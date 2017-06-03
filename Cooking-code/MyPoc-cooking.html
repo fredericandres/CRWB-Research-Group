@@ -1,0 +1,656 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+  <title>Dish Observation</title>
+
+  <style>
+  .container {
+      text-align: center;
+
+}
+  html,body {
+    background-color: #EBE8DF;
+    color: #555;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    position: static;
+
+  }
+  video, canvas {
+    
+    left: 0;
+    right: 0;
+    padding: 0;
+    margin: auto;
+    display: block;
+    text-align:center;
+    position: absolute;
+
+  }
+  
+  .video-front {
+      transform: scale(-1, 1);
+  }
+  .portrait {
+  transform-origin: 0 0;
+  transform: rotate(-90deg) translateX(-100%);
+  }
+ 
+h1 {
+  font-size: 60px;
+  text-align: center;
+  color: #FFF;
+} 
+
+h3 {
+  font-size: 30px;
+  line-height: 34px;
+  text-align: center;
+  color: #FFF;
+}
+
+h3 a {
+  color: #FFF;
+}
+
+a {
+  color: #FFF;
+}
+
+h1 {
+  margin-top: 100px;
+  text-align:center;
+  font-size:60px;
+  line-height: 70px;
+  font-family: 'Bree Serif', 'serif';
+  }
+
+#container {
+  margin: 0 auto;
+  max-width: 890px;
+}
+
+p {
+  text-align: center;
+}
+
+.toggle,
+[id^=drop] {
+  display: none;
+}
+
+/* Giving a background-color to the nav container. */
+nav { 
+  margin:0;
+  padding: 0;
+  background-color: #71bee8;
+}
+
+#logo {
+  display: block;
+  padding: 0 30px;
+  float: left;
+  font-size:20px;
+  line-height: 60px;
+}
+
+/* Since we'll have the "ul li" "float:left"
+ * we need to add a clear after the container. */
+
+nav:after {
+  content:"";
+  display:table;
+  clear:both;
+}
+
+/* Removing padding, margin and "list-style" from the "ul",
+ * and adding "position:reltive" */
+nav ul {
+  float: right;
+  padding:0;
+  margin:0;
+  list-style: none;
+  position: relative;
+  }
+  
+/* Positioning the navigation items inline */
+nav ul li {
+  margin: 0px;
+  display:inline-block;
+  float: left;
+  background-color: #888;
+  }
+
+/* Styling the links */
+nav a {
+  display:block;
+  padding:20px 70px;  
+  color:#FFF;
+  font-size:17px;
+  text-decoration:none;
+}
+
+nav ul li ul li:hover { background: #000000; }
+
+/* Background color change on Hover */
+nav a:hover { 
+  background-color: #000000; 
+}
+
+/* Hide Dropdowns by Default
+ * and giving it a position of absolute */
+nav ul ul {
+  display: none;
+  position: absolute; 
+  /* has to be the same number as the "line-height" of "nav a" */
+  top: 61px; 
+}
+  
+/* Display Dropdowns on Hover */
+nav ul li:hover > ul {
+  display:inherit;
+}
+  
+/* Fisrt Tier Dropdown */
+nav ul ul li {
+  width:170px;
+  float:none;
+  display:list-item;
+  position: relative;
+  z-index: 1;
+}
+
+/* Second, Third and more Tiers 
+ * We move the 2nd and 3rd etc tier dropdowns to the left
+ * by the amount of the width of the first tier.
+*/
+nav ul ul ul li {
+  position: relative;
+  top:-61px;
+  /* has to be the same number as the "width" of "nav ul ul li" */ 
+  left:170px; 
+}
+  
+/* Change ' +' in order to change the Dropdown symbol */
+li > a:after { content:  ' +'; }
+li > a:only-child:after { content: ''; }
+
+
+/* Media Queries
+--------------------------------------------- */
+
+@media all and (max-width : 768px) {
+
+  #logo {
+    display: block;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+    float: none;
+  }
+
+  nav {
+    margin: 0;
+  }
+
+  /* Hide the navigation menu by default */
+  /* Also hide the  */
+  .toggle + a,
+  .menu {
+    display: none;
+  }
+
+  /* Stylinf the toggle lable */
+  .toggle {
+    display: block;
+    background-color: #888;
+    padding:14px 20px;  
+    color:#FFF;
+    font-size:17px;
+    text-decoration:none;
+    border:none;
+  }
+
+  .toggle:hover {
+    background-color: #000000;
+  }
+
+  /* Display Dropdown when clicked on Parent Lable */
+  [id^=drop]:checked + ul {
+    display: block;
+  }
+
+  /* Change menu item's width to 100% */
+  nav ul li {
+    display: block;
+    width: 100%;
+    }
+
+  nav ul ul .toggle,
+  nav ul ul a {
+    padding: 0 40px;
+  }
+
+  nav ul ul ul a {
+    padding: 0 80px;
+  }
+
+  nav a:hover,
+  nav ul ul ul a {
+    background-color: #000000;
+  }
+  
+  nav ul li ul li .toggle,
+  nav ul ul a,
+  nav ul ul ul a{
+    padding:14px 20px;  
+    color:#FFF;
+    font-size:17px; 
+  }
+  
+  
+  nav ul li ul li .toggle,
+  nav ul ul a {
+    background-color: #888; 
+  }
+
+  /* Hide Dropdowns by Default */
+  nav ul ul {
+    float: none;
+    position:static;
+    color: #ffffff;
+    /* has to be the same number as the "line-height" of "nav a" */
+  }
+    
+  /* Hide menus on hover */
+  nav ul ul li:hover > ul,
+  nav ul li:hover > ul {
+    display: none;
+  }
+    
+  /* Fisrt Tier Dropdown */
+  nav ul ul li {
+    display: block;
+    width: 100%;
+  }
+
+  nav ul ul ul li {
+    position: static;
+    /* has to be the same number as the "width" of "nav ul ul li" */ 
+  }
+}
+
+@media all and (max-width : 330px) {
+
+  nav ul li {
+    display:block;
+    width: 94%;
+  }
+}
+#selection { 
+  border: 3px dotted ;
+  color: #ff00af;
+  position: absolute;
+  z-index: 1;
+  text-align: center;
+  width: 640px;
+  height: 480px;
+
+}
+
+</style>
+</head>
+<body>  
+      <div>
+      <nav>
+      <div id="logo">Dish Observation</div>
+
+        <label for="drop" class="toggle">Menu</label>
+        <input type="checkbox" id="drop" />
+            <ul class="menu">
+                <li><a href="#">Home</a></li>
+                <li>
+                    <!-- First Tier Drop Down -->
+                    <label for="drop-1" class="toggle">Apple +</label>
+                    <a href="#">Apple</a>
+                    <input type="checkbox" id="drop-1"/>
+                    <ul>
+                        <li><a href="#">Fungal</a></li>
+                        <li><a href="#">Fungal</a></li>
+                        <li><a href="#">Fungal</a></li>
+                    </ul> 
+
+                </li>
+                <li>
+
+                <!-- First Tier Drop Down -->
+                <label for="drop-2" class="toggle">Fig +</label>
+                <a href="#">Fig</a>
+                <input type="checkbox" id="drop-2"/>
+                <ul>
+                    <li id="Fungal" onclick = "isClick('Fungal')"><a>Fungal</a></li>
+                    <li><a href="#">Fungal</a></li>
+                    <li>
+                       
+                    <!-- Second Tier Drop Down -->        
+                    <label for="drop-3" class="toggle">Fungal +</label>
+                    <a href="#">Fungal</a>         
+                    <input type="checkbox" id="drop-3"/>
+
+                    <ul>
+                        <li><a href="#">Cycle1</a></li>
+                        <li><a href="#">Cycle2</a></li>
+                        <li><a href="#">Cycle3</a></li>
+                    </ul>
+                    </li>
+                </ul>
+                </li>
+                <li><a href="#">About</a></li>
+            </ul>
+      </nav> 
+      </div>
+      <div id="aboveMenu"></div>
+      <p id= "space" style= " display: block; margin: 10px 22px 8px 22px;overflow: hidden; text-align: left;" >   </p>
+   
+      <div> <!--video, color detection, advise, image from video, selection!-->
+      <video id="video" width="640" height="480" preload autoplay loop muted controls></video> 
+      <!--canvas id="canvas" width="640" height="480" hidden="0"  ></canvas!--> 
+      <canvas id="mycanvas" width="640" height="480" hidden  ></canvas> 
+      <canvas id="videoImage" width="640" height = "480" hidden="0" ></canvas> 
+      <canvas id="rectangle" width="640" height = "480" hidden="0" ></canvas> 
+      </div> 
+
+      <div id="underMenu"></div>
+      <button id="bt" onclick="stopFunction()" >pause</button>   
+      <button id="opennewwindow" onclick ="captureImage()">capture</button>   
+      <div id="option" style= " color: #888; display: block; text-align: left; width:100%;"></div>
+
+      <script src="build/tracking.js"></script>
+      <script src="js/dat.gui.min.js"></script>
+      <script src="js/jquery-3.1.0.min.js"></script>
+      <!--script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script!-->
+  <script>
+      var loaded = false;
+      var adviseWidth = 250, adviseHeight = 250, adviseX = 20, adviseY=20 , adviseTextX = adviseX+15, adviseTextY = adviseY+30;
+      var location,showposition,lat,lon;
+      var count = 0;
+      var isPause = false;
+      var isCount0 = false;
+
+      var adviseCanvas = document.getElementById('mycanvas');
+      var adviseContext = adviseCanvas.getContext('2d');
+      var rectangle = document.getElementById('rectangle')
+      var rectangleContext = rectangle.getContext('2d');
+      var videoImage = document.getElementById('videoImage');
+      var rectX = 0, rectY = 0, rectW = 200, rectH = 200;
+
+      var dataURL = "";
+
+      var isMobile = false;
+      if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+      isMobile = true;
+      }
+
+      window.onload = function() {
+      var video = document.getElementById('video');
+      //var canvas = document.getElementById('canvas');
+      var mycanvas = document.getElementById('mycanvas');
+      //var context = canvas.getContext('2d');
+     
+      var textbox;
+      var textboxCooking;
+    
+      var tracker = new tracking.ColorTracker([ 'brown']);
+      tracking.track('#video', tracker, { camera: true });
+
+      if(isMobile == false && window.innerHeight > window.innerWidth)
+      {   video.width = window.innerWidth;
+          video.height = 480*(video.width/640);
+          //canvas.width = video.width;
+          //canvas.height = video.height;
+          mycanvas.width = video.width;
+          mycanvas.height = video.height;
+          rectangle.width = video.width;
+          rectangle.height = video.height;
+          var h = video.height + 20;
+          document.getElementById("underMenu").style.margin = h+ "px";
+      }
+      if(isMobile == false && window.innerWidth > window.innerHeight ){
+       // For Desktop version with front-webcam
+      $('#video').addClass('video-front');
+      //$('#canvas').addClass('video-front');
+      $('#videoImage').addClass('video-front');
+      $('#rectangle').addClass('video-front');
+      }
+
+      if(isMobile==true ){
+
+        if(window.innerHeight < window.innerWidth){
+          
+           //canvas.width= video.width;
+           //canvas.height= video.height;
+           mycanvas.width= video.width;
+           mycanvas.height= video.height;
+           rectangle.width= video.width;
+           rectangle.height= video.height;
+           var h = video.height + 20;
+           document.getElementById("underMenu").style.margin = h+ "px";
+           //alert('w>h');
+         }
+       else if (window.innerHeight > window.innerWidth){ 
+           //$('#video').addClass('portrait');
+           //$('#canvas').addClass('portrait');
+           //alert('h>w'+ ' '+ video.width);
+           //canvas.width= video.width;
+           //canvas.height= video.height;
+           mycanvas.width= video.width;
+           mycanvas.height= video.height;
+           rectangle.width= video.width;
+           rectangle.height= video.height;
+         }
+      }
+
+      console.log(video.width+' '+ video.height);
+
+      var isCountingDone = false;
+      var isFirst = true;
+      var date = Date.now();
+
+         showposition = navigator.geolocation.getCurrentPosition(function(position){
+         lat = position.coords.latitude;
+         lon = position.coords.longitude;
+         saveLocation(lat,lon);
+        
+      $(document).ready(function(){
+        $("#opennewwindow").click(function(){
+
+      var xhr = new XMLHttpRequest();
+      var url = "http://odbenchmark.isima.fr:80/crwbdl";
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-type", "application/json", "charset=utf-8" );
+      xhr.send(JSON.stringify({
+           "photo": dataURL,
+           "timestamp": date
+      }));  
+
+
+      var dishInfo;
+      xhr.onreadystatechange = function () {
+          if (this.readyState != 4) return;
+
+          if (this.status == 200) {
+             dishInfo = this.responseText;
+             var obj = JSON.parse(dishInfo);
+             //alert(obj.status);
+
+             var gab = obj["garbage"];
+                  for(var object in gab){
+                      var gab1 = gab[object].test;
+                    }
+                  for(var object in gab){
+                      var gab2 = gab[object].test;
+                    }    
+
+
+               draw();
+                var size =18;
+                function draw(){
+
+                  adviseCanvas = document.getElementById('mycanvas');
+                  adviseContext = adviseCanvas.getContext('2d');
+                  adviseContext.clearRect(0, 0, adviseCanvas.width, adviseCanvas.height);
+                  adviseContext.beginPath();
+                  adviseContext.rect(adviseX,adviseY, adviseWidth ,adviseHeight); //x,y,w,h
+                  
+                  adviseContext.fillStyle= "#ffb900"
+                  adviseContext.fill();
+                  adviseContext.font = "18px Helvetica";
+                  adviseContext.fillStyle = "#333333";
+
+                  //fillTextMultiLine(adviseContext,  " has"+" \n Pressure: ", adviseTextX, adviseTextY); 
+                  textbox = fillTextMultiLine(adviseContext, "status is " +  obj.status + "\n" +"gabage1 is " + gab1 + " gabage2 is " + gab2, adviseTextX, adviseTextY); 
+                  requestAnimationFrame(draw);
+              } // close of function draw
+
+         } // close of if readyState && if status==200
+      }; // close of onreadystatechange
+
+
+         }); // close of capture button
+      }); // close of ready function
+
+       //       }); // close of getJSON    
+        //  }); // close of ready(function)
+     }); // close of showposition function   
+
+
+             
+
+      drawSelection();
+          function drawSelection(){
+            rectangleContext.clearRect(0, 0, rectangle.width, rectangle.height);
+            rectangleContext.beginPath();
+            rectangleContext.lineWidth="4";
+            rectangleContext.strokeStyle="green";
+            rectangleContext.rect(rectX,rectY,rectW,rectH);
+            rectangleContext.stroke();
+            requestAnimationFrame(drawSelection);            
+          }
+
+        gui = new dat.GUI();
+        parameters = 
+        {
+            x: 0, y: 0, w: adviseWidth, h: adviseHeight,
+            adviseVisible: true,
+            detectionVisivle: true,
+            moveX:0, moveY:0,
+            moveW:200, moveH:200,
+        };
+        var folder1 = gui.addFolder('Textbox Dish');
+        var adX = folder1.add( parameters, 'x' ).min(0).max(400).step(5).listen();
+        var adY = folder1.add( parameters, 'y' ).min(0).max(300).step(5).listen();
+        adX.onChange(function(value){ adviseX = value; adviseTextX = value+15});
+        adY.onChange(function(value){ adviseY = value; adviseTextY = value+30});
+
+        var adviseVis = gui.add(parameters,'adviseVisible').name('Show Dish name?').listen();
+        adviseVis.onChange(function (value) {
+          if(value==true){
+            visibleCanvas('mycanvas');
+          }else if(value==false){
+            hiddenCanvas('mycanvas');
+          }
+        });
+        //folder1.open();
+        var rectangleFolder = gui.addFolder('Area of Interest');
+        var rectx = rectangleFolder.add( parameters, 'moveX' ).min(0).max(400).step(5).listen();
+        var recty = rectangleFolder.add( parameters, 'moveY' ).min(0).max(300).step(5).listen();
+        var rectw = rectangleFolder.add( parameters, 'moveW' ).min(100).max(600).step(5).listen();
+        var recth = rectangleFolder.add( parameters, 'moveH' ).min(100).max(420).step(5).listen();
+        rectx.onChange(function(value){ rectX = value; });
+        recty.onChange(function(value){ rectY = value; });
+        rectw.onChange(function(value){ rectW = value; });
+        recth.onChange(function(value){ rectH = value; });
+        rectangleFolder.open();                
+
+        gui.open();
+    }; // close of window.onload
+
+////-----------------------------------FUNCTIONS---------------------------------------------//
+        function captureImage()
+        {
+          var videoImage = document.getElementById('videoImage');
+          var videoImageContext = videoImage.getContext('2d');
+          videoImageContext.clearRect(0, 0, videoImage.width, videoImage.height);         
+          videoImageContext.drawImage(video,rectX,rectY,rectW,rectH,10,10,rectW,rectH);
+          dataURL = videoImage.toDataURL('image/jpeg', 0.5);
+          console.log(dataURL);
+        }      
+        function stopFunction()
+        {
+          var v = document.getElementById('video');
+              if (v.paused) {
+                      v.play();
+                      isPause = false;
+                       if(count!=0){
+                         count = 0;
+                       }
+              } else {
+                      v.pause();
+                      isPause = true;                                    
+                    }
+              
+              if(isPause == true){
+                $("#bt").text("play");
+              }
+              else if(isPause == false){
+                $("#bt").text("pause");
+              }
+        }
+        function clearBox(elementID)
+        {
+            document.getElementById(elementID).innerHTML = "";
+        }
+        function hiddenCanvas(elementID) {
+            document.getElementById(elementID).style.visibility = "hidden";
+        }
+
+        function visibleCanvas(elementID) {
+          //  document.getElementById("imgbox1").style.display = "block";
+            document.getElementById(elementID).style.visibility = "visible";
+        }
+        function saveLocation(lat,lon){
+
+          this.lat = clone(lat);
+          this.lon = clone(lon);
+        }
+        function clone(obj) {
+          if (null == obj || "object" != typeof obj) return obj;
+          var copy = obj.constructor();
+          for (var attr in obj) {
+              if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+          }
+          return copy;
+        }
+        function fillTextMultiLine(ctx, text, x, y) {
+          var line2 = 0; 
+          var lineHeight = ctx.measureText("M").width * 1.2;
+          adviseHeight = lineHeight*(7);
+          var lines = text.split("\n");
+            for (var i = 0; i < lines.length; ++i) {
+              ctx.fillText(lines[i], x, y);
+              y += lineHeight;
+          }
+         var max;
+         for(var i = 0; i<lines.length; i++){
+           var lineWidth = ctx.measureText(lines[i]).width;
+           max = Math.max(ctx.measureText(lines[0]).width,ctx.measureText(lines[1]).width,ctx.measureText(lines[2]).width,ctx.measureText(lines[3]).width);
+         }
+        adviseWidth = max*1.25;
+        }
+  </script>
+
+</body>
+</html>
