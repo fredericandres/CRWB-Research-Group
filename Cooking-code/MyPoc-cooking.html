@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
   <title>Dish Observation</title>
+  <!--link rel="stylesheet" href="assets/demo.css"!--> 
+  <!--script src="assets/stats.min.js"></script!-->
+  <!--script src="assets/color_camera_gui.js"></script!-->
 
   <style>
   .container {
@@ -18,6 +21,7 @@
     font-size: 15px;
     position: static;
 
+
   }
   video, canvas {
     
@@ -30,6 +34,9 @@
     position: absolute;
 
   }
+  button {
+    -webkit-transform:translateZ(200px); /* Equivalent or greater than parent's*/
+  }
   
   .video-front {
       transform: scale(-1, 1);
@@ -38,7 +45,7 @@
   transform-origin: 0 0;
   transform: rotate(-90deg) translateX(-100%);
   }
- 
+/*CSS Menu*/
 h1 {
   font-size: 60px;
   text-align: center;
@@ -65,7 +72,6 @@ h1 {
   text-align:center;
   font-size:60px;
   line-height: 70px;
-  font-family: 'Bree Serif', 'serif';
   }
 
 #container {
@@ -86,7 +92,8 @@ p {
 nav { 
   margin:0;
   padding: 0;
-  background-color: #71bee8;
+  background-color: #fbce31;
+  
 }
 
 #logo {
@@ -104,6 +111,7 @@ nav:after {
   content:"";
   display:table;
   clear:both;
+  
 }
 
 /* Removing padding, margin and "list-style" from the "ul",
@@ -122,6 +130,7 @@ nav ul li {
   display:inline-block;
   float: left;
   background-color: #888;
+  
   }
 
 /* Styling the links */
@@ -132,6 +141,7 @@ nav a {
   font-size:17px;
   text-decoration:none;
 }
+
 
 nav ul li ul li:hover { background: #000000; }
 
@@ -146,7 +156,7 @@ nav ul ul {
   display: none;
   position: absolute; 
   /* has to be the same number as the "line-height" of "nav a" */
-  top: 61px; 
+  top: 50px; 
 }
   
 /* Display Dropdowns on Hover */
@@ -169,10 +179,11 @@ nav ul ul li {
 */
 nav ul ul ul li {
   position: relative;
-  top:-61px;
+  top:-50px;
   /* has to be the same number as the "width" of "nav ul ul li" */ 
   left:170px; 
 }
+
   
 /* Change ' +' in order to change the Dropdown symbol */
 li > a:after { content:  ' +'; }
@@ -183,7 +194,6 @@ li > a:only-child:after { content: ''; }
 --------------------------------------------- */
 
 @media all and (max-width : 768px) {
-
   #logo {
     display: block;
     padding: 0;
@@ -191,6 +201,7 @@ li > a:only-child:after { content: ''; }
     text-align: center;
     float: none;
   }
+
 
   nav {
     margin: 0;
@@ -249,6 +260,7 @@ li > a:only-child:after { content: ''; }
     padding:14px 20px;  
     color:#FFF;
     font-size:17px; 
+    background-color: #888; 
   }
   
   
@@ -256,6 +268,7 @@ li > a:only-child:after { content: ''; }
   nav ul ul a {
     background-color: #888; 
   }
+  
 
   /* Hide Dropdowns by Default */
   nav ul ul {
@@ -280,7 +293,9 @@ li > a:only-child:after { content: ''; }
   nav ul ul ul li {
     position: static;
     /* has to be the same number as the "width" of "nav ul ul li" */ 
+
   }
+
 }
 
 @media all and (max-width : 330px) {
@@ -289,14 +304,17 @@ li > a:only-child:after { content: ''; }
     display:block;
     width: 94%;
   }
+
 }
-#selection { 
-  border: 3px dotted ;
+
+}
+ #selection { 
+  border: 3px dotted ;             
   color: #ff00af;
-  position: absolute;
-  z-index: 1;
-  text-align: center;
-  width: 640px;
+  position: absolute;              
+  z-index: 1;              
+  text-align: center;              
+  width: 640px;              
   height: 480px;
 
 }
@@ -304,46 +322,46 @@ li > a:only-child:after { content: ''; }
 </style>
 </head>
 <body>  
-      <div>
+     <div>
       <nav>
       <div id="logo">Dish Observation</div>
 
         <label for="drop" class="toggle">Menu</label>
         <input type="checkbox" id="drop" />
             <ul class="menu">
-                <li><a href="#">Home</a></li>
+                <li><a href="#">lorem</a></li>
                 <li>
                     <!-- First Tier Drop Down -->
-                    <label for="drop-1" class="toggle">Apple +</label>
-                    <a href="#">Apple</a>
+                    <label for="drop-1" class="toggle">lorem +</label>
+                    <a href="#">lorem</a>
                     <input type="checkbox" id="drop-1"/>
                     <ul>
-                        <li><a href="#">Fungal</a></li>
-                        <li><a href="#">Fungal</a></li>
-                        <li><a href="#">Fungal</a></li>
+                        <li><a href="#">lorem</a></li>
+                        <li><a href="#">lorem</a></li>
+                        <li><a href="#">lorem</a></li>
                     </ul> 
 
                 </li>
                 <li>
 
                 <!-- First Tier Drop Down -->
-                <label for="drop-2" class="toggle">Fig +</label>
-                <a href="#">Fig</a>
+                <label for="drop-2" class="toggle">lorem +</label>
+                <a href="#">lorem</a>
                 <input type="checkbox" id="drop-2"/>
                 <ul>
-                    <li id="Fungal" onclick = "isClick('Fungal')"><a>Fungal</a></li>
-                    <li><a href="#">Fungal</a></li>
+                    <li id="Fungal" onclick = "isClick('Fungal')"><a>lorem</a></li>
+                    <li><a href="#">lorem</a></li>
                     <li>
                        
                     <!-- Second Tier Drop Down -->        
-                    <label for="drop-3" class="toggle">Fungal +</label>
-                    <a href="#">Fungal</a>         
+                    <label for="drop-3" class="toggle">lorem +</label>
+                    <a href="#">lorem</a>         
                     <input type="checkbox" id="drop-3"/>
 
                     <ul>
-                        <li><a href="#">Cycle1</a></li>
-                        <li><a href="#">Cycle2</a></li>
-                        <li><a href="#">Cycle3</a></li>
+                        <li><a href="#">lorem</a></li>
+                        <li><a href="#">lorem</a></li>
+                        <li><a href="#">lorem</a></li>
                     </ul>
                     </li>
                 </ul>
@@ -353,25 +371,33 @@ li > a:only-child:after { content: ''; }
       </nav> 
       </div>
       <div id="aboveMenu"></div>
-      <p id= "space" style= " display: block; margin: 10px 22px 8px 22px;overflow: hidden; text-align: left;" >   </p>
+      
+      <p id= "space" style= " display: block; margin: 10px 22px 8px 22px;overflow: hidden; text-align: left;" >   </p>    
    
-      <div> <!--video, color detection, advise, image from video, selection!-->
+      <div id="canvasDiv" > <!--video, color detection, advise, image from video, selection!-->
       <video id="video" width="640" height="480" preload autoplay loop muted controls></video> 
-      <!--canvas id="canvas" width="640" height="480" hidden="0"  ></canvas!--> 
+      <canvas id="canvas" width="640" height="480" hidden="0"  ></canvas> 
       <canvas id="mycanvas" width="640" height="480" hidden  ></canvas> 
       <canvas id="videoImage" width="640" height = "480" hidden="0" ></canvas> 
       <canvas id="rectangle" width="640" height = "480" hidden="0" ></canvas> 
       </div> 
+     
 
       <div id="underMenu"></div>
-      <button id="bt" onclick="stopFunction()" >pause</button>   
-      <button id="opennewwindow" onclick ="captureImage()">capture</button>   
+      <button id="bt" style="font-size: 15px;" onmousedown="stopFunction()" >pause</button>   
+      <button id="opennewwindow" style="font-size: 15px;"onclick="captureImage();">capture</button>   
+      <div id="hu" style= " color: #888; display: block; text-align: left; width:10%;"></div>
+      <div id="pixel" style= " color: #888; display: block; text-align: left; width:100%;"></div>
+     
       <div id="option" style= " color: #888; display: block; text-align: left; width:100%;"></div>
 
       <script src="build/tracking.js"></script>
       <script src="js/dat.gui.min.js"></script>
       <script src="js/jquery-3.1.0.min.js"></script>
+
       <!--script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script!-->
+
+
   <script>
       var loaded = false;
       var adviseWidth = 250, adviseHeight = 250, adviseX = 20, adviseY=20 , adviseTextX = adviseX+15, adviseTextY = adviseY+30;
@@ -380,14 +406,16 @@ li > a:only-child:after { content: ''; }
       var isPause = false;
       var isCount0 = false;
 
+      var pixel = document.getElementById("pixel");
+      var pixelCount = document.getElementById("pixel");
       var adviseCanvas = document.getElementById('mycanvas');
       var adviseContext = adviseCanvas.getContext('2d');
       var rectangle = document.getElementById('rectangle')
       var rectangleContext = rectangle.getContext('2d');
-      var videoImage = document.getElementById('videoImage');
       var rectX = 0, rectY = 0, rectW = 200, rectH = 200;
-
+      
       var dataURL = "";
+
 
       var isMobile = false;
       if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
@@ -396,70 +424,77 @@ li > a:only-child:after { content: ''; }
 
       window.onload = function() {
       var video = document.getElementById('video');
-      //var canvas = document.getElementById('canvas');
+      var canvas = document.getElementById('canvas');
       var mycanvas = document.getElementById('mycanvas');
-      //var context = canvas.getContext('2d');
-     
+      var context = canvas.getContext('2d');
+      var countIs = 0;
       var textbox;
-      var textboxCooking;
+      $("#bt").on("tap",stopFunction());
     
       var tracker = new tracking.ColorTracker([ 'brown']);
       tracking.track('#video', tracker, { camera: true });
 
       if(isMobile == false && window.innerHeight > window.innerWidth)
-      {   video.width = window.innerWidth;
-          video.height = 480*(video.width/640);
-          //canvas.width = video.width;
-          //canvas.height = video.height;
-          mycanvas.width = video.width;
-          mycanvas.height = video.height;
-          rectangle.width = video.width;
-          rectangle.height = video.height;
+      {   video.width=window.innerWidth;
+          video.height= 480*(video.width/640);
+         canvas.width= video.width;
+          canvas.height= video.height;
+          mycanvas.width= video.width;
+          mycanvas.height= video.height;
+          rectangle.width= video.width;
+          rectangle.height= video.height;
           var h = video.height + 20;
-          document.getElementById("underMenu").style.margin = h+ "px";
+          document.getElementById("canvasDiv").style.marginBottom = h+ "px";
       }
       if(isMobile == false && window.innerWidth > window.innerHeight ){
        // For Desktop version with front-webcam
+       // document.getElementById("video").style.transform = "scale(-1, 1)"; 
       $('#video').addClass('video-front');
-      //$('#canvas').addClass('video-front');
+            $('#canvas').addClass('video-front');
+
       $('#videoImage').addClass('video-front');
       $('#rectangle').addClass('video-front');
       }
 
       if(isMobile==true ){
-
+         //no scroll left-right  
+        document.body.style.overflowX = "hidden";
         if(window.innerHeight < window.innerWidth){
+
+           canvas.width= video.width;
+           canvas.height= video.height;
+   
+           mycanvas.width= video.width;
+           mycanvas.height= video.height;
+           rectangle.width= video.width;
+           rectangle.height= video.height;
+           
+         }
+       else if (window.innerHeight > window.innerWidth){ 
           
-           //canvas.width= video.width;
-           //canvas.height= video.height;
+          video.height=window.innerWidth;
+          video.width= 480*(video.height/640);
+          canvas.width= video.width;
+           canvas.height= video.height;
            mycanvas.width= video.width;
            mycanvas.height= video.height;
            rectangle.width= video.width;
            rectangle.height= video.height;
            var h = video.height + 20;
-           document.getElementById("underMenu").style.margin = h+ "px";
-           //alert('w>h');
+           document.getElementById("canvasDiv").style.marginBottom = h+ "px";
+
          }
-       else if (window.innerHeight > window.innerWidth){ 
-           //$('#video').addClass('portrait');
-           //$('#canvas').addClass('portrait');
-           //alert('h>w'+ ' '+ video.width);
-           //canvas.width= video.width;
-           //canvas.height= video.height;
-           mycanvas.width= video.width;
-           mycanvas.height= video.height;
-           rectangle.width= video.width;
-           rectangle.height= video.height;
-         }
+
       }
-
+    
       console.log(video.width+' '+ video.height);
-
+    
       var isCountingDone = false;
       var isFirst = true;
       var date = Date.now();
 
-         showposition = navigator.geolocation.getCurrentPosition(function(position){
+     
+ showposition = navigator.geolocation.getCurrentPosition(function(position){
          lat = position.coords.latitude;
          lon = position.coords.longitude;
          saveLocation(lat,lon);
@@ -474,7 +509,9 @@ li > a:only-child:after { content: ''; }
       xhr.send(JSON.stringify({
            "photo": dataURL,
            "timestamp": date
-      }));  
+           
+      } )); 
+   //   alert(dataURL);  
 
 
       var dishInfo;
@@ -510,7 +547,7 @@ li > a:only-child:after { content: ''; }
                   adviseContext.font = "18px Helvetica";
                   adviseContext.fillStyle = "#333333";
 
-                  //fillTextMultiLine(adviseContext,  " has"+" \n Pressure: ", adviseTextX, adviseTextY); 
+                
                   textbox = fillTextMultiLine(adviseContext, "status is " +  obj.status + "\n" +"gabage1 is " + gab1 + " gabage2 is " + gab2, adviseTextX, adviseTextY); 
                   requestAnimationFrame(draw);
               } // close of function draw
@@ -526,9 +563,7 @@ li > a:only-child:after { content: ''; }
         //  }); // close of ready(function)
      }); // close of showposition function   
 
-
-             
-
+       
       drawSelection();
           function drawSelection(){
             rectangleContext.clearRect(0, 0, rectangle.width, rectangle.height);
@@ -537,7 +572,7 @@ li > a:only-child:after { content: ''; }
             rectangleContext.strokeStyle="green";
             rectangleContext.rect(rectX,rectY,rectW,rectH);
             rectangleContext.stroke();
-            requestAnimationFrame(drawSelection);            
+            requestAnimationFrame(drawSelection);
           }
 
         gui = new dat.GUI();
@@ -549,13 +584,13 @@ li > a:only-child:after { content: ''; }
             moveX:0, moveY:0,
             moveW:200, moveH:200,
         };
-        var folder1 = gui.addFolder('Textbox Dish');
+        
+        var folder1 = gui.addFolder('Textbox');
         var adX = folder1.add( parameters, 'x' ).min(0).max(400).step(5).listen();
         var adY = folder1.add( parameters, 'y' ).min(0).max(300).step(5).listen();
         adX.onChange(function(value){ adviseX = value; adviseTextX = value+15});
         adY.onChange(function(value){ adviseY = value; adviseTextY = value+30});
-
-        var adviseVis = gui.add(parameters,'adviseVisible').name('Show Dish name?').listen();
+        var adviseVis = gui.add(parameters,'adviseVisible').name('General Advise visible?').listen();
         adviseVis.onChange(function (value) {
           if(value==true){
             visibleCanvas('mycanvas');
@@ -563,10 +598,11 @@ li > a:only-child:after { content: ''; }
             hiddenCanvas('mycanvas');
           }
         });
-        //folder1.open();
+        
+     
         var rectangleFolder = gui.addFolder('Area of Interest');
-        var rectx = rectangleFolder.add( parameters, 'moveX' ).min(0).max(400).step(5).listen();
-        var recty = rectangleFolder.add( parameters, 'moveY' ).min(0).max(300).step(5).listen();
+        var rectx = rectangleFolder.add( parameters, 'moveX' ).min(0).max(video.width).step(5).listen();
+        var recty = rectangleFolder.add( parameters, 'moveY' ).min(0).max(video.height).step(5).listen();
         var rectw = rectangleFolder.add( parameters, 'moveW' ).min(100).max(600).step(5).listen();
         var recth = rectangleFolder.add( parameters, 'moveH' ).min(100).max(420).step(5).listen();
         rectx.onChange(function(value){ rectX = value; });
@@ -575,18 +611,31 @@ li > a:only-child:after { content: ''; }
         recth.onChange(function(value){ rectH = value; });
         rectangleFolder.open();                
 
-        gui.open();
+       
     }; // close of window.onload
 
 ////-----------------------------------FUNCTIONS---------------------------------------------//
         function captureImage()
         {
+          var h = video.height + 50;
+          var l = h/3;
           var videoImage = document.getElementById('videoImage');
+          videoImage.style.marginTop = h+ "px";
+          videoImage.style.marginLeft = l+ "px";
+          var vw = 640;
+          var ww = window.innerWidth;
+          var ratio = vw/ww;
           var videoImageContext = videoImage.getContext('2d');
           videoImageContext.clearRect(0, 0, videoImage.width, videoImage.height);         
+          if(isMobile==true){
+          videoImageContext.drawImage(video,rectX*(ratio),rectY*(ratio),rectW*(ratio),rectH*(ratio),10,10,rectW,rectH);
+        }else{
           videoImageContext.drawImage(video,rectX,rectY,rectW,rectH,10,10,rectW,rectH);
+        }
           dataURL = videoImage.toDataURL('image/jpeg', 0.5);
           console.log(dataURL);
+         // alert(dataURL);
+        
         }      
         function stopFunction()
         {
@@ -597,17 +646,24 @@ li > a:only-child:after { content: ''; }
                        if(count!=0){
                          count = 0;
                        }
+
+
               } else {
                       v.pause();
-                      isPause = true;                                    
-                    }
-              
+                      isPause = true; 
+                     
+              }
               if(isPause == true){
                 $("#bt").text("play");
               }
               else if(isPause == false){
                 $("#bt").text("pause");
               }
+        }
+        function selectOption(elementID)
+        {
+          var text = document.getElementById(elementID);
+          console.log(text.innerText);
         }
         function clearBox(elementID)
         {
@@ -618,7 +674,6 @@ li > a:only-child:after { content: ''; }
         }
 
         function visibleCanvas(elementID) {
-          //  document.getElementById("imgbox1").style.display = "block";
             document.getElementById(elementID).style.visibility = "visible";
         }
         function saveLocation(lat,lon){
@@ -634,6 +689,7 @@ li > a:only-child:after { content: ''; }
           }
           return copy;
         }
+
         function fillTextMultiLine(ctx, text, x, y) {
           var line2 = 0; 
           var lineHeight = ctx.measureText("M").width * 1.2;
@@ -646,9 +702,13 @@ li > a:only-child:after { content: ''; }
          var max;
          for(var i = 0; i<lines.length; i++){
            var lineWidth = ctx.measureText(lines[i]).width;
+
+           
            max = Math.max(ctx.measureText(lines[0]).width,ctx.measureText(lines[1]).width,ctx.measureText(lines[2]).width,ctx.measureText(lines[3]).width);
          }
-        adviseWidth = max*1.25;
+
+        adviseWidth = max*1.25
+
         }
   </script>
 
