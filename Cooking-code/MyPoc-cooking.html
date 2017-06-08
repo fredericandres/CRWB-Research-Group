@@ -515,6 +515,7 @@ li > a:only-child:after { content: ''; }
 
 
       var dishInfo;
+      var ingredientsInfo = "Ingredients are " + "\n";
       xhr.onreadystatechange = function () {
           if (this.readyState != 4) return;
 
@@ -524,12 +525,10 @@ li > a:only-child:after { content: ''; }
              //alert(obj.status);
 
              var gab = obj["garbage"];
-                  for(var object in gab){
-                      var gab1 = gab[object].test;
-                    }
-                  for(var object in gab){
-                      var gab2 = gab[object].test;
-                    }    
+             gabObjects = new Array(gab.length);
+             for(i = 0; i < gab.length; i++) {
+                ingredientsInfo += gab[i].test + ", "; 
+             }
 
 
                draw();
@@ -548,7 +547,7 @@ li > a:only-child:after { content: ''; }
                   adviseContext.fillStyle = "#333333";
 
                 
-                  textbox = fillTextMultiLine(adviseContext, "status is " +  obj.status + "\n" +"gabage1 is " + gab1 + " gabage2 is " + gab2, adviseTextX, adviseTextY); 
+                  textbox = fillTextMultiLine(adviseContext, "This is " +  obj.dishName + "\n" + ingredientsInfo, adviseTextX, adviseTextY); 
                   requestAnimationFrame(draw);
               } // close of function draw
 
@@ -707,7 +706,7 @@ li > a:only-child:after { content: ''; }
            max = Math.max(ctx.measureText(lines[0]).width,ctx.measureText(lines[1]).width,ctx.measureText(lines[2]).width,ctx.measureText(lines[3]).width);
          }
 
-        adviseWidth = max*1.25
+        adviseWidth = max*1.2
 
         }
   </script>
