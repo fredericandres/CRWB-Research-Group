@@ -493,6 +493,7 @@ li > a:only-child:after { content: ''; }
       var isFirst = true;
       var date = Date.now();
 
+
      
  showposition = navigator.geolocation.getCurrentPosition(function(position){
          lat = position.coords.latitude;
@@ -502,19 +503,99 @@ li > a:only-child:after { content: ''; }
       $(document).ready(function(){
         $("#opennewwindow").click(function(){
 
+      var observationURL;
+      var dishName;
       var xhr = new XMLHttpRequest();
-      var url = "http://odbenchmark.isima.fr:80/crwbdl";
-      xhr.open("POST", url, true);
-      xhr.setRequestHeader("Content-type", "application/json", "charset=utf-8" );
-      xhr.send(JSON.stringify({
-           "photo": dataURL,
-           "timestamp": date
+     // var url = "http://odbenchmark.isima.fr:80/crwbdl";
+      var url = "http://odbenchmark.isima.fr/CRWB-Erina-web/resource/observation";
+     //   xhr.open("POST", url, true);
+     // xhr.setRequestHeader("Content-type", "application/json", "charset=utf-8" );
+      
+      var blob = dataURItoBlob(dataURL);
+
+      var formData = new FormData();
+      formData.append("file", blob);
+      
+      $.ajax({
+        url: url,
+        type: 'POST',
+        processData: false, // important
+        contentType: false, // important
+        enctype: 'multipart/form-data',
+        data: formData,
+        dataType: 'text/plain',
+        complete: function(jqXHR, textStatus) {
+          alert(jqXHR.responseText);
+          observationURL = jqXHR.responseText;
+
+          //Ajax GET
+
+                $.ajax({
+                type: "GET",
+                url: observationURL,
+                
+                processData: false, //prevent jQuery from automatically transforming the data into a query string
+                //contentType: false,
+                dataType: "xml",
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+
+                dishName = data.getElementsByTagName("text")[0].childNodes[0].nodeValue;
+                //alert(dishName);
+
+                draw();
+                  function draw(){
+
+                      adviseCanvas = document.getElementById('mycanvas');
+                      adviseContext = adviseCanvas.getContext('2d');
+                      adviseContext.clearRect(0, 0, adviseCanvas.width, adviseCanvas.height);
+                      adviseContext.beginPath();
+                      adviseContext.rect(adviseX,adviseY, adviseWidth ,adviseHeight); //x,y,w,h
+                      
+                      adviseContext.fillStyle= "#ffb900"
+                      adviseContext.fill();
+                      adviseContext.font = "18px Helvetica";
+                      adviseContext.fillStyle = "#333333";
+
+                      textbox = fillTextMultiLine(adviseContext, "Dish is " + dishName +"\n", adviseTextX, adviseTextY); 
+                      requestAnimationFrame(draw);
+                } // close of function draw
+
+
+                 
+
+
+              
+               //  dishName = xmlDoc.getElementsByTagName("text")[0].nodeValue;
+                //   console.log("SUCCESS : ", dishName);
+                  //  $("#btnSubmit").prop("disabled", false);
+
+                },
+                error: function (e) {
+
+                   // $("#result").text(e.responseText);
+                    console.log("ERROR : ", e);
+                    //$("#btnSubmit").prop("disabled", false);
+
+                }
+            });
+          //Close Ajax GET
+
+        }
+      });
+
+   //   xhr.send(({
+           //"photo": dataURL,
+           //"timestamp": date
+          // "file": formData 
            
-      } )); 
+   //   } )); 
    //   alert(dataURL);  
+      
+       
 
-
-      var dishInfo;
+/*      var dishInfo;
       var ingredientsInfo = "Ingredients are " + "\n";
       xhr.onreadystatechange = function () {
           if (this.readyState != 4) return;
@@ -522,7 +603,7 @@ li > a:only-child:after { content: ''; }
           if (this.status == 200) {
              dishInfo = this.responseText;
              var obj = JSON.parse(dishInfo);
-             //alert(obj.status);
+
 
              var gab = obj["garbage"];
              gabObjects = new Array(gab.length);
@@ -530,29 +611,11 @@ li > a:only-child:after { content: ''; }
                 ingredientsInfo += gab[i].test + ", "; 
              }
 
+*/
+               
 
-               draw();
-                var size =18;
-                function draw(){
-
-                  adviseCanvas = document.getElementById('mycanvas');
-                  adviseContext = adviseCanvas.getContext('2d');
-                  adviseContext.clearRect(0, 0, adviseCanvas.width, adviseCanvas.height);
-                  adviseContext.beginPath();
-                  adviseContext.rect(adviseX,adviseY, adviseWidth ,adviseHeight); //x,y,w,h
-                  
-                  adviseContext.fillStyle= "#ffb900"
-                  adviseContext.fill();
-                  adviseContext.font = "18px Helvetica";
-                  adviseContext.fillStyle = "#333333";
-
-                
-                  textbox = fillTextMultiLine(adviseContext, "This is " +  obj.dishName + "\n" + ingredientsInfo, adviseTextX, adviseTextY); 
-                  requestAnimationFrame(draw);
-              } // close of function draw
-
-         } // close of if readyState && if status==200
-      }; // close of onreadystatechange
+      //   } // close of if readyState && if status==200
+     // }; // close of onreadystatechange
 
 
          }); // close of capture button
@@ -659,6 +722,29 @@ li > a:only-child:after { content: ''; }
                 $("#bt").text("pause");
               }
         }
+        function dataURItoBlob(dataURI) 
+        {
+            // convert base64/URLEncoded data component to raw binary data held in a string
+            var byteString;
+            if (dataURI.split(',')[0].indexOf('base64') >= 0)
+                byteString = atob(dataURI.split(',')[1]);
+            else
+                byteString = unescape(dataURI.split(',')[1]);
+
+            // separate out the mime component
+            var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+            // write the bytes of the string to a typed array
+            var ia = new Uint8Array(byteString.length);
+            for (var i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+
+            return new Blob([ia], {type:mimeString});
+        }
+
+
+
         function selectOption(elementID)
         {
           var text = document.getElementById(elementID);
@@ -689,15 +775,21 @@ li > a:only-child:after { content: ''; }
           return copy;
         }
 
+            
+
         function fillTextMultiLine(ctx, text, x, y) {
           var line2 = 0; 
           var lineHeight = ctx.measureText("M").width * 1.2;
-          adviseHeight = lineHeight*(7);
-          var lines = text.split("\n");
-            for (var i = 0; i < lines.length; ++i) {
+
+          var lines = text.split("\n"); 
+            for (var i = 0; i < lines.length; ++i) { 
               ctx.fillText(lines[i], x, y);
-              y += lineHeight;
+              y += lineHeight; 
+              //alert(adviseHeight + " " + y + " " + lineHeight);
           }
+
+          adviseHeight = lineHeight * (lines.length + 1);
+
          var max;
          for(var i = 0; i<lines.length; i++){
            var lineWidth = ctx.measureText(lines[i]).width;
@@ -706,9 +798,15 @@ li > a:only-child:after { content: ''; }
            max = Math.max(ctx.measureText(lines[0]).width,ctx.measureText(lines[1]).width,ctx.measureText(lines[2]).width,ctx.measureText(lines[3]).width);
          }
 
-        adviseWidth = max*1.2
+        adviseWidth = max + 15 + 15;
 
         }
+
+  
+         
+
+
+
   </script>
 
 </body>
