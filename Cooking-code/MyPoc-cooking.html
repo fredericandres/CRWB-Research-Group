@@ -691,17 +691,18 @@ li > a:only-child:after { content: ''; }
           var videoImage = document.getElementById('videoImage');
           videoImage.style.marginTop = h+ "px";
           videoImage.style.marginLeft = l+ "px";
-           videoImage.width = rectW;
-        videoImage.height = rectH;
+           //seting size of the captured image
+          videoImage.width = rectW;
+          videoImage.height = rectH;
           var vw = 640;
           var ww = window.innerWidth;
           var ratio = vw/ww;
           var videoImageContext = videoImage.getContext('2d');
           videoImageContext.clearRect(0, 0, videoImage.width, videoImage.height);         
           if(isMobile==true){
-          videoImageContext.drawImage(video,rectX*(ratio),rectY*(ratio),rectW*(ratio),rectH*(ratio),10,10,rectW,rectH);
+          videoImageContext.drawImage(video,rectX*(ratio),rectY*(ratio),rectW*(ratio),rectH*(ratio),0,0,rectW,rectH);
         }else{
-          videoImageContext.drawImage(video,rectX,rectY,rectW,rectH,10,10,rectW,rectH);
+          videoImageContext.drawImage(video,rectX,rectY,rectW,rectH,0,0,rectW,rectH);
         }
 
           dataURL = videoImage.toDataURL('image/jpeg', 0.5);
