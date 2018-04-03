@@ -1,0 +1,479 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+<style>
+      .table {
+        background-color:#F5F5FF;
+        border-left:4px solid gray;
+        border-bottom:4px solid gray;
+        border-top:4px solid gray;
+        border-right:4px solid gray;
+        margin-bottom:3em;
+        margin-left:2em;
+        margin-right:2em;
+        padding:1em;
+      }
+      .tableNameHeading h1 {
+          display: inline;
+        font-family: Segoe UI, Arial, sans-serif;
+        font-size:125%;
+        font-weight:bold;
+      }
+        
+      .tableNameHeading h2 {
+        display: inline;
+        font-family: Segoe UI, Arial, sans-serif;
+        font-size:115%;
+        font-weight:normal;
+      }
+      
+      .tableComment { 
+        background-color:#e4efff; margin-bottom:20px;
+      }
+      
+      .tableDefinition { 
+        padding:2px;
+        border-collapse:collapse;
+        margin-top:1em;
+      }
+
+      .tdTableDefinition {
+        padding-right:10px;
+        vertical-align:top;
+        border-top:1px solid #C0C0C0;
+      }
+
+      .tdLogicalColName {
+        width:20em;
+      }
+      
+      .tdPhysicalColName {
+        width:20em;
+      }
+      
+      .tdDataType {
+        width:10em;
+      }
+
+      .tdPkFlag {
+        width:4em;
+      }
+
+      .tdNullFlag {
+        width:9em;
+      }
+
+      .tdTableHeading {
+        padding:2px;
+        font-family: Segoe UI, Arial, sans-serif;
+        font-weight: bold;
+        vertical-align:top;
+        border-bottom: 1px solid #C0C0C0;
+        background-color: rgb(240,240,240);
+      }
+      
+      .subTitle {
+        font-family: Segoe UI, Arial, sans-serif;
+        font-weight: bold;
+      }
+
+      .references {
+      }
+      .comment {
+        color:#666666;
+        margin-left:3em;
+        padding:0.25em;
+      }
+    </style>
+<title>CRWB</title>
+</head>
+<body>
+<center>
+<h2>CRWB</h2>
+</center>
+<h3>List of tables</h3>
+<ul>
+<li>
+<a href="#accounts">accounts</a>
+</li>
+<li>
+<a href="#aliases">aliases</a>
+</li>
+<li>
+<a href="#emails">emails</a>
+</li>
+<li>
+<a href="#groups">groups</a>
+</li>
+<li>
+<a href="#legal_persons">legal_persons</a>
+</li>
+<li>
+<a href="#natural_persons">natural_persons</a>
+</li>
+<li>
+<a href="#persons">persons</a>
+</li>
+<li>
+<a href="#persons_emails">persons_emails</a>
+</li>
+<li>
+<a href="#persons_groups">persons_groups</a>
+</li>
+<li>
+<a href="#persons_pictures">persons_pictures</a>
+</li>
+<li>
+<a href="#pictures">pictures</a>
+</li>
+</ul>
+<div class="tableNameHeading">
+<h1>accounts<a name="accounts"></a>
+</h1>
+<h2>
+      (Physical Name: accounts)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_account (PK)
+                &nbsp;(<a href="#natural_persons">FK</a>)
+              </td><td class="tdTableDefinition">id_account</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">password</td><td class="tdTableDefinition">password</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#natural_persons">natural_persons</a> through (id_account)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>aliases<a name="aliases"></a>
+</h1>
+<h2>
+      (Physical Name: aliases)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_person (PK)
+                &nbsp;(<a href="#persons">FK</a>)
+              </td><td class="tdTableDefinition">id_person</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">alias (PK)</td><td class="tdTableDefinition">alias</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#persons">persons</a> through (id_person)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>emails<a name="emails"></a>
+</h1>
+<h2>
+      (Physical Name: emails)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_email (PK)</td><td class="tdTableDefinition">id_email</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">email</td><td class="tdTableDefinition">email</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#persons_emails">persons_emails</a> referencing (id_email)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>groups<a name="groups"></a>
+</h1>
+<h2>
+      (Physical Name: groups)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_group (PK)</td><td class="tdTableDefinition">id_group</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#persons_groups">persons_groups</a> referencing (id_group)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>legal_persons<a name="legal_persons"></a>
+</h1>
+<h2>
+      (Physical Name: legal_persons)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_legal_person (PK)</td><td class="tdTableDefinition">id_legal_person</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">legal_person</td><td class="tdTableDefinition">legal_person</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#persons">persons</a> referencing (id_legal_person)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>natural_persons<a name="natural_persons"></a>
+</h1>
+<h2>
+      (Physical Name: natural_persons)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_natural_person (PK)
+                &nbsp;(<a href="#persons">FK</a>)
+              </td><td class="tdTableDefinition">id_natural_person</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">surname</td><td class="tdTableDefinition">surname</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#persons">persons</a> through (id_natural_person)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#accounts">accounts</a> referencing (id_natural_person)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>persons<a name="persons"></a>
+</h1>
+<h2>
+      (Physical Name: persons)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_person (PK)</td><td class="tdTableDefinition">id_person</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_legal_person
+                &nbsp;(<a href="#legal_persons">FK</a>)
+              </td><td class="tdTableDefinition">id_legal_person</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#legal_persons">legal_persons</a> through (id_legal_person)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#natural_persons">natural_persons</a> referencing (id_person)</li>
+<li>
+<a href="#persons_pictures">persons_pictures</a> referencing (id_person)</li>
+<li>
+<a href="#persons_groups">persons_groups</a> referencing (id_person)</li>
+<li>
+<a href="#persons_emails">persons_emails</a> referencing (id_person)</li>
+<li>
+<a href="#aliases">aliases</a> referencing (id_person)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>persons_emails<a name="persons_emails"></a>
+</h1>
+<h2>
+      (Physical Name: persons_emails)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_person (PK)
+                &nbsp;(<a href="#persons">FK</a>)
+              </td><td class="tdTableDefinition">id_person</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_email (PK)
+                &nbsp;(<a href="#emails">FK</a>)
+              </td><td class="tdTableDefinition">id_email</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#persons">persons</a> through (id_person)</li>
+<li>
+<a href="#emails">emails</a> through (id_email)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>persons_groups<a name="persons_groups"></a>
+</h1>
+<h2>
+      (Physical Name: persons_groups)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_person (PK)
+                &nbsp;(<a href="#persons">FK</a>)
+              </td><td class="tdTableDefinition">id_person</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_group (PK)
+                &nbsp;(<a href="#groups">FK</a>)
+              </td><td class="tdTableDefinition">id_group</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#persons">persons</a> through (id_person)</li>
+<li>
+<a href="#groups">groups</a> through (id_group)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>persons_pictures<a name="persons_pictures"></a>
+</h1>
+<h2>
+      (Physical Name: persons_pictures)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_person (PK)
+                &nbsp;(<a href="#persons">FK</a>)
+              </td><td class="tdTableDefinition">id_person</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_picture (PK)
+                &nbsp;(<a href="#pictures">FK</a>)
+              </td><td class="tdTableDefinition">id_picture</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#persons">persons</a> through (id_person)</li>
+<li>
+<a href="#pictures">pictures</a> through (id_picture)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>pictures<a name="pictures"></a>
+</h1>
+<h2>
+      (Physical Name: pictures)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id_picture (PK)</td><td class="tdTableDefinition">id_picture</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">data</td><td class="tdTableDefinition">data</td><td class="tdTableDefinition">BLOB</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">timestamp</td><td class="tdTableDefinition">timestamp</td><td class="tdTableDefinition">TIMESTAMP</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#persons_pictures">persons_pictures</a> referencing (id_picture)</li>
+</ul>
+</div>
+</div>
+</body>
+</html>
