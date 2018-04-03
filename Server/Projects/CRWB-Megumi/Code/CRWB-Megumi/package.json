@@ -1,0 +1,11 @@
+{
+    "name": "CRWB-Megumi",
+    "version": "1.0.0",
+    "author": "Anderson Carlos Ferreira da Silva",
+    "scripts": {
+    },   
+    "devDependencies": {
+    },
+    "dependencies": {
+    }
+}
