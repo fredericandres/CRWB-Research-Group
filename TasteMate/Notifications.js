@@ -2,9 +2,9 @@ import React from 'react';
 import {Text, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "./NavBarButton";
 
-export class SearchExploreScreen extends React.Component {
+export class NotificationsScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
-        title: 'Explore',
+        title: 'Notifications',
         headerLeft: (
             <NavBarProfileButton nav={navigation}/>
         ),
@@ -16,7 +16,7 @@ export class SearchExploreScreen extends React.Component {
     render() {
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text>Search Screen</Text>
+                <Text>Notifications Screen</Text>
             </View>
         );
     }
