@@ -10,6 +10,8 @@ import {EatingOutListScreen} from "./EatingOutList";
 import {CreateObservationScreen} from "./CreateObservation";
 import {brandContrast, brandLight, brandMain} from './constants/Colors';
 import {StyleSheet} from "react-native";
+import {SettingsScreen} from "./Settings";
+import {SignUpLogInScreen} from "./SignUpLogIn";
 
 const styles = StyleSheet.create({
     navHeaderStyle: {
@@ -79,6 +81,8 @@ const EatingOutListStack = StackNavigator({
 
 const ProfileStack = StackNavigator({
         Profile: { screen: ProfileScreen },
+        Settings: { screen: SettingsScreen },
+        SignUpLogIn: { screen: SignUpLogInScreen },
     },
     {
         initialRouteName: 'Profile',
@@ -154,6 +158,9 @@ export default  RootStack = StackNavigator(
         Profile: {
             screen: ProfileStack,
         },
+        SignUpLogIn: {
+            screen: SignUpLogInScreen,
+        }
     },
     {
         mode: 'modal',

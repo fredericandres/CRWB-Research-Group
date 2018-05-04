@@ -2,7 +2,7 @@ import React from 'react';
 import {Image, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {brandContrast} from "./constants/Colors";
-import StandardStyle from "./StandardStyle";
+import StandardStyle from "./styles";
 
 export class NavBarButton extends React.Component {
     render() {
@@ -25,12 +25,12 @@ export class NavBarButton extends React.Component {
         var wrapper = <TouchableOpacity/>;
         if (isModal) {
             wrapper =
-                <TouchableOpacity onPress={() => nav.goBack(null)} style={StandardStyle.container}>
+                <TouchableOpacity onPress={() => nav.goBack(null)} style={StandardStyle.containerPadding}>
                     {content}
                 </TouchableOpacity>
         } else {
             wrapper =
-                <TouchableOpacity onPress={() => nav.navigate(screen)} style={StandardStyle.container}>
+                <TouchableOpacity onPress={() => nav.navigate(screen)} style={StandardStyle.containerPadding}>
                     {content}
                 </TouchableOpacity>;
         }

@@ -1,12 +1,15 @@
 import React from 'react';
 import {Button, View, Text, TouchableOpacity} from 'react-native';
-import {NavBarCloseButton} from "./NavBarButton";
+import {NavBarButton, NavBarCloseButton} from "./NavBarButton";
 
 export class ProfileScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
         title: 'Profile',
         headerLeft: (
             <NavBarCloseButton nav={navigation}/>
+        ),
+        headerRight: (
+            <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'}/>
         ),
     });
 
