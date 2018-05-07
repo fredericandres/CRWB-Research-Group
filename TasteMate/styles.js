@@ -12,6 +12,8 @@ export default StyleSheet.create({
                 padding: 6
             }
         }),
+        //borderStyle: 'solid',
+        //borderWidth: 0.5,
     },
 
     baseContainer: {
@@ -23,19 +25,31 @@ export default StyleSheet.create({
     },
 
     textTitleBold: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
-        color: brandContrast
+        color: brandContrast,
+        //backgroundColor: 'blue'
     },
     textTitle: {
-        fontSize: 20,
-        color: brandContrast
+        fontSize: 18,
+        color: brandContrast,
+        //backgroundColor: 'red'
     },
     textStandard: {
+        fontSize: 14,
         color: brandContrast
     },
     textSmall: {
         fontSize: 10,
-        color: brandLight
+        color: brandLight,
+        //backgroundColor: 'pink'
+    },
+
+    roundProfile: {
+        alignSelf: 'center',
+        height: 40,
+        width: 40,
+        //borderWidth: 1,
+        borderRadius: 20
     }
 });
