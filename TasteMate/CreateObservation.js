@@ -15,7 +15,7 @@ export class CreateObservationScreen extends React.Component {
     render() {
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text>Create Observation Screen</Text>
+                <Text>Create Observation Screen: {this.props.navigation.state.params.item.dishname}</Text>
             </View>
         );
     }

@@ -51,5 +51,17 @@ export default StyleSheet.create({
         width: 40,
         //borderWidth: 1,
         borderRadius: 20
+    },
+    roundProfileSmall: {
+        alignSelf: 'center',
+        height: 25,
+        width: 25,
+        //borderWidth: 1,
+        borderRadius: 12
+    },
+
+    bottomLine: {
+        borderBottomColor: brandContrast,
+        borderBottomWidth: 0.2,
     }
 });
