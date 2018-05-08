@@ -21,19 +21,25 @@ export default StyleSheet.create({
     },
 
     containerOpacity: {
-        backgroundColor: brandBackground+'99'
+        backgroundColor: brandBackground + '99'
+    },
+    containerOpacityDark: {
+        backgroundColor: brandContrast + '99'
     },
 
     textTitleBold: {
         fontSize: 18,
         fontWeight: 'bold',
         color: brandContrast,
-        //backgroundColor: 'blue'
+    },
+    textTitleBoldLight: {
+        fontSize: 36,
+        fontWeight: 'bold',
+        color: brandBackground,
     },
     textTitle: {
         fontSize: 18,
         color: brandContrast,
-        //backgroundColor: 'red'
     },
     textStandard: {
         fontSize: 14,

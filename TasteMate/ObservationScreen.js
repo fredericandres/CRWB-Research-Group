@@ -1,9 +1,20 @@
 import React from "react";
-import {ActionSheetIOS, Alert, FlatList, Image, Platform, Text, TextInput, TouchableOpacity, View, Linking} from "react-native";
+import {
+    ActionSheetIOS,
+    FlatList,
+    Image,
+    Linking,
+    Platform,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {brandContrast, brandLight, brandMain} from "./constants/Colors";
 import styles from "./styles";
 import BottomSheet from 'react-native-bottom-sheet';
+import {adjectives, comments} from "./MockupData";
 
 export class ObservationScreen extends React.Component {
     constructor(props) {
@@ -11,6 +22,7 @@ export class ObservationScreen extends React.Component {
         this._onPressMenuButton = this._onPressMenuButton.bind(this);
         this._onPressMenuDetailButton = this._onPressMenuDetailButton.bind(this);
         this._onPressLocationText = this._onPressLocationText.bind(this);
+        this.state = {isHidden: true};
     }
 
     _onPressLikeButton() {
@@ -123,8 +135,19 @@ export class ObservationScreen extends React.Component {
         // TODO: ??
     }
 
+    _toggleOverlay() {
+        this.setState(previousState => {
+            return { isHidden: !previousState.isHidden };
+        });
+    }
+
     render() {
         var SmileysEnum = Object.freeze({1:'😖', 2:'😟', 3:'🙁', 4:'😕', 5:'😶', 6:'🙂', 7:'😊', 8:'😄', 9:'😍'});
+
+        var adjs = '';
+        for (var i = 0; i < adjectives.length; i++) {
+            adjs = adjs + '#' + adjectives[i].value.adjective + ' ';
+        }
 
         return (
             <View >
@@ -145,7 +168,9 @@ export class ObservationScreen extends React.Component {
                         <FontAwesome name={'ellipsis-v'} size={25} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
                     </View>
                     <View name={'picture'} style={{flex: 1, flexDirection:'row'}}>
-                        <Image name={'image'} resizeMode={'contain'} source={require('./carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
+                        <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
+                            <Image name={'image'} resizeMode={'contain'} source={require('./carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
+                        </TouchableOpacity>
                         <View style={[styles.containerOpacity, {padding: 6, position: 'absolute'}]}>
                             <Text name={'smiley'} style={styles.textTitleBold}>{SmileysEnum[this.props.item.rating]}</Text>
                         </View>
@@ -160,6 +185,10 @@ export class ObservationScreen extends React.Component {
                                 <FontAwesome name={'cutlery'} size={25} color={brandContrast}/>
                             </TouchableOpacity>
                         </View>
+                        {!this.state.isHidden &&
+                        <TouchableOpacity name={'adjectivesoverlay'} onPress={this._toggleOverlay.bind(this)} style={[styles.containerOpacityDark ,{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, alignItems:'center', justifyContent:'center'}]}>
+                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{adjs} </Text>
+                        </TouchableOpacity>}
                     </View>
                     <View name={'description'} style={[styles.containerPadding, styles.bottomLine, {flex: 1, flexDirection:'column'}]}>
                         <Text name={'description'} style={styles.textStandard}>{this.props.item.description}</Text>
@@ -167,11 +196,7 @@ export class ObservationScreen extends React.Component {
                         <Text name={'details'} style={styles.textSmall}>{this.props.item.time} • {this.props.item.likes} likes • {this.props.item.cutleries} cutleries</Text>
                     </View>
                     <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
-                              data={[
-                                  {key: '1', value:{userid:123, imageid:'123', message:'Delicious I bet!'}},
-                                  {key: '2', value:{userid:123, imageid:'123', message:'Mmh, so jelly! Hehe remember the last time we had that together? We were both maybe 10 years old and laughing so hard at everything.. lol!! Good times'}},
-                                  {key: '3', value:{userid:123, imageid:'123', message:'Oh my goodness, that truly looks amazing! I wish I was there eating this with you! xoxo'}},
-                              ]}
+                              data={comments}
                               renderItem={({item}) =>
                                   <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
                                       <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('./user.jpg')} />
@@ -194,5 +219,4 @@ export class ObservationScreen extends React.Component {
         );
     }
 }
-
-//TODO: keyboard reopens when alert dismissed, 3+ comments
+//TODO: 3+ comments

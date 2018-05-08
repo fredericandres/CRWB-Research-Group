@@ -1,7 +1,5 @@
 import React from 'react';
-import {Button, View, Text, TouchableOpacity} from 'react-native';
-import {HomeScreen} from "./Home";
-import * as NavigationActions from "react-navigation";
+import {Text, View} from 'react-native';
 import {NavBarCloseButton} from "./NavBarButton";
 
 export class CreateObservationScreen extends React.Component {
@@ -13,9 +11,15 @@ export class CreateObservationScreen extends React.Component {
     });
 
     render() {
+        let observation = {};
+        if (this.props.navigation.state.params) {
+            observation = this.props.navigation.state.params.item;
+        }
+
+
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text>Create Observation Screen: {this.props.navigation.state.params.item.dishname}</Text>
+                <Text>Create Observation Screen: {observation.dishname}</Text>
             </View>
         );
     }
