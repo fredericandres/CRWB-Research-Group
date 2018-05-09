@@ -17,7 +17,7 @@
                BlueprintIdentifier = "2D2A28121D9B038B00D4039D"
                BuildableName = "libReact.a"
                BlueprintName = "React-tvOS"
-               ReferencedContainer = "containerPadding:../node_modules/react-native/React/React.xcodeproj">
+               ReferencedContainer = "container:../node_modules/react-native/React/React.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,7 +31,7 @@
                BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
                BuildableName = "TasteMate-tvOS.app"
                BlueprintName = "TasteMate-tvOS"
-               ReferencedContainer = "containerPadding:TasteMate.xcodeproj">
+               ReferencedContainer = "container:TasteMate.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -45,7 +45,7 @@
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
                BuildableName = "TasteMate-tvOSTests.xctest"
                BlueprintName = "TasteMate-tvOSTests"
-               ReferencedContainer = "containerPadding:TasteMate.xcodeproj">
+               ReferencedContainer = "container:TasteMate.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -63,7 +63,7 @@
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
                BuildableName = "TasteMate-tvOSTests.xctest"
                BlueprintName = "TasteMate-tvOSTests"
-               ReferencedContainer = "containerPadding:TasteMate.xcodeproj">
+               ReferencedContainer = "container:TasteMate.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -73,7 +73,7 @@
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
             BuildableName = "TasteMate-tvOS.app"
             BlueprintName = "TasteMate-tvOS"
-            ReferencedContainer = "containerPadding:TasteMate.xcodeproj">
+            ReferencedContainer = "container:TasteMate.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -96,7 +96,7 @@
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
             BuildableName = "TasteMate-tvOS.app"
             BlueprintName = "TasteMate-tvOS"
-            ReferencedContainer = "containerPadding:TasteMate.xcodeproj">
+            ReferencedContainer = "container:TasteMate.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -115,7 +115,7 @@
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
             BuildableName = "TasteMate-tvOS.app"
             BlueprintName = "TasteMate-tvOS"
-            ReferencedContainer = "containerPadding:TasteMate.xcodeproj">
+            ReferencedContainer = "container:TasteMate.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
