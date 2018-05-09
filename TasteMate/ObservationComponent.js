@@ -12,18 +12,19 @@ import {
     View
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {brandContrast, brandLight, brandMain} from "./constants/Colors";
+import {brandContrast, brandLight, brandMain} from "./constants/Constants";
 import styles from "./styles";
 import BottomSheet from 'react-native-bottom-sheet';
 import {adjectives, comments} from "./MockupData";
 
-export class ObservationScreen extends React.Component {
+export class ObservationComponent extends React.Component {
     constructor(props) {
         super(props);
         this._onPressMenuButton = this._onPressMenuButton.bind(this);
         this._onPressMenuDetailButton = this._onPressMenuDetailButton.bind(this);
         this._onPressLocationText = this._onPressLocationText.bind(this);
         this.state = {isHidden: true};
+        this.observation = this.props.observation;
     }
 
     _onPressLikeButton() {
@@ -40,7 +41,7 @@ export class ObservationScreen extends React.Component {
 
     _onPressLocationText() {
         // TODO: Possible maps integration, e.g. using https://github.com/react-community/react-native-maps
-        const url =  'https://www.google.com/maps/search/?api=1&query=' + observation.location + '&query_place_id=' + observation.googleMapsId;
+        const url =  'https://www.google.com/maps/search/?api=1&query=' + this.observation.location + '&query_place_id=' + this.observation.googleMapsId;
         Linking.canOpenURL(url).then(supported => {
             if (supported) {
                 Linking.openURL(url);
@@ -52,7 +53,7 @@ export class ObservationScreen extends React.Component {
 
     _onPressMenuButton() {
         const title = 'Select an action';
-        const message = 'What would you like to do with the post \"' + observation.dishname + '\" by ' + observation.userid;
+        const message = 'What would you like to do with the post \"' + this.observation.dishname + '\" by ' + this.observation.userid;
         const options = [
             'Share',
             'Edit',
@@ -122,7 +123,7 @@ export class ObservationScreen extends React.Component {
                     });
             }
         } else if (buttonIndex === 1) {
-            this.props.nav.navigate('CreateObservation', {item: observation});
+            this.props.nav.navigate('CreateObservation', {item: this.observation});
         } else if (buttonIndex === 2) {
             // TODO: Delete obs
         }
@@ -149,9 +150,6 @@ export class ObservationScreen extends React.Component {
         for (let i = 0; i < adjectives.length; i++) {
             adjs = adjs + '#' + adjectives[i].value.adjective + ' ';
         }
-
-        const observation = this.props.observation;
-
         return (
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
@@ -161,11 +159,11 @@ export class ObservationScreen extends React.Component {
                     <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
                         <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
                             <Text name={'dishnames'} >
-                                <Text name={'dishname'} style={styles.textTitleBold}>{observation.dishname}</Text>
-                                <Text name={'mypoc'} style={styles.textTitle}> ({observation.mypoc})</Text>
+                                <Text name={'dishname'} style={styles.textTitleBold}>{this.observation.dishname}</Text>
+                                <Text name={'mypoc'} style={styles.textTitle}> ({this.observation.mypoc})</Text>
                             </Text>
                         </View>
-                        <Text name={'location'} style={styles.textSmall} onPress={this._onPressLocationText}>{observation.location}</Text>
+                        <Text name={'location'} style={styles.textSmall} onPress={this._onPressLocationText}>{this.observation.location}</Text>
                     </View>
                     <FontAwesome name={'ellipsis-v'} size={25} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
                 </View>
@@ -174,10 +172,10 @@ export class ObservationScreen extends React.Component {
                         <Image name={'image'} resizeMode={'contain'} source={require('./carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
                     </TouchableOpacity>
                     <View style={[styles.containerOpacity, {padding: 6, position: 'absolute'}]}>
-                        <Text name={'smiley'} style={styles.textTitleBold}>{SmileysEnum[observation.rating]}</Text>
+                        <Text name={'smiley'} style={styles.textTitleBold}>{SmileysEnum[this.observation.rating]}</Text>
                     </View>
                     <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', right:0, flexWrap:'wrap'}]}>
-                        <Text name={'price'} style={styles.textTitleBold}>{observation.currency} {observation.price}</Text>
+                        <Text name={'price'} style={styles.textTitleBold}>{this.observation.currency} {this.observation.price}</Text>
                     </View>
                     <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', bottom: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={{paddingRight: 6}} onPress={this._onPressLikeButton}>
@@ -196,9 +194,9 @@ export class ObservationScreen extends React.Component {
                     }
                 </View>
                 <View name={'description'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'column'}]}>
-                    <Text name={'description'} style={styles.textStandard}>{observation.description}</Text>
+                    <Text name={'description'} style={styles.textStandard}>{this.observation.description}</Text>
                     {/*TODO: reformat time, likes & cutleries from e.g. 2001 likes to 2k likes, date to 2 days ago etc*/}
-                    <Text name={'details'} style={styles.textSmall}>{observation.time} • {observation.likes} likes • {observation.cutleries} cutleries</Text>
+                    <Text name={'details'} style={styles.textSmall}>{this.observation.time} • {this.observation.likes} likes • {this.observation.cutleries} cutleries</Text>
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
                           data={comments}

@@ -1,5 +1,5 @@
 import React from 'react';
-import {ObservationScreen} from "./ObservationScreen";
+import {ObservationComponent} from "./ObservationComponent";
 import {ScrollView} from "react-native";
 
 export class ObservationDetailScreen extends React.Component {
@@ -10,7 +10,7 @@ export class ObservationDetailScreen extends React.Component {
     render() {
         return (
             <ScrollView>
-                <ObservationScreen nav={this.props.navigation} observation={this.props.navigation.getParam('observation', null)}/>
+                <ObservationComponent nav={this.props.navigation} observation={this.props.navigation.getParam('observation', null)}/>
             </ScrollView>
         );
     }

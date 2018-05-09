@@ -2,7 +2,7 @@ import React from "react";
 import {Image, Text, TouchableOpacity, View} from "react-native";
 import styles from "./styles";
 
-export class ObservationExploreScreen extends React.Component {
+export class ObservationExploreComponent extends React.Component {
     constructor(props) {
         super(props);
     }

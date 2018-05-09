@@ -1,6 +1,9 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {FlatList, Text, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "./NavBarButton";
+import {NotificationComponent} from "./NotificationComponent";
+import styles from "./styles";
+import {notifications} from "./MockupData";
 
 export class NotificationsScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
@@ -13,11 +16,20 @@ export class NotificationsScreen extends React.Component {
         ),
     });
 
+    _onRefreshPulled() {
+        // TODO: pull to refresh
+    }
+
     render() {
         return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text>Notifications Screen</Text>
-            </View>
+            <FlatList
+                data={notifications}
+                renderItem={({item}) => <NotificationComponent notification={item.value} nav={this.props.navigation}/>}
+                refreshing={false}
+                onRefresh={() => this._onRefreshPulled}
+                ListEmptyComponent={() => <Text style={styles.containerPadding}>Seems like you do not have any notifications yet.</Text>}
+                ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
+            />
         );
     }
 }

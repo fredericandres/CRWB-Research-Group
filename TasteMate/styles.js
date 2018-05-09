@@ -1,5 +1,5 @@
 import {Platform, StyleSheet} from 'react-native';
-import {brandBackground, brandContrast, brandLight} from "./constants/Colors";
+import {brandBackground, brandContrast, brandLight} from "./constants/Constants";
 
 export default StyleSheet.create({
     containerPadding: {
@@ -12,8 +12,6 @@ export default StyleSheet.create({
                 padding: 6
             }
         }),
-        //borderStyle: 'solid',
-        //borderWidth: 0.5,
     },
 
     baseContainer: {
@@ -48,21 +46,17 @@ export default StyleSheet.create({
     textSmall: {
         fontSize: 10,
         color: brandLight,
-        //backgroundColor: 'pink'
     },
 
     roundProfile: {
         alignSelf: 'center',
         height: 40,
-        width: 40,
-        //borderWidth: 1,
-        borderRadius: 20
+        width: 40, borderRadius: 20
     },
     roundProfileSmall: {
         alignSelf: 'center',
         height: 25,
         width: 25,
-        //borderWidth: 1,
         borderRadius: 12
     },
 

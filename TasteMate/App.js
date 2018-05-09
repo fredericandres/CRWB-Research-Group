@@ -8,7 +8,7 @@ import {NotificationsScreen} from "./Notifications";
 import {ProfileScreen} from "./Profile";
 import {EatingOutListScreen} from "./EatingOutList";
 import {CreateObservationScreen} from "./CreateObservation";
-import {brandContrast, brandLight, brandMain} from './constants/Colors';
+import {brandContrast, brandLight, brandMain} from './constants/Constants';
 import {StyleSheet} from "react-native";
 import {SettingsScreen} from "./Settings";
 import {SignUpLogInScreen} from "./SignUpLogIn";

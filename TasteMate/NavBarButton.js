@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {brandContrast} from "./constants/Colors";
+import {brandContrast} from "./constants/Constants";
 import StandardStyle from "./styles";
 
 export class NavBarButton extends React.Component {
