@@ -5,6 +5,7 @@ import {
     Image,
     Linking,
     Platform,
+    ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
@@ -39,7 +40,7 @@ export class ObservationScreen extends React.Component {
 
     _onPressLocationText() {
         // TODO: Possible maps integration, e.g. using https://github.com/react-community/react-native-maps
-        var url =  'https://www.google.com/maps/search/?api=1&query=' + this.props.item.location + '&query_place_id=' + this.props.item.googleMapsId;
+        const url =  'https://www.google.com/maps/search/?api=1&query=' + observation.location + '&query_place_id=' + observation.googleMapsId;
         Linking.canOpenURL(url).then(supported => {
             if (supported) {
                 Linking.openURL(url);
@@ -50,16 +51,16 @@ export class ObservationScreen extends React.Component {
     }
 
     _onPressMenuButton() {
-        var title = 'Select an action';
-        var message = 'What would you like to do with the post \"' + this.props.item.dishname + '\" by ' + this.props.item.userid;
-        var options = [
+        const title = 'Select an action';
+        const message = 'What would you like to do with the post \"' + observation.dishname + '\" by ' + observation.userid;
+        const options = [
             'Share',
             'Edit',
             'Delete',
             'Cancel',
         ];
-        var cancelButtonIndex = 3;
-        var destructiveButtonIndex = 2;
+        const cancelButtonIndex = 3;
+        const destructiveButtonIndex = 2;
 
         // TODO: Customize ActionSheet depending on is logged in or not
         if (Platform.OS === 'android') {
@@ -90,9 +91,9 @@ export class ObservationScreen extends React.Component {
     _onPressMenuDetailButton(buttonIndex) {
         if (buttonIndex === 0) {
             // TODO: Whati s being shared? Link?
-            var subject = 'Share';
-            var message = 'Where do you want to share this post?';
-            var url = '';
+            const subject = 'Share';
+            const message = 'Where do you want to share this post?';
+            const url = '';
             //var excludedActivityTypes = '';
 
             if (Platform.OS === 'android') {
@@ -121,7 +122,7 @@ export class ObservationScreen extends React.Component {
                     });
             }
         } else if (buttonIndex === 1) {
-            this.props.nav.navigate('CreateObservation', {item: this.props.item});
+            this.props.nav.navigate('CreateObservation', {item: observation});
         } else if (buttonIndex === 2) {
             // TODO: Delete obs
         }
@@ -142,80 +143,81 @@ export class ObservationScreen extends React.Component {
     }
 
     render() {
-        var SmileysEnum = Object.freeze({1:'😖', 2:'😟', 3:'🙁', 4:'😕', 5:'😶', 6:'🙂', 7:'😊', 8:'😄', 9:'😍'});
+        const SmileysEnum = Object.freeze({1:'😖', 2:'😟', 3:'🙁', 4:'😕', 5:'😶', 6:'🙂', 7:'😊', 8:'😄', 9:'😍'});
 
-        var adjs = '';
-        for (var i = 0; i < adjectives.length; i++) {
+        let adjs = '';
+        for (let i = 0; i < adjectives.length; i++) {
             adjs = adjs + '#' + adjectives[i].value.adjective + ' ';
         }
 
-        return (
-            <View >
-                <View name={'wrapper'} >
-                    <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
-                        <View name={'header'} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
-                            <Image name={'userprofilepic'} resizeMode={'cover'} source={require('./user2.jpg')} style={styles.roundProfile}/>
-                        </View>
-                        <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
-                            <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
-                                <Text name={'dishnames'} >
-                                    <Text name={'dishname'} style={styles.textTitleBold}>{this.props.item.dishname}</Text>
-                                    <Text name={'mypoc'} style={styles.textTitle}> ({this.props.item.mypoc})</Text>
-                                </Text>
-                            </View>
-                            <Text name={'location'} style={styles.textSmall} onPress={this._onPressLocationText}>{this.props.item.location}</Text>
-                        </View>
-                        <FontAwesome name={'ellipsis-v'} size={25} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
-                    </View>
-                    <View name={'picture'} style={{flex: 1, flexDirection:'row'}}>
-                        <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
-                            <Image name={'image'} resizeMode={'contain'} source={require('./carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
-                        </TouchableOpacity>
-                        <View style={[styles.containerOpacity, {padding: 6, position: 'absolute'}]}>
-                            <Text name={'smiley'} style={styles.textTitleBold}>{SmileysEnum[this.props.item.rating]}</Text>
-                        </View>
-                        <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', right:0, flexWrap:'wrap'}]}>
-                            <Text name={'price'} style={styles.textTitleBold}>{this.props.item.currency} {this.props.item.price}</Text>
-                        </View>
-                        <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', bottom: 0, flexDirection:'row'}]}>
-                            <TouchableOpacity style={{paddingRight: 6}} onPress={this._onPressLikeButton}>
-                                <FontAwesome name={'thumbs-o-up'} size={25} color={brandContrast}/>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={this._onPressCutleryButton}>
-                                <FontAwesome name={'cutlery'} size={25} color={brandContrast}/>
-                            </TouchableOpacity>
-                        </View>
-                        {!this.state.isHidden &&
-                        <TouchableOpacity name={'adjectivesoverlay'} onPress={this._toggleOverlay.bind(this)} style={[styles.containerOpacityDark ,{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, alignItems:'center', justifyContent:'center'}]}>
-                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{adjs} </Text>
-                        </TouchableOpacity>}
-                    </View>
-                    <View name={'description'} style={[styles.containerPadding, styles.bottomLine, {flex: 1, flexDirection:'column'}]}>
-                        <Text name={'description'} style={styles.textStandard}>{this.props.item.description}</Text>
-                        {/*TODO: reformat time, likes & cutleries from e.g. 2001 likes to 2k likes, date to 2 days ago etc*/}
-                        <Text name={'details'} style={styles.textSmall}>{this.props.item.time} • {this.props.item.likes} likes • {this.props.item.cutleries} cutleries</Text>
-                    </View>
-                    <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
-                              data={comments}
-                              renderItem={({item}) =>
-                                  <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
-                                      <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('./user.jpg')} />
-                                      <Text style={[styles.textStandard, styles.containerPadding, {flex: 1}]}>{item.value.message}</Text>
-                                  </View>}
-                              ListFooterComponent={() =>
-                                  <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
-                                      <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('./user2.jpg')} />
-                                      <TextInput style={[styles.textStandard, styles.containerPadding, {flex: 1}]} placeholder="Write a comment..." placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
-                                      <TouchableOpacity onPress={this._onPressSendButton}>
-                                          <FontAwesome name={'send'} size={25} color={brandContrast}/>
-                                      </TouchableOpacity>
-                                  </View>
-                              }
-                    />
-                </View>
-                <View style={styles.containerPadding}/>
-            </View>
+        const observation = this.props.observation;
 
+        return (
+            <View name={'wrapper'} style={{flex:1}} >
+                <View name={'header'} style={{flexDirection:'row'}}>
+                    <View name={'header'} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
+                        <Image name={'userprofilepic'} resizeMode={'cover'} source={require('./user2.jpg')} style={styles.roundProfile}/>
+                    </View>
+                    <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
+                        <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
+                            <Text name={'dishnames'} >
+                                <Text name={'dishname'} style={styles.textTitleBold}>{observation.dishname}</Text>
+                                <Text name={'mypoc'} style={styles.textTitle}> ({observation.mypoc})</Text>
+                            </Text>
+                        </View>
+                        <Text name={'location'} style={styles.textSmall} onPress={this._onPressLocationText}>{observation.location}</Text>
+                    </View>
+                    <FontAwesome name={'ellipsis-v'} size={25} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
+                </View>
+                <View name={'picture'} style={{flexDirection:'row'}}>
+                    <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
+                        <Image name={'image'} resizeMode={'contain'} source={require('./carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
+                    </TouchableOpacity>
+                    <View style={[styles.containerOpacity, {padding: 6, position: 'absolute'}]}>
+                        <Text name={'smiley'} style={styles.textTitleBold}>{SmileysEnum[observation.rating]}</Text>
+                    </View>
+                    <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', right:0, flexWrap:'wrap'}]}>
+                        <Text name={'price'} style={styles.textTitleBold}>{observation.currency} {observation.price}</Text>
+                    </View>
+                    <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', bottom: 0, flexDirection:'row'}]}>
+                        <TouchableOpacity style={{paddingRight: 6}} onPress={this._onPressLikeButton}>
+                            <FontAwesome name={'thumbs-o-up'} size={25} color={brandContrast}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this._onPressCutleryButton}>
+                            <FontAwesome name={'cutlery'} size={25} color={brandContrast}/>
+                        </TouchableOpacity>
+                    </View>
+                    {!this.state.isHidden &&
+                    <ScrollView style={[styles.containerOpacityDark, {position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}]} contentContainerStyle={{flexGrow: 1}}>
+                        <TouchableOpacity name={'adjectivesoverlay'} onPress={this._toggleOverlay.bind(this)} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                            <Text style={[styles.textTitleBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{adjs} </Text>
+                        </TouchableOpacity>
+                    </ScrollView>
+                    }
+                </View>
+                <View name={'description'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'column'}]}>
+                    <Text name={'description'} style={styles.textStandard}>{observation.description}</Text>
+                    {/*TODO: reformat time, likes & cutleries from e.g. 2001 likes to 2k likes, date to 2 days ago etc*/}
+                    <Text name={'details'} style={styles.textSmall}>{observation.time} • {observation.likes} likes • {observation.cutleries} cutleries</Text>
+                </View>
+                <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
+                          data={comments}
+                          renderItem={({item}) =>
+                              <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
+                                  <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('./user.jpg')} />
+                                  <Text style={[styles.textStandard, styles.containerPadding, {flex: 1}]}>{item.value.message}</Text>
+                              </View>}
+                          ListFooterComponent={() =>
+                              <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
+                                  <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('./user2.jpg')} />
+                                  <TextInput style={[styles.textStandard, styles.containerPadding, {flex: 1}]} placeholder="Write a comment..." placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
+                                  <TouchableOpacity onPress={this._onPressSendButton}>
+                                      <FontAwesome name={'send'} size={25} color={brandContrast}/>
+                                  </TouchableOpacity>
+                              </View>
+                          }
+                />
+            </View>
         );
     }
 }

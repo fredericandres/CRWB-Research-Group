@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, Text} from 'react-native';
+import {FlatList, Text, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "./NavBarButton";
 import {ObservationScreen} from "./ObservationScreen";
 import styles from "./styles";
@@ -24,19 +24,14 @@ export class HomeScreen extends React.Component {
 
         return (
             <FlatList
-                      data={data}
-                      renderItem={({item}) => <ObservationScreen item={item.value} nav={this.props.navigation}/>}
-                      refreshing={false}
-                      onRefresh={() => this._onRefreshPulled}
-                      ListEmptyComponent={() => <Text style={styles.containerPadding}>Seems like your feed is empty. Why not follow some tastemates? </Text>}
+                data={data}
+                renderItem={({item}) => <ObservationScreen observation={item.value} nav={this.props.navigation}/>}
+                refreshing={false}
+                onRefresh={() => this._onRefreshPulled}
+                ListEmptyComponent={() => <Text style={styles.containerPadding}>Seems like your feed is empty. Why not follow some tastemates? </Text>}
+                ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
             />
         );
     }
 }
-
-//<--Button
-//                     title="Go to ObsDetail"
-//                     onPress={() => this.props.navigation.navigate('ObservationDetail')}
-//                 /!-->
-//                 <View>
 // TODO: empty list component with suggestions for followees/observations
