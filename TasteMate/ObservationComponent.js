@@ -16,6 +16,7 @@ import {brandContrast, brandLight, brandMain} from "./constants/Constants";
 import styles from "./styles";
 import BottomSheet from 'react-native-bottom-sheet';
 import {adjectives, comments} from "./MockupData";
+import TimeAgo from "react-native-timeago";
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -163,7 +164,7 @@ export class ObservationComponent extends React.Component {
                                 <Text name={'mypoc'} style={styles.textTitle}> ({this.observation.mypoc})</Text>
                             </Text>
                         </View>
-                        <Text name={'location'} style={styles.textSmall} onPress={this._onPressLocationText}>{this.observation.location}</Text>
+                        <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location}</Text>
                     </View>
                     <FontAwesome name={'ellipsis-v'} size={25} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
                 </View>
@@ -188,7 +189,7 @@ export class ObservationComponent extends React.Component {
                     {!this.state.isHidden &&
                     <ScrollView style={[styles.containerOpacityDark, {position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}]} contentContainerStyle={{flexGrow: 1}}>
                         <TouchableOpacity name={'adjectivesoverlay'} onPress={this._toggleOverlay.bind(this)} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={[styles.textTitleBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{adjs} </Text>
+                            <Text style={[styles.textAdjBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{adjs} </Text>
                         </TouchableOpacity>
                     </ScrollView>
                     }
@@ -196,7 +197,10 @@ export class ObservationComponent extends React.Component {
                 <View name={'description'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'column'}]}>
                     <Text name={'description'} style={styles.textStandard}>{this.observation.description}</Text>
                     {/*TODO: reformat time, likes & cutleries from e.g. 2001 likes to 2k likes, date to 2 days ago etc*/}
-                    <Text name={'details'} style={styles.textSmall}>{this.observation.time} • {this.observation.likes} likes • {this.observation.cutleries} cutleries</Text>
+                    <View name={'information'} style={{flexDirection: 'row'}}>
+                        <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
+                        <Text name={'details'} style={styles.textSmall}> • {this.observation.likes} likes • {this.observation.cutleries} cutleries</Text>
+                    </View>
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
                           data={comments}

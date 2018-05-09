@@ -28,8 +28,8 @@ export class NotificationsScreen extends React.Component {
                 refreshing={false}
                 onRefresh={() => this._onRefreshPulled}
                 ListEmptyComponent={() => <Text style={styles.containerPadding}>Seems like you do not have any notifications yet.</Text>}
-                ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
             />
         );
     }
 }
+//                ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}

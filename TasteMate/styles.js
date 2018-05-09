@@ -1,6 +1,17 @@
 import {Platform, StyleSheet} from 'react-native';
 import {brandBackground, brandContrast, brandLight} from "./constants/Constants";
 
+const bold = 'bold';
+const center = 'center';
+
+const extraLargeFontSize = 36;
+const largeFontSize = 18;
+const standardFontSize = 14;
+const smallFontSize = 10;
+
+const largeThumbnailSize = 40;
+const smallThumbnailSize = 25;
+
 export default StyleSheet.create({
     containerPadding: {
         ...Platform.select({
@@ -26,38 +37,44 @@ export default StyleSheet.create({
     },
 
     textTitleBold: {
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: largeFontSize,
+        fontWeight: bold,
         color: brandContrast,
     },
-    textTitleBoldLight: {
-        fontSize: 36,
-        fontWeight: 'bold',
+    textAdjBoldLight: {
+        fontSize: extraLargeFontSize,
+        fontWeight: bold,
         color: brandBackground,
     },
     textTitle: {
-        fontSize: 18,
+        fontSize: largeFontSize,
         color: brandContrast,
     },
     textStandard: {
-        fontSize: 14,
+        fontSize: standardFontSize,
         color: brandContrast
     },
     textSmall: {
-        fontSize: 10,
+        fontSize: smallFontSize,
         color: brandLight,
     },
 
     roundProfile: {
-        alignSelf: 'center',
-        height: 40,
-        width: 40, borderRadius: 20
+        alignSelf: center,
+        height: largeThumbnailSize,
+        width: largeThumbnailSize,
+        borderRadius: largeThumbnailSize/2
     },
     roundProfileSmall: {
-        alignSelf: 'center',
-        height: 25,
-        width: 25,
-        borderRadius: 12
+        alignSelf: center,
+        height: smallThumbnailSize,
+        width: smallThumbnailSize,
+        borderRadius: smallThumbnailSize/2
+    },
+    squareThumbnail: {
+        alignSelf: center,
+        height: largeThumbnailSize,
+        width: largeThumbnailSize,
     },
 
     bottomLine: {
