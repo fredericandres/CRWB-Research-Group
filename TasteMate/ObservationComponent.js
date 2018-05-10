@@ -12,7 +12,7 @@ import {
     View
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {brandContrast, brandLight, brandMain} from "./constants/Constants";
+import {_formatNumber, brandContrast, brandLight, brandMain} from "./constants/Constants";
 import styles from "./styles";
 import BottomSheet from 'react-native-bottom-sheet';
 import {adjectives, comments} from "./MockupData";
@@ -24,7 +24,8 @@ export class ObservationComponent extends React.Component {
         this._onPressMenuButton = this._onPressMenuButton.bind(this);
         this._onPressMenuDetailButton = this._onPressMenuDetailButton.bind(this);
         this._onPressLocationText = this._onPressLocationText.bind(this);
-        this.state = {isHidden: true};
+        this._onPressShareButton = this._onPressShareButton.bind(this);
+        this.state = {overlayIsHidden: true};
         this.observation = this.props.observation;
     }
 
@@ -92,41 +93,45 @@ export class ObservationComponent extends React.Component {
 
     _onPressMenuDetailButton(buttonIndex) {
         if (buttonIndex === 0) {
-            // TODO: Whati s being shared? Link?
-            const subject = 'Share';
-            const message = 'Where do you want to share this post?';
-            const url = '';
-            //var excludedActivityTypes = '';
-
-            if (Platform.OS === 'android') {
-                BottomSheet.showShareBottomSheetWithOptions({
-                        subject: subject,
-                        message: message,
-                        url: url,
-                    },
-                    () => {
-                        this._onSuccessfulShare();
-                    },
-                    () => {
-                        this._onUnsuccessfulShare();
-                    });
-            } else if (Platform.OS === 'ios') {
-                ActionSheetIOS.showShareActionSheetWithOptions({
-                        subject: subject,
-                        message: message,
-                        url: url,
-                    },
-                    () => {
-                        this._onSuccessfulShare();
-                    },
-                    () => {
-                        this._onUnsuccessfulShare();
-                    });
-            }
+            this._onPressShareButton();
         } else if (buttonIndex === 1) {
             this.props.nav.navigate('CreateObservation', {item: this.observation});
         } else if (buttonIndex === 2) {
             // TODO: Delete obs
+        }
+    }
+
+    _onPressShareButton() {
+        // TODO: What is being shared? Link?
+        const subject = 'Share';
+        const message = 'Where do you want to share this post?';
+        const url = '';
+        //var excludedActivityTypes = '';
+
+        if (Platform.OS === 'android') {
+            BottomSheet.showShareBottomSheetWithOptions({
+                    subject: subject,
+                    message: message,
+                    url: url,
+                },
+                () => {
+                    this._onSuccessfulShare();
+                },
+                () => {
+                    this._onUnsuccessfulShare();
+                });
+        } else if (Platform.OS === 'ios') {
+            ActionSheetIOS.showShareActionSheetWithOptions({
+                    subject: subject,
+                    message: message,
+                    url: url,
+                },
+                () => {
+                    this._onSuccessfulShare();
+                },
+                () => {
+                    this._onUnsuccessfulShare();
+                });
         }
     }
 
@@ -140,7 +145,7 @@ export class ObservationComponent extends React.Component {
 
     _toggleOverlay() {
         this.setState(previousState => {
-            return { isHidden: !previousState.isHidden };
+            return { overlayIsHidden: !previousState.overlayIsHidden };
         });
     }
 
@@ -172,21 +177,24 @@ export class ObservationComponent extends React.Component {
                     <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
                         <Image name={'image'} resizeMode={'contain'} source={require('./carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
                     </TouchableOpacity>
-                    <View style={[styles.containerOpacity, {padding: 6, position: 'absolute'}]}>
-                        <Text name={'smiley'} style={styles.textTitleBold}>{SmileysEnum[this.observation.rating]}</Text>
+                    <View style={[styles.containerOpacity, {position: 'absolute'}]}>
+                        <Text name={'smiley'} style={[styles.textTitleBold, styles.containerPadding]}>{SmileysEnum[this.observation.rating]}</Text>
                     </View>
-                    <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', right:0, flexWrap:'wrap'}]}>
-                        <Text name={'price'} style={styles.textTitleBold}>{this.observation.currency} {this.observation.price}</Text>
+                    <View style={[styles.containerOpacity, {position: 'absolute', right:0, flexWrap:'wrap'}]}>
+                        <Text name={'price'} style={[styles.textTitleBold, styles.containerPadding]}>{this.observation.currency} {this.observation.price}</Text>
                     </View>
                     <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', bottom: 0, flexDirection:'row'}]}>
-                        <TouchableOpacity style={{paddingRight: 6}} onPress={this._onPressLikeButton}>
+                        <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
                             <FontAwesome name={'thumbs-o-up'} size={25} color={brandContrast}/>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this._onPressCutleryButton}>
+                        <TouchableOpacity style={styles.containerPadding} onPress={this._onPressCutleryButton}>
                             <FontAwesome name={'cutlery'} size={25} color={brandContrast}/>
                         </TouchableOpacity>
+                        <TouchableOpacity style={styles.containerPadding} onPress={this._onPressShareButton}>
+                            <FontAwesome name={'share'} size={25} color={brandContrast}/>
+                        </TouchableOpacity>
                     </View>
-                    {!this.state.isHidden &&
+                    {!this.state.overlayIsHidden &&
                     <ScrollView style={[styles.containerOpacityDark, {position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}]} contentContainerStyle={{flexGrow: 1}}>
                         <TouchableOpacity name={'adjectivesoverlay'} onPress={this._toggleOverlay.bind(this)} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                             <Text style={[styles.textAdjBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{adjs} </Text>
@@ -196,10 +204,10 @@ export class ObservationComponent extends React.Component {
                 </View>
                 <View name={'description'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'column'}]}>
                     <Text name={'description'} style={styles.textStandard}>{this.observation.description}</Text>
-                    {/*TODO: reformat time, likes & cutleries from e.g. 2001 likes to 2k likes, date to 2 days ago etc*/}
+                    {/*TODO: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                     <View name={'information'} style={{flexDirection: 'row'}}>
                         <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
-                        <Text name={'details'} style={styles.textSmall}> • {this.observation.likes} likes • {this.observation.cutleries} cutleries</Text>
+                        <Text name={'details'} style={styles.textSmall}> • {_formatNumber(this.observation.likes)} likes • {_formatNumber(this.observation.cutleries)} cutleries • {_formatNumber(this.observation.shares)} shares</Text>
                     </View>
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
@@ -223,4 +231,4 @@ export class ObservationComponent extends React.Component {
         );
     }
 }
-//TODO: 3+ comments
+// TODO: 3+ comments

@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./styles";
 import {Image, Text, TouchableOpacity, View} from "react-native";
 import TimeAgo from 'react-native-timeago'
-import {brandMain} from "./constants/Constants";
+import {_formatNumber, brandMain} from "./constants/Constants";
 
 export class NotificationComponent extends React.Component {
     constructor(props) {
@@ -45,7 +45,7 @@ export class NotificationComponent extends React.Component {
 
         return (
             <TouchableOpacity onPress={this.notification.type === 'FOLLOW' ? this._onPressProfile : this._onPresObservation} style={[{flexDirection:'row'}, !this.notification.read ? {backgroundColor:brandMain} : {}]}>
-                <TouchableOpacity name={'userpic'} onPress={this._onPressProfile} style={[styles.containerPadding, {flex: 0, flexDirection:'column', justifyContent:'center'}]}>
+                <TouchableOpacity name={'userpic'} onPress={this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles} style={[styles.containerPadding, {flex: 0, flexDirection:'column', justifyContent:'center'}]}>
                     <Image name={'userprofilepic'} resizeMode={'cover'} source={require('./user2.jpg')} style={styles.roundProfile}/>
                 </TouchableOpacity>
                 <View name={'textcontentwrapper'} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>
@@ -61,7 +61,7 @@ export class NotificationComponent extends React.Component {
                         }
                         {
                             (this.notification.senderid.length > 2) &&
-                            <Text onPress={this._onPressMultipleProfiles} style={styles.textStandardBold}>{this.notification.senderid.length - 1} others</Text>
+                            <Text onPress={this._onPressMultipleProfiles} style={styles.textStandardBold}>{_formatNumber(this.notification.senderid.length - 1)} others</Text>
                         }
                         <Text style={[styles.textStandard]}> {action}</Text>
                     </Text>
