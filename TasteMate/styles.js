@@ -4,6 +4,8 @@ import {brandBackground, brandContrast, brandLight} from "./constants/Constants"
 const bold = 'bold';
 const center = 'center';
 
+const opacity = '99';
+
 const extraLargeFontSize = 36;
 const largeFontSize = 18;
 const standardFontSize = 14;
@@ -30,10 +32,10 @@ export default StyleSheet.create({
     },
 
     containerOpacity: {
-        backgroundColor: brandBackground + '99'
+        backgroundColor: brandBackground + opacity
     },
     containerOpacityDark: {
-        backgroundColor: brandContrast + '99'
+        backgroundColor: brandContrast + opacity
     },
 
     textTitleBold: {
