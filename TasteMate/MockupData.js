@@ -24,12 +24,12 @@ export const comments = [
 ]
 
 export const notifications = [
-    {key:'0', value: {senderid:'julianthegreatestman', type:'LIKE', observationid:'12343', timestamp:(new Date()).valueOf(), read:false}},
-    {key:'1', value: {senderid:'annabanana', type:'WANTTOEAT', observationid:'1234', timestamp:1525842681630, read:false}},
-    {key:'2', value: {senderid:'123jump', type:'FOLLOW', timestamp:1525842681230, read:false}},
-    {key:'3', value: {senderid:'watatat', type:'SHARE', observationid:'12345', timestamp:1525842671630, read:false}},
-    {key:'4', value: {senderid:'nyum', type:'LIKE', observationid:'12344', timestamp:1525832681630, read:true}},
-    {key:'5', value: {senderid:'shelby', type:'SHARE', observationid:'1234', timestamp:1522842581630, read:true}},
-    {key:'6', value: {senderid:'missy', type:'LIKE', observationid:'1234', timestamp:1515841681630, read:true}},
-    {key:'7', value: {senderid:'ardnaxela', type:'FOLLOW', timestamp:1425832681630, read:true}},
+    {key:'0', value: {senderid:['julianthegreatestman'], type:'LIKE', observationid:'12343', timestamp:(new Date()).valueOf(), read:false}},
+    {key:'1', value: {senderid:['annabanana'], type:'WANTTOEAT', observationid:'1234', timestamp:1525842681630, read:false}},
+    {key:'2', value: {senderid:['123jump'], type:'FOLLOW', timestamp:1525842681230, read:false}},
+    {key:'3', value: {senderid:['watatat'], type:'SHARE', observationid:'12345', timestamp:1525842671630, read:false}},
+    {key:'4', value: {senderid:['nyum'], type:'LIKE', observationid:'12344', timestamp:1525832681630, read:true}},
+    {key:'5', value: {senderid:['shelby', 'missy', 'nyum', 'watatat'], type:'SHARE', observationid:'1234', timestamp:1522842581630, read:true}},
+    {key:'6', value: {senderid:['missyuserwithasuperduperlongusernamewowthisissolongimnotsureifthesystemshouldallowthislength'], type:'LIKE', observationid:'1234', timestamp:1515841681630, read:true}},
+    {key:'7', value: {senderid:['ardnaxela', 'luisa'], type:'FOLLOW', timestamp:1425832681630, read:true}},
 ];

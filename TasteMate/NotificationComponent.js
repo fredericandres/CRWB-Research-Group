@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./styles";
 import {Image, Text, TouchableOpacity, View} from "react-native";
 import TimeAgo from 'react-native-timeago'
-import {brandContrast, brandMain} from "./constants/Constants";
+import {brandMain} from "./constants/Constants";
 
 export class NotificationComponent extends React.Component {
     constructor(props) {
@@ -12,15 +12,19 @@ export class NotificationComponent extends React.Component {
         this.notification = this.props.notification;
     }
 
-    _onPressProfile() {
-        this.props.nav.navigate('Profile',  { user: this.notification.senderid });
+    // TODO: onclick//view -> mark as read
+
+    _onPressMultipleProfiles() {
+        // TODO: When more than 2 people --> clicking on names leads to a list of users
+    }
+
+    _onPressProfile(index) {
+        this.props.nav.navigate('Profile',  { userid: this.notification.senderid[index] });
     }
 
     _onPresObservation() {
         this.props.nav.navigate('ObservationDetail',  { observation: this.notification.observationid });
     }
-
-    // TODO: onclick//view -> mark as read
 
     render() {
         let action = '';
@@ -40,22 +44,34 @@ export class NotificationComponent extends React.Component {
         }
 
         return (
-            <View style={[{flexDirection:'row'}, !this.notification.read ? {backgroundColor:brandMain} : {}]}>
-                <TouchableOpacity name={'userpic'} onPress={this._onPressProfile} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
+            <TouchableOpacity onPress={this.notification.type === 'FOLLOW' ? this._onPressProfile : this._onPresObservation} style={[{flexDirection:'row'}, !this.notification.read ? {backgroundColor:brandMain} : {}]}>
+                <TouchableOpacity name={'userpic'} onPress={this._onPressProfile} style={[styles.containerPadding, {flex: 0, flexDirection:'column', justifyContent:'center'}]}>
                     <Image name={'userprofilepic'} resizeMode={'cover'} source={require('./user2.jpg')} style={styles.roundProfile}/>
                 </TouchableOpacity>
-                <TouchableOpacity name={'header'} onPress={this.notification.type === 'FOLLOW' ? this._onPressProfile : this._onPresObservation} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>
+                <View name={'textcontentwrapper'} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>
                     <Text name={'action'}>
-                        <Text style={[styles.textStandard, {fontWeight:'bold'}]}>{this.notification.senderid} </Text>
-                        <Text style={[styles.textStandard]}>{action}</Text>
+                        <Text onPress={() => this._onPressProfile(0)} style={styles.textStandardBold}>{this.notification.senderid[0]}</Text>
+                        {
+                            (this.notification.senderid.length > 1) &&
+                            <Text style={styles.textStandard}> and </Text>
+                        }
+                        {
+                            (this.notification.senderid.length === 2) &&
+                            <Text onPress={() => this._onPressProfile(1)} style={styles.textStandardBold}>{this.notification.senderid[1]}</Text>
+                        }
+                        {
+                            (this.notification.senderid.length > 2) &&
+                            <Text onPress={this._onPressMultipleProfiles} style={styles.textStandardBold}>{this.notification.senderid.length - 1} others</Text>
+                        }
+                        <Text style={[styles.textStandard]}> {action}</Text>
                     </Text>
                     <TimeAgo name={'time'} style={styles.textSmall} time={this.notification.timestamp}/>
-                </TouchableOpacity>
+                </View>
                 {this.notification.type !== 'FOLLOW' &&
-                <TouchableOpacity name={'image'} onPress={this._onPresObservation} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
+                <TouchableOpacity name={'image'} onPress={this._onPresObservation} style={[styles.containerPadding, {flex: 0, flexDirection:'column', justifyContent:'center'}]}>
                     <Image name={'userprofilepic'} resizeMode={'cover'} source={require('./carbonara.png')} style={styles.squareThumbnail}/>
                 </TouchableOpacity>}
-            </View>
+            </TouchableOpacity>
         );
     }
 }

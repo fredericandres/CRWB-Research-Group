@@ -54,6 +54,11 @@ export default StyleSheet.create({
         fontSize: standardFontSize,
         color: brandContrast
     },
+    textStandardBold: {
+        fontSize: standardFontSize,
+        color: brandContrast,
+        fontWeight: bold,
+    },
     textSmall: {
         fontSize: smallFontSize,
         color: brandLight,
