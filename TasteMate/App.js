@@ -13,6 +13,9 @@ import {StyleSheet} from "react-native";
 import {SettingsScreen} from "./Settings";
 import {SignUpLogInScreen} from "./SignUpLogIn";
 
+
+// TODO: Localization
+
 const styles = StyleSheet.create({
     navHeaderStyle: {
         backgroundColor: brandMain
@@ -22,10 +25,8 @@ const styles = StyleSheet.create({
     },
 });
 
-
 const HomeStack = StackNavigator({
         Home: { screen: HomeScreen },
-        ObservationDetail: { screen: ObservationDetailScreen },
     },
     {
         initialRouteName: 'Home',
@@ -83,6 +84,7 @@ const ProfileStack = StackNavigator({
         Profile: { screen: ProfileScreen },
         Settings: { screen: SettingsScreen },
         SignUpLogIn: { screen: SignUpLogInScreen },
+        ObservationDetail: { screen: ObservationDetailScreen },
     },
     {
         initialRouteName: 'Profile',
@@ -123,12 +125,10 @@ const TabBar = TabNavigator(
                     iconName = `home`;
                 } else if (routeName === 'Explore') {
                     iconName = `search`;
-                    //${focused ? '' : '-outline'}`;
                 } else if (routeName === 'Notifications') {
                     iconName = `heart`;
                 } else if (routeName === 'EatingOutList') {
                     iconName = `cutlery`;
-                    //${focused ? '' : '-outline'}`;
                 }
                 return <FontAwesome name={iconName} size={25} color={tintColor} />;
             },
@@ -147,7 +147,7 @@ const TabBar = TabNavigator(
     }
 );
 
-export default  RootStack = StackNavigator(
+export default RootStack = StackNavigator(
     {
         Main: {
             screen: TabBar,

@@ -25,6 +25,7 @@ export class ObservationComponent extends React.Component {
         this._onPressMenuDetailButton = this._onPressMenuDetailButton.bind(this);
         this._onPressLocationText = this._onPressLocationText.bind(this);
         this._onPressShareButton = this._onPressShareButton.bind(this);
+        this._onPressProfile = this._onPressProfile.bind(this);
         this.state = {overlayIsHidden: true};
         this.observation = this.props.observation;
     }
@@ -149,6 +150,10 @@ export class ObservationComponent extends React.Component {
         });
     }
 
+    _onPressProfile() {
+        this.props.nav.navigate('Profile',  { userid: this.observation.userid });
+    }
+
     render() {
         const SmileysEnum = Object.freeze({1:'😖', 2:'😟', 3:'🙁', 4:'😕', 5:'😶', 6:'🙂', 7:'😊', 8:'😄', 9:'😍'});
 
@@ -159,13 +164,13 @@ export class ObservationComponent extends React.Component {
         return (
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
-                    <View name={'header'} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
+                    <TouchableOpacity name={'header'} onPress={this._onPressProfile} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
                         <Image name={'userprofilepic'} resizeMode={'cover'} source={require('./user2.jpg')} style={styles.roundProfile}/>
-                    </View>
+                    </TouchableOpacity>
                     <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
                         <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
                             <Text name={'dishnames'} >
-                                <Text name={'dishname'} style={styles.textTitleBold}>{this.observation.dishname}</Text>
+                                <Text name={'dishname'} style={styles.textTitleBoldDark}>{this.observation.dishname}</Text>
                                 <Text name={'mypoc'} style={styles.textTitle}> ({this.observation.mypoc})</Text>
                             </Text>
                         </View>
@@ -178,10 +183,10 @@ export class ObservationComponent extends React.Component {
                         <Image name={'image'} resizeMode={'contain'} source={require('./carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
                     </TouchableOpacity>
                     <View style={[styles.containerOpacity, {position: 'absolute'}]}>
-                        <Text name={'smiley'} style={[styles.textTitleBold, styles.containerPadding]}>{SmileysEnum[this.observation.rating]}</Text>
+                        <Text name={'smiley'} style={[styles.textTitleBoldDark, styles.containerPadding]}>{SmileysEnum[this.observation.rating]}</Text>
                     </View>
                     <View style={[styles.containerOpacity, {position: 'absolute', right:0, flexWrap:'wrap'}]}>
-                        <Text name={'price'} style={[styles.textTitleBold, styles.containerPadding]}>{this.observation.currency} {this.observation.price}</Text>
+                        <Text name={'price'} style={[styles.textTitleBoldDark, styles.containerPadding]}>{this.observation.currency} {this.observation.price}</Text>
                     </View>
                     <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', bottom: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
@@ -197,13 +202,13 @@ export class ObservationComponent extends React.Component {
                     {!this.state.overlayIsHidden &&
                     <ScrollView style={[styles.containerOpacityDark, {position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}]} contentContainerStyle={{flexGrow: 1}}>
                         <TouchableOpacity name={'adjectivesoverlay'} onPress={this._toggleOverlay.bind(this)} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={[styles.textAdjBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{adjs} </Text>
+                            <Text style={[styles.textLargeBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{adjs} </Text>
                         </TouchableOpacity>
                     </ScrollView>
                     }
                 </View>
                 <View name={'description'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'column'}]}>
-                    <Text name={'description'} style={styles.textStandard}>{this.observation.description}</Text>
+                    <Text name={'description'} style={styles.textStandardDark}>{this.observation.description}</Text>
                     {/*TODO: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                     <View name={'information'} style={{flexDirection: 'row'}}>
                         <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
@@ -215,12 +220,12 @@ export class ObservationComponent extends React.Component {
                           renderItem={({item}) =>
                               <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
                                   <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('./user.jpg')} />
-                                  <Text style={[styles.textStandard, styles.containerPadding, {flex: 1}]}>{item.value.message}</Text>
+                                  <Text style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]}>{item.value.message}</Text>
                               </View>}
                           ListFooterComponent={() =>
                               <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
                                   <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('./user2.jpg')} />
-                                  <TextInput style={[styles.textStandard, styles.containerPadding, {flex: 1}]} placeholder="Write a comment..." placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
+                                  <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} placeholder="Write a comment..." placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
                                   <TouchableOpacity onPress={this._onPressSendButton}>
                                       <FontAwesome name={'send'} size={25} color={brandContrast}/>
                                   </TouchableOpacity>

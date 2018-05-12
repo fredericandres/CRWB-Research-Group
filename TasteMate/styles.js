@@ -1,5 +1,7 @@
-import {Platform, StyleSheet} from 'react-native';
-import {brandBackground, brandContrast, brandLight} from "./constants/Constants";
+import {Platform, StyleSheet, Dimensions} from 'react-native';
+import {brandBackground, brandContrast, brandLight, brandMain} from "./constants/Constants";
+import { StatusBar } from 'react-native';
+import { Header } from 'react-navigation';
 
 const bold = 'bold';
 const center = 'center';
@@ -11,7 +13,8 @@ const largeFontSize = 18;
 const standardFontSize = 14;
 const smallFontSize = 10;
 
-const largeThumbnailSize = 40;
+const largeThumbnailSize = ((Dimensions.get('window').height - Header.HEIGHT - (Platform.OS === 'android' ? StatusBar.currentHeight : 0)) * 2 / 7) * 3 / 5;
+const standardThumbnailSize = 40;
 const smallThumbnailSize = 25;
 
 export default StyleSheet.create({
@@ -38,23 +41,34 @@ export default StyleSheet.create({
         backgroundColor: brandContrast + opacity
     },
 
-    textTitleBold: {
+    textTitleBoldDark: {
         fontSize: largeFontSize,
         fontWeight: bold,
         color: brandContrast,
     },
-    textAdjBoldLight: {
+    textTitleBold: {
+        fontSize: largeFontSize,
+        fontWeight: bold,
+    },
+    textLargeBoldLight: {
         fontSize: extraLargeFontSize,
         fontWeight: bold,
         color: brandBackground,
+    },
+    textLargeBold: {
+        fontSize: extraLargeFontSize,
+        fontWeight: bold,
     },
     textTitle: {
         fontSize: largeFontSize,
         color: brandContrast,
     },
-    textStandard: {
+    textStandardDark: {
         fontSize: standardFontSize,
         color: brandContrast
+    },
+    textStandard: {
+        fontSize: standardFontSize,
     },
     textStandardBold: {
         fontSize: standardFontSize,
@@ -68,6 +82,12 @@ export default StyleSheet.create({
 
     roundProfile: {
         alignSelf: center,
+        height: standardThumbnailSize,
+        width: standardThumbnailSize,
+        borderRadius: standardThumbnailSize/2
+    },
+    roundProfileLarge: {
+        alignSelf: center,
         height: largeThumbnailSize,
         width: largeThumbnailSize,
         borderRadius: largeThumbnailSize/2
@@ -80,12 +100,37 @@ export default StyleSheet.create({
     },
     squareThumbnail: {
         alignSelf: center,
-        height: largeThumbnailSize,
-        width: largeThumbnailSize,
+        height: standardThumbnailSize,
+        width: standardThumbnailSize,
     },
 
     bottomLine: {
         borderBottomColor: brandContrast,
         borderBottomWidth: 0.2,
-    }
+    },
+
+    segmentedControl:{
+        flex: 1,
+        justifyContent: 'space-around'
+    },
+    itemSelected :{
+        backgroundColor: brandContrast,
+    },
+    textSelected: {
+        color: brandMain,
+    },
+    itemNotSelected: {
+        backgroundColor: brandBackground,
+    },
+    textNotSelected: {
+        color: brandContrast,
+    },
+    leftRoundedEdges: {
+        borderBottomLeftRadius: 10,
+        borderTopLeftRadius: 10,
+    },
+    rightRoundedEdges: {
+        borderBottomRightRadius: 10,
+        borderTopRightRadius: 10,
+    },
 });

@@ -29,7 +29,7 @@ export class SearchExploreScreen extends React.Component {
             <View name={'wrapper'} >
                 <View name={'searchbar'} style={{backgroundColor: brandMain}}>
                     <View style={[styles.containerPadding, {flexDirection:'row', alignItems: 'center'}]}>
-                        <TextInput style={[styles.textStandard, styles.containerPadding, {backgroundColor: brandBackground, flex: 1}]}
+                        <TextInput style={[styles.textStandardDark, styles.containerPadding, {backgroundColor: brandBackground, flex: 1}]}
                                    placeholder="What food are you craving?"
                                    placeholderTextColor={brandLight}
                                    returnKeyType={'search'}
@@ -45,10 +45,11 @@ export class SearchExploreScreen extends React.Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <FlatList contentContainerStyle={{justifyContent: 'space-between'}}
-                          data={MockupData.observations}
-                          renderItem={({item}) => <ObservationExploreComponent observation={item.value} nav={this.props.navigation}/>}
-                          numColumns={numColumns}
+                <FlatList
+                    style={styles.containerPadding}
+                    data={MockupData.observations}
+                    renderItem={({item}) => <ObservationExploreComponent observation={item.value} nav={this.props.navigation}/>}
+                    numColumns={numColumns}
                 />
             </View>
         );

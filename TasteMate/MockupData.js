@@ -38,3 +38,24 @@ export const notifications = [
     {key:'6', value: {senderid:['missyuserwithasuperduperlongusernamewowthisissolongimnotsureifthesystemshouldallowthislength'], type:'LIKE', observationid:'1234', timestamp:1515841681630, read:true}},
     {key:'7', value: {senderid:['ardnaxela', 'luisa'], type:'FOLLOW', timestamp:1425832681630, read:true}},
 ];
+
+export const userr = {
+    userid: '123',
+    email: 'a@b.de',
+    password: 'asdasd',
+    username: 'isnotyourname',
+    location: 'Mumbai, India',
+    joined: 1425832681630,
+    picture: 'asdasd'
+};
+
+export const users = [
+    {key:'0', value: {username:'annabanana', location: 'Munich, Germany'}},
+    {key:'1', value: {username:'julianthegreatestman', location: 'Stockholm, Sweden'}},
+    {key:'2', value: {username:'123jump', location: 'Tokyo, Japan'}},
+    {key:'3', value: {username:'watatat', location: 'Oslo, Norway'}},
+    {key:'4', value: {username:'shelby', location: 'Denver, Colorado, USA'}},
+    {key:'5', value: {username:'missyuserwithasuperduperlongusernamewowthisissolongimnotsureifthesystemshouldallowthislength', location: 'Melbourne, Australia'}},
+    {key:'6', value: {username:'luisa', location: 'Stockholm, Sweden'}},
+    {key:'7', value: {username:'ardnaxela', location: 'Stockholm, Sweden'}},
+];
