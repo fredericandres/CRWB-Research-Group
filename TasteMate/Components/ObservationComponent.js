@@ -12,12 +12,12 @@ import {
     View
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {_formatNumber, brandContrast, brandLight, brandMain} from "../constants/Constants";
+import {_formatNumber, _navigateToScreen, brandContrast, brandLight, brandMain} from "../constants/Constants";
 import styles from "../styles";
 import BottomSheet from 'react-native-bottom-sheet';
 import {adjectives, comments} from "../MockupData";
 import TimeAgo from "react-native-timeago";
-import { _navigateToScreen } from '../constants/Constants';
+import {CommentComponent} from "./CommentComponent";
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -218,11 +218,7 @@ export class ObservationComponent extends React.Component {
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
                           data={comments}
-                          renderItem={({item}) =>
-                              <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
-                                  <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user.jpg')} />
-                                  <Text style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]}>{item.value.message}</Text>
-                              </View>}
+                          renderItem={({item}) => <CommentComponent comment={item.value} nav={this.props.navigation}/>}
                           ListFooterComponent={() =>
                               <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
                                   <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user2.jpg')} />

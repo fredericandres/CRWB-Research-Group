@@ -2,7 +2,7 @@ import React from "react";
 import styles from "../styles";
 import {Image, Text, TouchableOpacity, View} from "react-native";
 import TimeAgo from 'react-native-timeago'
-import {_formatNumber, brandMain} from "../constants/Constants";
+import {_formatNumber, _navigateToScreen, brandMain} from "../constants/Constants";
 
 export class NotificationComponent extends React.Component {
     constructor(props) {
@@ -19,7 +19,7 @@ export class NotificationComponent extends React.Component {
     }
 
     _onPressProfile(index) {
-        this.props.nav.navigate('Profile',  { userid: this.notification.senderid[index] });
+        _navigateToScreen('Profile', this.props.nav, this.notification.senderid[index], null);
     }
 
     _onPresObservation() {

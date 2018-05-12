@@ -15,8 +15,8 @@ const isFollowing = false;
 export class ProfileScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
         title: navigation.getParam('user') ? navigation.getParam('user').username : userr.username,
-        // Set left header button to 'Close' if top of stack
-        headerLeft: navigation.dangerouslyGetParent().state.routes.length > 1 ? undefined : (
+        // Set left header button to 'Close' if top of stack aka own profile
+        headerLeft: !navigation.getParam('myProfile') ? undefined : (
             <NavBarCloseButton nav={navigation}/>
         ),
         headerRight: (
