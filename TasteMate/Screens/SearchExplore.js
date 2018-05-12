@@ -1,11 +1,11 @@
 import React from 'react';
 import {FlatList, TextInput, TouchableOpacity, View} from 'react-native';
-import {NavBarCreateObsButton, NavBarProfileButton} from "./NavBarButton";
-import styles from "./styles";
-import {brandBackground, brandContrast, brandLight, brandMain} from "./constants/Constants";
+import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
+import styles from "../styles";
+import {brandBackground, brandContrast, brandLight, brandMain} from "../constants/Constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {ObservationExploreComponent} from "./ObservationExploreComponent";
-import * as MockupData from "./MockupData";
+import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
+import * as MockupData from "../MockupData";
 
 const numColumns = 3;
 

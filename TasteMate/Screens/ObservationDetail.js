@@ -1,5 +1,5 @@
 import React from 'react';
-import {ObservationComponent} from "./ObservationComponent";
+import {ObservationComponent} from "../Components/ObservationComponent";
 import {ScrollView} from "react-native";
 
 export class ObservationDetailScreen extends React.Component {

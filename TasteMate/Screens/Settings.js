@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, View, Text } from 'react-native';
-import {NavBarButton} from "./NavBarButton";
+import {NavBarButton} from "../Components/NavBarButton";
 
 export class SettingsScreen extends React.Component {
     static navigationOptions =({navigation})=> ({

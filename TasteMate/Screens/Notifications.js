@@ -1,9 +1,9 @@
 import React from 'react';
 import {FlatList, Text} from 'react-native';
-import {NavBarCreateObsButton, NavBarProfileButton} from "./NavBarButton";
-import {NotificationComponent} from "./NotificationComponent";
-import styles from "./styles";
-import {notifications} from "./MockupData";
+import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
+import {NotificationComponent} from "../Components/NotificationComponent";
+import styles from "../styles";
+import {notifications} from "../MockupData";
 
 export class NotificationsScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({

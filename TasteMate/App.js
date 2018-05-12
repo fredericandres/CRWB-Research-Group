@@ -1,18 +1,17 @@
 import React from 'react';
-import {StackNavigator, TabBarBottom, TabNavigator} from 'react-navigation';
-import {HomeScreen} from "./Home";
-import {ObservationDetailScreen} from "./ObservationDetail";
-import {SearchExploreScreen} from "./SearchExplore";
+import {createBottomTabNavigator, createStackNavigator} from 'react-navigation';
+import {HomeScreen} from "./Screens/Home";
+import {ObservationDetailScreen} from "./Screens/ObservationDetail";
+import {SearchExploreScreen} from "./Screens/SearchExplore";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {NotificationsScreen} from "./Notifications";
+import {NotificationsScreen} from "./Screens/Notifications";
 import {ProfileScreen} from "./Profile";
-import {EatingOutListScreen} from "./EatingOutList";
-import {CreateObservationScreen} from "./CreateObservation";
+import {EatingOutListScreen} from "./Screens/EatingOutList";
+import {CreateObservationScreen} from "./Screens/CreateObservation";
 import {brandContrast, brandLight, brandMain} from './constants/Constants';
 import {StyleSheet} from "react-native";
-import {SettingsScreen} from "./Settings";
-import {SignUpLogInScreen} from "./SignUpLogIn";
-
+import {SettingsScreen} from "./Screens/Settings";
+import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
 
 // TODO: Localization
 
@@ -25,8 +24,10 @@ const styles = StyleSheet.create({
     },
 });
 
-const HomeStack = StackNavigator({
+const HomeStack = createStackNavigator({
         Home: { screen: HomeScreen },
+        Profile: { screen: ProfileScreen },
+        ObservationDetail: { screen: ObservationDetailScreen },
     },
     {
         initialRouteName: 'Home',
@@ -38,9 +39,10 @@ const HomeStack = StackNavigator({
     }
 );
 
-const ExploreSearchStack = StackNavigator({
+const ExploreSearchStack = createStackNavigator({
         Explore: { screen: SearchExploreScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
+        Profile: { screen: ProfileScreen },
     },
     {
         initialRouteName: 'Explore',
@@ -52,9 +54,10 @@ const ExploreSearchStack = StackNavigator({
     }
 );
 
-const NotificationsStack = StackNavigator({
+const NotificationsStack = createStackNavigator({
         Notifications: { screen: NotificationsScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
+        Profile: { screen: ProfileScreen },
     },
     {
         initialRouteName: 'Notifications',
@@ -66,9 +69,10 @@ const NotificationsStack = StackNavigator({
     }
 );
 
-const EatingOutListStack = StackNavigator({
+const EatingOutListStack = createStackNavigator({
         EatingOutList: { screen: EatingOutListScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
+        Profile: { screen: ProfileScreen },
     },
     {
         initialRouteName: 'EatingOutList',
@@ -80,7 +84,7 @@ const EatingOutListStack = StackNavigator({
     }
 );
 
-const ProfileStack = StackNavigator({
+const ProfileStack = createStackNavigator({
         Profile: { screen: ProfileScreen },
         Settings: { screen: SettingsScreen },
         SignUpLogIn: { screen: SignUpLogInScreen },
@@ -96,7 +100,7 @@ const ProfileStack = StackNavigator({
     }
 );
 
-const CreateObservationStack = StackNavigator({
+const CreateObservationStack = createStackNavigator({
         CreateObservation: { screen: CreateObservationScreen },
     },
     {
@@ -109,7 +113,7 @@ const CreateObservationStack = StackNavigator({
     }
 );
 
-const TabBar = TabNavigator(
+const TabBar = createBottomTabNavigator(
     {
         Home: { screen: HomeStack },
         Explore: { screen: ExploreSearchStack },
@@ -140,14 +144,12 @@ const TabBar = TabNavigator(
                 backgroundColor: brandContrast,
             },
         },
-        tabBarComponent: TabBarBottom,
-        tabBarPosition: 'bottom',
         animationEnabled: true,
         swipeEnabled: true,
     }
 );
 
-export default RootStack = StackNavigator(
+export default RootStack = createStackNavigator(
     {
         Main: {
             screen: TabBar,
@@ -155,7 +157,7 @@ export default RootStack = StackNavigator(
         CreateObservation: {
             screen: CreateObservationStack,
         },
-        Profile: {
+        MyProfile: {
             screen: ProfileStack,
         },
         SignUpLogIn: {

@@ -12,11 +12,12 @@ import {
     View
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {_formatNumber, brandContrast, brandLight, brandMain} from "./constants/Constants";
-import styles from "./styles";
+import {_formatNumber, brandContrast, brandLight, brandMain} from "../constants/Constants";
+import styles from "../styles";
 import BottomSheet from 'react-native-bottom-sheet';
-import {adjectives, comments} from "./MockupData";
+import {adjectives, comments} from "../MockupData";
 import TimeAgo from "react-native-timeago";
+import { _navigateToScreen } from '../constants/Constants';
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -151,7 +152,7 @@ export class ObservationComponent extends React.Component {
     }
 
     _onPressProfile() {
-        this.props.nav.navigate('Profile',  { userid: this.observation.userid });
+        _navigateToScreen('Profile', this.props.nav, this.observation.userid, null);
     }
 
     render() {
@@ -165,7 +166,7 @@ export class ObservationComponent extends React.Component {
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
                     <TouchableOpacity name={'header'} onPress={this._onPressProfile} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
-                        <Image name={'userprofilepic'} resizeMode={'cover'} source={require('./user2.jpg')} style={styles.roundProfile}/>
+                        <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../user2.jpg')} style={styles.roundProfile}/>
                     </TouchableOpacity>
                     <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
                         <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
@@ -180,7 +181,7 @@ export class ObservationComponent extends React.Component {
                 </View>
                 <View name={'picture'} style={{flexDirection:'row'}}>
                     <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
-                        <Image name={'image'} resizeMode={'contain'} source={require('./carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
+                        <Image name={'image'} resizeMode={'contain'} source={require('../carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
                     </TouchableOpacity>
                     <View style={[styles.containerOpacity, {position: 'absolute'}]}>
                         <Text name={'smiley'} style={[styles.textTitleBoldDark, styles.containerPadding]}>{SmileysEnum[this.observation.rating]}</Text>
@@ -219,12 +220,12 @@ export class ObservationComponent extends React.Component {
                           data={comments}
                           renderItem={({item}) =>
                               <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
-                                  <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('./user.jpg')} />
+                                  <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user.jpg')} />
                                   <Text style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]}>{item.value.message}</Text>
                               </View>}
                           ListFooterComponent={() =>
                               <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
-                                  <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('./user2.jpg')} />
+                                  <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user2.jpg')} />
                                   <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} placeholder="Write a comment..." placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
                                   <TouchableOpacity onPress={this._onPressSendButton}>
                                       <FontAwesome name={'send'} size={25} color={brandContrast}/>

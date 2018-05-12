@@ -1,13 +1,18 @@
 import React from 'react';
 import {Image, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {brandContrast} from "./constants/Constants";
-import StandardStyle from "./styles";
+import {brandContrast} from "../constants/Constants";
+import StandardStyle from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import { _navigateToScreen } from '../constants/Constants';
 
 export class NavBarButton extends React.Component {
     _toggleFollowUnfollow() {
         // TODO
+    }
+
+    _openScreen(screen) {
+        _navigateToScreen(screen, this.props.nav, null, true);
     }
 
     render() {
@@ -40,7 +45,7 @@ export class NavBarButton extends React.Component {
                 </TouchableOpacity>
         } else {
             wrapper =
-                <TouchableOpacity onPress={screen === '' ? this._toggleFollowUnfollow : () => nav.navigate(screen)} style={StandardStyle.containerPadding}>
+                <TouchableOpacity onPress={screen === '' ? this._toggleFollowUnfollow : (()=> this._openScreen(screen))} style={StandardStyle.containerPadding}>
                     {content}
                 </TouchableOpacity>;
         }
@@ -55,7 +60,7 @@ export class NavBarProfileButton extends React.Component {
     render() {
         const nav = this.props.nav;
         return (
-            <NavBarButton nav={nav} screen={'Profile'} icon={'user'} />
+            <NavBarButton nav={nav} screen={'MyProfile'} icon={'user'}/>
         );
     }
 }

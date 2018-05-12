@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./styles";
+import styles from "../styles";
 import {Text, TouchableOpacity} from "react-native";
 
 export class SegmentedControlItem extends React.Component {

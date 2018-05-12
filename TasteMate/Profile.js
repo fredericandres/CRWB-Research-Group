@@ -1,28 +1,29 @@
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
-import {NavBarButton, NavBarCloseButton} from "./NavBarButton";
+import {NavBarButton, NavBarCloseButton} from "./Components/NavBarButton";
 import {brandContrast, brandMain} from "./constants/Constants";
 import styles from "./styles";
 import * as MockupData from "./MockupData";
 import {userr, users} from "./MockupData";
-import {SegmentedControlItem} from "./SegmentedControlItem";
-import {UserComponent} from "./UserComponent";
-import {ObservationExploreComponent} from "./ObservationExploreComponent";
+import {SegmentedControlItem} from "./Components/SegmentedControlItem";
+import {UserComponent} from "./Components/UserComponent";
+import {ObservationExploreComponent} from "./Components/ObservationExploreComponent";
 
 // TODO: check at server
-const isLoggedIn = false;
 const isFollowing = false;
 
 export class ProfileScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
-        title: userr.username,
-        // TODO: see if 'close' can be hidden for not top stack element
-        //title: navigation.state.key,
-        headerLeft: (
+        title: navigation.getParam('user') ? navigation.getParam('user').username : userr.username,
+        // Set left header button to 'Close' if top of stack
+        headerLeft: navigation.dangerouslyGetParent().state.routes.length > 1 ? undefined : (
             <NavBarCloseButton nav={navigation}/>
         ),
         headerRight: (
-            <NavBarButton nav={navigation} icon={isLoggedIn ? 'cog' : (isFollowing ? 'user-following' : 'user-follow')} iconType={isLoggedIn ? '' : 'SimpleLineIcons'} screen={!isLoggedIn ? '' : 'Settings'}/>
+            navigation.getParam('myProfile') ?
+                <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'} myProfile={true}/>
+                :
+                <NavBarButton nav={navigation} icon={isFollowing ? 'user-following' : 'user-follow'} iconType={'SimpleLineIcons'}/>
         ),
         headerStyle: {
             borderBottomWidth: 0,

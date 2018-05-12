@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View} from 'react-native';
-import {NavBarCloseButton} from "./NavBarButton";
+import {NavBarCloseButton} from "../Components/NavBarButton";
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({

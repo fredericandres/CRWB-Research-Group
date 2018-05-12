@@ -1,7 +1,7 @@
 import {Platform, StyleSheet, Dimensions} from 'react-native';
 import {brandBackground, brandContrast, brandLight, brandMain} from "./constants/Constants";
 import { StatusBar } from 'react-native';
-import { Header } from 'react-navigation';
+import { Header, TabNavigator } from 'react-navigation';
 
 const bold = 'bold';
 const center = 'center';
@@ -13,7 +13,7 @@ const largeFontSize = 18;
 const standardFontSize = 14;
 const smallFontSize = 10;
 
-const largeThumbnailSize = ((Dimensions.get('window').height - Header.HEIGHT - (Platform.OS === 'android' ? StatusBar.currentHeight : 0)) * 2 / 7) * 3 / 5;
+const largeThumbnailSize = ((Dimensions.get('window').height - Header.HEIGHT - Header.HEIGHT - (Platform.OS === 'android' ? StatusBar.currentHeight : 0)) * 2 / 7) * 3 / 5;
 const standardThumbnailSize = 40;
 const smallThumbnailSize = 25;
 

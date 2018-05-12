@@ -1,9 +1,9 @@
 import React from 'react';
 import {FlatList, Text, View} from 'react-native';
-import {NavBarCreateObsButton, NavBarProfileButton} from "./NavBarButton";
-import {ObservationComponent} from "./ObservationComponent";
-import styles from "./styles";
-import {observations} from "./MockupData";
+import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
+import {ObservationComponent} from "../Components/ObservationComponent";
+import styles from "../styles";
+import {observations} from "../MockupData";
 
 export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({

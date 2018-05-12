@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, View, Text } from 'react-native';
-import {NavBarCreateObsButton, NavBarProfileButton} from "./NavBarButton";
+import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 
 export class EatingOutListScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
