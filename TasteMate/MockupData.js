@@ -46,16 +46,17 @@ export const userr = {
     username: 'isnotyourname',
     location: 'Mumbai, India',
     joined: 1425832681630,
-    picture: 'asdasd'
+    picture: 'asdasd',
+    isFollowing:true
 };
 
 export const users = [
-    {key:'0', value: {username:'annabanana', location: 'Munich, Germany'}},
-    {key:'1', value: {username:'julianthegreatestman', location: 'Stockholm, Sweden'}},
-    {key:'2', value: {username:'123jump', location: 'Tokyo, Japan'}},
-    {key:'3', value: {username:'watatat', location: 'Oslo, Norway'}},
-    {key:'4', value: {username:'shelby', location: 'Denver, Colorado, USA'}},
-    {key:'5', value: {username:'missyuserwithasuperduperlongusernamewowthisissolongimnotsureifthesystemshouldallowthislength', location: 'Melbourne, Australia'}},
-    {key:'6', value: {username:'luisa', location: 'Stockholm, Sweden'}},
-    {key:'7', value: {username:'ardnaxela', location: 'Stockholm, Sweden'}},
+    {key:'0', value: {username:'annabanana', location: 'Munich, Germany', isFollowing:true}},
+    {key:'1', value: {username:'julianthegreatestman', location: 'Stockholm, Sweden', isFollowing:false}},
+    {key:'2', value: {username:'123jump', location: 'Tokyo, Japan', isFollowing:false}},
+    {key:'3', value: {username:'watatat', location: 'Oslo, Norway', isFollowing:false}},
+    {key:'4', value: {username:'shelby', location: 'Denver, Colorado, USA', isFollowing:true}},
+    {key:'5', value: {username:'missyuserwithasuperduperlongusernamewowthisissolongimnotsureifthesystemshouldallowthislength', location: 'Melbourne, Australia', isFollowing:true}},
+    {key:'6', value: {username:'luisa', location: 'Stockholm, Sweden', isFollowing:true}},
+    {key:'7', value: {username:'ardnaxela', location: 'Stockholm, Sweden', isFollowing:true}},
 ];

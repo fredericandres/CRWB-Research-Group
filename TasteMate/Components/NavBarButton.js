@@ -1,16 +1,11 @@
 import React from 'react';
-import {Image, Text, TouchableOpacity} from 'react-native';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {brandContrast} from "../constants/Constants";
+import {_navigateToScreen, brandContrast} from "../constants/Constants";
 import StandardStyle from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
-import { _navigateToScreen } from '../constants/Constants';
 
 export class NavBarButton extends React.Component {
-    _toggleFollowUnfollow() {
-        // TODO
-    }
-
     _openScreen(screen) {
         _navigateToScreen(screen, this.props.nav, null, true);
     }
@@ -23,20 +18,21 @@ export class NavBarButton extends React.Component {
         const text = this.props.text;
         const isModal = this.props.isModal;
         const iconType = this.props.iconType;
+        const action = this.props.actionn;
 
         // Content
         let content = <Text>{text}</Text>;
         if (icon != null) {
             if (iconType === 'SimpleLineIcons') {
-                content =  <SimpleLineIcons name={icon} size={25} color={brandContrast}/>;
+                content = <SimpleLineIcons name={icon} size={25} color={brandContrast}/>;
             } else {
-                content =  <FontAwesome name={icon} size={25} color={brandContrast}/>;
+                content = <FontAwesome name={icon} size={25} color={brandContrast}/>;
             }
         } else if (image != null) {
             content = <Image/>;
         }
 
-        //Action
+        // Action
         let wrapper = <TouchableOpacity/>;
         if (isModal) {
             wrapper =
@@ -45,7 +41,7 @@ export class NavBarButton extends React.Component {
                 </TouchableOpacity>
         } else {
             wrapper =
-                <TouchableOpacity onPress={screen === '' ? this._toggleFollowUnfollow : (()=> this._openScreen(screen))} style={StandardStyle.containerPadding}>
+                <TouchableOpacity onPress={screen === undefined ? action : (()=> this._openScreen(screen))} style={StandardStyle.containerPadding}>
                     {content}
                 </TouchableOpacity>;
         }
@@ -79,6 +75,18 @@ export class NavBarCloseButton extends React.Component {
         const nav = this.props.nav;
         return (
             <NavBarButton nav={nav} text={'Close'} isModal={true} />
+        );
+    }
+}
+
+export class NavBarFollowUnfollowButton extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        const actionn = this.props.actionn;
+        return (
+            <NavBarButton icon={'user-following'} iconType={'SimpleLineIcons'} actionn={actionn}/>
         );
     }
 }

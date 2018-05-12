@@ -1,16 +1,20 @@
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
-import {NavBarButton, NavBarCloseButton} from "./Components/NavBarButton";
-import {brandContrast, brandMain} from "./constants/Constants";
-import styles from "./styles";
-import * as MockupData from "./MockupData";
-import {userr, users} from "./MockupData";
-import {SegmentedControlItem} from "./Components/SegmentedControlItem";
-import {UserComponent} from "./Components/UserComponent";
-import {ObservationExploreComponent} from "./Components/ObservationExploreComponent";
+import {NavBarButton, NavBarCloseButton, NavBarFollowUnfollowButton} from "../Components/NavBarButton";
+import {brandMain} from "../constants/Constants";
+import styles from "../styles";
+import * as MockupData from "../MockupData";
+import {userr, users} from "../MockupData";
+import {UserComponent} from "../Components/UserComponent";
+import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
+import {SegmentedControlItem} from "../Components/SegmentedControlItem";
 
-// TODO: check at server
-const isFollowing = false;
+
+function _toggleFollowUnfollow() {
+    // TODO
+    this.user = !this.user;
+    return undefined;
+}
 
 export class ProfileScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -23,7 +27,13 @@ export class ProfileScreen extends React.Component {
             navigation.getParam('myProfile') ?
                 <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'} myProfile={true}/>
                 :
-                <NavBarButton nav={navigation} icon={isFollowing ? 'user-following' : 'user-follow'} iconType={'SimpleLineIcons'}/>
+                <View>
+                    {userr.isFollowing &&
+                    <NavBarFollowUnfollowButton icon={'user-following'} actionn={_toggleFollowUnfollow}/>}
+                    {!userr.isFollowing &&
+                    <NavBarFollowUnfollowButton icon={'user-follow'} actionn={_toggleFollowUnfollow}/>}
+                </View>
+
         ),
         headerStyle: {
             borderBottomWidth: 0,
@@ -43,6 +53,7 @@ export class ProfileScreen extends React.Component {
         this._onPressFollowers = this._onPressFollowers.bind(this);
         this._onPressPhotos = this._onPressPhotos.bind(this);
         this._onPressFollowing = this._onPressFollowing.bind(this);
+        this.user = userr;
     }
 
     _onPressPhotos() {
@@ -77,7 +88,7 @@ export class ProfileScreen extends React.Component {
                         flexDirection: 'column',
                         justifyContent: 'center'
                     }]}>
-                        <Image name={'userprofilepic'} resizeMode={'cover'} source={require('./user2.jpg')}
+                        <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../user2.jpg')}
                                style={[{flex: 0}, styles.roundProfileLarge]}/>
                     </View>
                     <View name={'username'} style={{flex: 1, alignItems: 'flex-end', flexDirection: 'row'}}>

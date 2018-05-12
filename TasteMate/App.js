@@ -5,7 +5,7 @@ import {ObservationDetailScreen} from "./Screens/ObservationDetail";
 import {SearchExploreScreen} from "./Screens/SearchExplore";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {NotificationsScreen} from "./Screens/Notifications";
-import {ProfileScreen} from "./Profile";
+import {ProfileScreen} from "./Screens/Profile";
 import {EatingOutListScreen} from "./Screens/EatingOutList";
 import {CreateObservationScreen} from "./Screens/CreateObservation";
 import {brandContrast, brandLight, brandMain} from './constants/Constants';
