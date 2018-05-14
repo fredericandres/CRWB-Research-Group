@@ -4,6 +4,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {_navigateToScreen, brandContrast} from "../constants/Constants";
 import StandardStyle from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import strings from "../strings";
 
 export class NavBarButton extends React.Component {
     _openScreen(screen) {
@@ -74,7 +75,7 @@ export class NavBarCloseButton extends React.Component {
     render() {
         const nav = this.props.nav;
         return (
-            <NavBarButton nav={nav} text={'Close'} isModal={true} />
+            <NavBarButton nav={nav} text={strings.close} isModal={true} />
         );
     }
 }

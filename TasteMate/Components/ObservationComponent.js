@@ -18,6 +18,7 @@ import BottomSheet from 'react-native-bottom-sheet';
 import {adjectives, comments} from "../MockupData";
 import TimeAgo from "react-native-timeago";
 import {CommentComponent} from "./CommentComponent";
+import strings from "../strings";
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -56,16 +57,16 @@ export class ObservationComponent extends React.Component {
     }
 
     _onPressMenuButton() {
-        const title = 'Select an action';
-        const message = 'What would you like to do with the post \"' + this.observation.dishname + '\" by ' + this.observation.userid;
+        // TODO: Only show menu when it is my own post
+        const title = strings.selectAction;
+        const message = strings.formatString(strings.doWithPost, this.observation.dishname, this.observation.userid);
         const options = [
-            'Share',
-            'Edit',
-            'Delete',
-            'Cancel',
+            strings.edit,
+            strings.delete,
+            strings.cancel
         ];
-        const cancelButtonIndex = 3;
-        const destructiveButtonIndex = 2;
+        const cancelButtonIndex = 2;
+        const destructiveButtonIndex = 1;
 
         // TODO: Customize ActionSheet depending on is logged in or not
         if (Platform.OS === 'android') {
@@ -105,8 +106,8 @@ export class ObservationComponent extends React.Component {
 
     _onPressShareButton() {
         // TODO: What is being shared? Link?
-        const subject = 'Share';
-        const message = 'Where do you want to share this post?';
+        const subject = strings.share;
+        const message = strings.shareQuestion;
         const url = '';
         //var excludedActivityTypes = '';
 
@@ -162,6 +163,7 @@ export class ObservationComponent extends React.Component {
         for (let i = 0; i < adjectives.length; i++) {
             adjs = adjs + '#' + adjectives[i].value.adjective + ' ';
         }
+
         return (
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
@@ -213,16 +215,16 @@ export class ObservationComponent extends React.Component {
                     {/*TODO: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                     <View name={'information'} style={{flexDirection: 'row'}}>
                         <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
-                        <Text name={'details'} style={styles.textSmall}> • {_formatNumber(this.observation.likes)} likes • {_formatNumber(this.observation.cutleries)} cutleries • {_formatNumber(this.observation.shares)} shares</Text>
+                        <Text name={'details'} style={styles.textSmall}> • {_formatNumber(this.observation.likes)} {strings.likes} • {_formatNumber(this.observation.cutleries)} {strings.cutleries} • {_formatNumber(this.observation.shares)} {strings.shares}</Text>
                     </View>
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
                           data={comments}
-                          renderItem={({item}) => <CommentComponent comment={item.value} nav={this.props.navigation}/>}
+                          renderItem={({item}) => <CommentComponent comment={item.value} nav={this.props.nav}/>}
                           ListFooterComponent={() =>
                               <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
                                   <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user2.jpg')} />
-                                  <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} placeholder="Write a comment..." placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
+                                  <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} placeholder={strings.writeComment} placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
                                   <TouchableOpacity onPress={this._onPressSendButton}>
                                       <FontAwesome name={'send'} size={25} color={brandContrast}/>
                                   </TouchableOpacity>

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, View, Text } from 'react-native';
-
+import strings from "../strings";
 export class SignUpLogInScreen extends React.Component {
     static navigationOptions = {
-        title: 'SignUp/LogIn',
+        title: strings.signUpLogIn,
     };
 
     render() {

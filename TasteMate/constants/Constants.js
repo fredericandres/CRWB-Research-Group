@@ -1,4 +1,5 @@
 import {StackActions} from "react-navigation";
+import {Platform, NativeModules} from "react-native";
 
 export const brandMain = '#ffcc66';
 export const brandContrast = '#333333';
@@ -24,4 +25,15 @@ export function _navigateToScreen(screen, navigation, user, myProfile) {
         },
     });
     navigation.dispatch(pushAction);
+}
+
+export function _getLanguageCode() {
+    let systemLanguage = 'en';
+    if (Platform.OS === 'android') {
+        systemLanguage = NativeModules.I18nManager.localeIdentifier;
+    } else {
+        systemLanguage = NativeModules.SettingsManager.settings.AppleLocale;
+    }
+    const languageCode = systemLanguage.substring(0, 2);
+    return languageCode;
 }

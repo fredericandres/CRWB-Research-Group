@@ -8,7 +8,7 @@ import {userr, users} from "../MockupData";
 import {UserComponent} from "../Components/UserComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {SegmentedControlItem} from "../Components/SegmentedControlItem";
-
+import strings from "../strings";
 
 function _toggleFollowUnfollow() {
     // TODO
@@ -108,13 +108,13 @@ export class ProfileScreen extends React.Component {
                         {/*TODO: Reformat numbers*/}
                         <View name={'segmentedcontrolwrapper'}
                               style={[{flexDirection: 'row'}, styles.containerPadding]}>
-                            <SegmentedControlItem name={'photos'} text={'Photos'} number='27'
+                            <SegmentedControlItem name={'photos'} text={strings.photos} number='27'
                                                   isSelected={this.state.selectedIndex === 0}
                                                   action={this._onPressPhotos}/>
-                            <SegmentedControlItem name={'followers'} text={'Followers'}
+                            <SegmentedControlItem name={'followers'} text={strings.followers}
                                                   isSelected={this.state.selectedIndex === 1} number='200'
                                                   action={this._onPressFollowers}/>
-                            <SegmentedControlItem name={'following'} text={'Following'}
+                            <SegmentedControlItem name={'following'} text={strings.following}
                                                   isSelected={this.state.selectedIndex === 2} number='31'
                                                   action={this._onPressFollowing}/>
                         </View>
@@ -123,8 +123,7 @@ export class ProfileScreen extends React.Component {
                         this.state.selectedIndex === 0 &&
                         <FlatList
                             style={styles.containerPadding}
-                            ListEmptyComponent={() => <Text style={styles.containerPadding}>This user has not added any
-                                pictures.</Text>}
+                            ListEmptyComponent={() => <Text style={styles.containerPadding}>{strings.noPictures}</Text>}
                             data={MockupData.observations}
                             renderItem={({item}) => <ObservationExploreComponent observation={item.value}
                                                                                  nav={this.props.navigation}/>}
@@ -136,7 +135,7 @@ export class ProfileScreen extends React.Component {
                         <FlatList
                             style={styles.containerPadding}
                             data={users}
-                            ListEmptyComponent={() => <Text style={styles.containerPadding}>No users to display.</Text>}
+                            ListEmptyComponent={() => <Text style={styles.containerPadding}>{strings.noUsers}</Text>}
                             ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                             renderItem={({item}) => <UserComponent user={item.value} nav={this.props.navigation}/>}
                         />

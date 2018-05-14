@@ -6,12 +6,13 @@ import {brandBackground, brandContrast, brandLight, brandMain} from "../constant
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import * as MockupData from "../MockupData";
+import strings from "../strings";
 
 const numColumns = 3;
 
 export class SearchExploreScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
-        title: 'Explore',
+        title: strings.explore,
         headerLeft: (
             <NavBarProfileButton nav={navigation}/>
         ),
@@ -30,7 +31,7 @@ export class SearchExploreScreen extends React.Component {
                 <View name={'searchbar'} style={{backgroundColor: brandMain}}>
                     <View style={[styles.containerPadding, {flexDirection:'row', alignItems: 'center'}]}>
                         <TextInput style={[styles.textStandardDark, styles.containerPadding, {backgroundColor: brandBackground, flex: 1}]}
-                                   placeholder="What food are you craving?"
+                                   placeholder={strings.foodCraving}
                                    placeholderTextColor={brandLight}
                                    returnKeyType={'search'}
                                    keyboardType={'default'}

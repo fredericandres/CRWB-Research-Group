@@ -1,7 +1,6 @@
-import {Platform, StyleSheet, Dimensions} from 'react-native';
+import {Dimensions, Platform, StatusBar, StyleSheet} from 'react-native';
 import {brandBackground, brandContrast, brandLight, brandMain} from "./constants/Constants";
-import { StatusBar } from 'react-native';
-import { Header, TabNavigator } from 'react-navigation';
+import {Header} from 'react-navigation';
 
 const bold = 'bold';
 const center = 'center';

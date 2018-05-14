@@ -3,6 +3,7 @@ import styles from "../styles";
 import {Image, Text, TouchableOpacity, View} from "react-native";
 import TimeAgo from 'react-native-timeago'
 import {_formatNumber, _navigateToScreen, brandMain} from "../constants/Constants";
+import strings from "../strings";
 
 export class NotificationComponent extends React.Component {
     constructor(props) {
@@ -30,17 +31,26 @@ export class NotificationComponent extends React.Component {
         let action = '';
         switch(this.notification.type) {
             case 'LIKE':
-                action = 'liked your picture.';
+                action = strings.likedPicture;
                 break;
             case 'WANTTOEAT':
-                action = 'wants to eat your picture.';
+                action = strings.wantsToEatPicture;
                 break;
             case 'SHARE':
-                action = 'shared your picture.';
+                action = strings.sharedPicture;
                 break;
             case 'FOLLOW':
-                action = 'started following you.';
+                action = strings.startedFollowing;
                 break;
+        }
+
+        let completeActionString = '';
+        if (this.notification.senderid.length === 1) {
+            completeActionString = strings.formatString(action, this.notification.senderid[0]);
+        } else if (this.notification.senderid.length === 2) {
+            completeActionString = strings.formatString(action, strings.formatString(strings.userAndUser, this.notification.senderid[0], this.notification.senderid[1]));
+        } else {
+            completeActionString = strings.formatString(action, strings.formatString(strings.userAndUser, this.notification.senderid[0], strings.formatString(strings.others, this.notification.senderid.length - 1)));
         }
 
         return (
@@ -50,8 +60,8 @@ export class NotificationComponent extends React.Component {
                 </TouchableOpacity>
                 <View name={'textcontentwrapper'} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>
                     <Text name={'action'}>
-                        <Text onPress={() => this._onPressProfile(0)} style={styles.textStandardBold}>{this.notification.senderid[0]}</Text>
-                        {
+                        <Text onPress={() => this._onPressProfile(0)} style={styles.textStandardBold}>{completeActionString/*this.notification.senderid[0]*/}</Text>
+                        {/*
                             (this.notification.senderid.length > 1) &&
                             <Text style={styles.textStandardDark}> and </Text>
                         }
@@ -62,8 +72,7 @@ export class NotificationComponent extends React.Component {
                         {
                             (this.notification.senderid.length > 2) &&
                             <Text onPress={this._onPressMultipleProfiles} style={styles.textStandardBold}>{_formatNumber(this.notification.senderid.length - 1)} others</Text>
-                        }
-                        <Text style={[styles.textStandardDark]}> {action}</Text>
+                                                <Text style={[styles.textStandardDark]}> {action}</Text>*/}
                     </Text>
                     <TimeAgo name={'time'} style={styles.textSmall} time={this.notification.timestamp}/>
                 </View>

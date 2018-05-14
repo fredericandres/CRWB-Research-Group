@@ -1,10 +1,11 @@
 import React from 'react';
-import { Button, View, Text } from 'react-native';
+import {Text, View} from 'react-native';
 import {NavBarButton} from "../Components/NavBarButton";
+import strings from "../strings";
 
 export class SettingsScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
-        title: 'Settings',
+        title: strings.settings,
         headerRight: (
             <NavBarButton nav={navigation} icon={'sign-out'} screen={'SignUpLogIn'}/>
         ),

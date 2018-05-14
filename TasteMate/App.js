@@ -12,8 +12,7 @@ import {brandContrast, brandLight, brandMain} from './constants/Constants';
 import {StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
-
-// TODO: Localization
+import strings from "./strings";
 
 const styles = StyleSheet.create({
     navHeaderStyle: {
@@ -115,10 +114,10 @@ const CreateObservationStack = createStackNavigator({
 
 const TabBar = createBottomTabNavigator(
     {
-        Home: { screen: HomeStack },
-        Explore: { screen: ExploreSearchStack },
-        Notifications: { screen: NotificationsStack },
-        EatingOutList: { screen: EatingOutListStack },
+        Home: { screen: HomeStack, navigationOptions: {title: strings.home} },
+        Explore: { screen: ExploreSearchStack, navigationOptions: {title: strings.explore} },
+        Notifications: { screen: NotificationsStack, navigationOptions: {title: strings.notifications} },
+        EatingOutList: { screen: EatingOutListStack, navigationOptions: {title: strings.eatingOutList} },
     },
     {
         navigationOptions: ({ navigation }) => ({

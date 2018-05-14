@@ -4,6 +4,7 @@ import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarBu
 import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";
 import {observations} from "../MockupData";
+import strings from "../strings";
 
 export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
@@ -27,7 +28,7 @@ export class HomeScreen extends React.Component {
                 renderItem={({item}) => <ObservationComponent observation={item.value} nav={this.props.navigation}/>}
                 refreshing={false}
                 onRefresh={() => this._onRefreshPulled}
-                ListEmptyComponent={() => <Text style={styles.containerPadding}>Seems like your feed is empty. Why not follow some tastemates? </Text>}
+                ListEmptyComponent={() => <Text style={styles.containerPadding}>{strings.emptyFeed}</Text>}
                 ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
             />
         );

@@ -1,0 +1,59 @@
+import LocalizedStrings from 'react-native-localization';
+import {_getLanguageCode} from './constants/Constants';
+import moment from "moment";
+import "moment/locale/ja";
+import "moment/locale/fr";
+
+moment.locale(_getLanguageCode());
+
+// import strings from "../strings";
+
+export default strings = new LocalizedStrings({
+    en:{
+        home: 'Home',
+        explore: 'Explore',
+        notifications: 'Notifications',
+        eatingOutList: 'Eating Out List',
+        profile: 'Profile',
+        settings: 'Settings',
+        observationDetail: 'Detail',
+        createObservation: 'Create Observation',
+        signUpLogIn: 'Sign Up Log In',
+
+        emptyFeed: 'Seems like your feed is empty. Why not follow some tastemates?',
+        selectAction: 'Select an action',
+        doWithPost: 'What would you like to do with the post \"{0}\" by {1}',
+        share: 'Share',
+        edit: 'Edit',
+        delete: 'Delete',
+        cancel: 'Cancel',
+        shareQuestion: 'Where do you want to share this post?',
+        likes: 'likes',
+        shares: 'shares',
+        cutleries: 'cutleries',
+        writeComment: 'Write a comment...',
+
+        likedPicture: '{0} liked your picture.', // e.g. Lukas liked your picture.
+        sharedPicture: '{0} shared your picture.',
+        wantsToEatPicture: '{0} wants to eat your picture.',
+        startedFollowing: '{0} started following you.',
+        userAndUser: '{0} and {1}', // e.g., Tom and Susie
+        others: '{0} others', // e.g. 42 others
+
+        photos: 'Photos',
+        followers: 'Followers',
+        following: 'Following',
+        noPictures: 'This user has not added any pictures.',
+        noUsers: 'No users to display.',
+
+        close: 'Close',
+
+        foodCraving: 'What food are you craving?',
+
+    },
+    fr: {
+    },
+    ja: {
+
+    }
+});
