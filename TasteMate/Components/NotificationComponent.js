@@ -34,7 +34,7 @@ export class NotificationComponent extends React.Component {
                 action = strings.likedPicture;
                 break;
             case 'WANTTOEAT':
-                action = strings.wantsToEatPicture;
+                action = strings.addedToEatingOutPicture;
                 break;
             case 'SHARE':
                 action = strings.sharedPicture;

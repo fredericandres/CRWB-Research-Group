@@ -5,6 +5,11 @@ export const brandMain = '#ffcc66';
 export const brandContrast = '#333333';
 export const brandLight = '#999999';
 export const brandBackground = '#f2f2f2';
+export const brandMainDark ='#feb71d';
+export const brandAccent = '#6699ff';
+
+export const iconSizeStandard = 25;
+export const iconSizeSmall = 15;
 
 export function _formatNumber(number) {
     if (number < 1000) {

@@ -35,7 +35,7 @@ export default strings = new LocalizedStrings({
 
         likedPicture: '{0} liked your picture.', // e.g. Lukas liked your picture.
         sharedPicture: '{0} shared your picture.',
-        wantsToEatPicture: '{0} wants to eat your picture.',
+        addedToEatingOutPicture: '{0} added your picture to their Eating Out list.',
         startedFollowing: '{0} started following you.',
         userAndUser: '{0} and {1}', // e.g., Tom and Susie
         others: '{0} others', // e.g. 42 others
@@ -50,6 +50,18 @@ export default strings = new LocalizedStrings({
 
         foodCraving: 'What food are you craving?',
 
+        username: 'username',
+        emailAddress: 'email address',
+        location: 'location',
+        oldPassword: 'old password',
+        newPassword: 'new password',
+        newPasswordRepeat: 'new password (repeat)',
+        notifyMe: 'Notify me when...',
+        likesPicture: 'someone likes my picture',
+        addsToEatingOutPicture: 'someone adds my picture to their Eating Out list',
+        sharesPicture: 'someone shares my picture',
+        startsFollowing: 'someone starts following me',
+        saveChanges: 'Save Changes',
     },
     fr: {
     },
