@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {_navigateToScreen, brandContrast} from "../constants/Constants";
+import {_navigateToScreen, brandContrast, iconSizeStandard} from "../constants/Constants";
 import StandardStyle from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import strings from "../strings";
@@ -25,9 +25,9 @@ export class NavBarButton extends React.Component {
         let content = <Text>{text}</Text>;
         if (icon != null) {
             if (iconType === 'SimpleLineIcons') {
-                content = <SimpleLineIcons name={icon} size={25} color={brandContrast}/>;
+                content = <SimpleLineIcons name={icon} size={iconSizeStandard} color={brandContrast}/>;
             } else {
-                content = <FontAwesome name={icon} size={25} color={brandContrast}/>;
+                content = <FontAwesome name={icon} size={iconSizeStandard} color={brandContrast}/>;
             }
         } else if (image != null) {
             content = <Image/>;
@@ -57,7 +57,7 @@ export class NavBarProfileButton extends React.Component {
     render() {
         const nav = this.props.nav;
         return (
-            <NavBarButton nav={nav} screen={'MyProfile'} icon={'user'}/>
+            <NavBarButton nav={nav} screen={'MyProfile'} icon={'user-o'}/>
         );
     }
 }

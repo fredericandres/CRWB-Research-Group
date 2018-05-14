@@ -8,7 +8,7 @@ import {NotificationsScreen} from "./Screens/Notifications";
 import {ProfileScreen} from "./Screens/Profile";
 import {EatingOutListScreen} from "./Screens/EatingOutList";
 import {CreateObservationScreen} from "./Screens/CreateObservation";
-import {brandContrast, brandLight, brandMain} from './constants/Constants';
+import {brandContrast, brandLight, brandMain, iconSizeStandard} from './constants/Constants';
 import {StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
@@ -133,7 +133,7 @@ const TabBar = createBottomTabNavigator(
                 } else if (routeName === 'EatingOutList') {
                     iconName = `cutlery`;
                 }
-                return <FontAwesome name={iconName} size={25} color={tintColor} />;
+                return <FontAwesome name={iconName} size={iconSizeStandard} color={tintColor} />;
             },
         }),
         tabBarOptions: {

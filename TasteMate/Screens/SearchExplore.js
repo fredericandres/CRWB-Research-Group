@@ -2,7 +2,7 @@ import React from 'react';
 import {FlatList, TextInput, TouchableOpacity, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import styles from "../styles";
-import {brandBackground, brandContrast, brandLight, brandMain} from "../constants/Constants";
+import {brandBackground, brandContrast, brandLight, brandMain, iconSizeSmall} from "../constants/Constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import * as MockupData from "../MockupData";
@@ -42,7 +42,7 @@ export class SearchExploreScreen extends React.Component {
                                    onChangeText={this._onPressSearchButton}
                         />
                         <TouchableOpacity onPress={this._onPressSearchButton} style={styles.containerPadding}>
-                            <FontAwesome name={'search'} size={25} color={brandContrast}/>
+                            <FontAwesome name={'search'} size={iconSizeSmall} color={brandContrast}/>
                         </TouchableOpacity>
                     </View>
                 </View>

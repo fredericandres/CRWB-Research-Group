@@ -12,7 +12,15 @@ import {
     View
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {_formatNumber, _navigateToScreen, brandContrast, brandLight, brandMain} from "../constants/Constants";
+import {
+    _formatNumber,
+    _navigateToScreen,
+    brandContrast,
+    brandLight,
+    brandMain,
+    iconSizeSmall,
+    iconSizeStandard
+} from "../constants/Constants";
 import styles from "../styles";
 import BottomSheet from 'react-native-bottom-sheet';
 import {adjectives, comments} from "../MockupData";
@@ -179,7 +187,7 @@ export class ObservationComponent extends React.Component {
                         </View>
                         <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location}</Text>
                     </View>
-                    <FontAwesome name={'ellipsis-v'} size={25} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
+                    <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
                 </View>
                 <View name={'picture'} style={{flexDirection:'row'}}>
                     <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
@@ -193,13 +201,13 @@ export class ObservationComponent extends React.Component {
                     </View>
                     <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', bottom: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
-                            <FontAwesome name={'thumbs-o-up'} size={25} color={brandContrast}/>
+                            <FontAwesome name={'thumbs-o-up'} size={iconSizeStandard} color={brandContrast}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressCutleryButton}>
-                            <FontAwesome name={'cutlery'} size={25} color={brandContrast}/>
+                            <FontAwesome name={'cutlery'} size={iconSizeStandard} color={brandContrast}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressShareButton}>
-                            <FontAwesome name={'share'} size={25} color={brandContrast}/>
+                            <FontAwesome name={'share'} size={iconSizeStandard} color={brandContrast}/>
                         </TouchableOpacity>
                     </View>
                     {!this.state.overlayIsHidden &&
@@ -226,7 +234,7 @@ export class ObservationComponent extends React.Component {
                                   <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user2.jpg')} />
                                   <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} placeholder={strings.writeComment} placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
                                   <TouchableOpacity onPress={this._onPressSendButton}>
-                                      <FontAwesome name={'send'} size={25} color={brandContrast}/>
+                                      <FontAwesome name={'send'} size={iconSizeSmall} color={brandContrast}/>
                                   </TouchableOpacity>
                               </View>
                           }
