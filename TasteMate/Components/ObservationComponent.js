@@ -223,7 +223,7 @@ export class ObservationComponent extends React.Component {
                     {/*TODO: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                     <View name={'information'} style={{flexDirection: 'row'}}>
                         <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
-                        <Text name={'details'} style={styles.textSmall}> • {_formatNumber(this.observation.likes)} {strings.likes} • {_formatNumber(this.observation.cutleries)} {strings.cutleries} • {_formatNumber(this.observation.shares)} {strings.shares}</Text>
+                        <Text name={'details'} style={styles.textSmall}> • {_formatNumber(this.observation.likes, 'LIKE')} • {_formatNumber(this.observation.cutleries, 'CUTLERY')} • {_formatNumber(this.observation.shares, 'SHARE')}</Text>
                     </View>
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}

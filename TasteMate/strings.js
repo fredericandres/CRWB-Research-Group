@@ -28,9 +28,14 @@ export default strings = new LocalizedStrings({
         delete: 'Delete',
         cancel: 'Cancel',
         shareQuestion: 'Where do you want to share this post?',
-        likes: 'likes',
-        shares: 'shares',
-        cutleries: 'cutleries',
+        likes: '{0} likes',
+        shares: '{0} shares',
+        cutleries: '{0} cutleries',
+        likesSg: '{0} like',
+        sharesSg: '{0} share',
+        cutleriesSg: '{0} cutlery',
+        thousand: '{0}k', // e.g., 1k
+        million: '{0}m',
         writeComment: 'Write a comment...',
 
         likedPicture: '{0} liked your picture.', // e.g. Lukas liked your picture.
