@@ -13,7 +13,6 @@ export const iconSizeStandard = 25;
 export const iconSizeSmall = 15;
 
 export function _formatNumber(number, type) {
-    console.log(number + ': ' + type);
     let wordString = '';
     let numberString = '';
     if (number === 1) {

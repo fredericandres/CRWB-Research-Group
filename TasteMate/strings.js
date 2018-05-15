@@ -67,6 +67,11 @@ export default strings = new LocalizedStrings({
         sharesPicture: 'someone shares my picture',
         startsFollowing: 'someone starts following me',
         saveChanges: 'Save Changes',
+
+        list: 'List',
+        map: 'Map',
+        noEatingOut: 'Seems like you have not added a dish to your list. Just click the cutlery icon to do so!'
+
     },
     fr: {
     },

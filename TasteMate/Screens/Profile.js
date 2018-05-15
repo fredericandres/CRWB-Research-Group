@@ -7,7 +7,7 @@ import * as MockupData from "../MockupData";
 import {userr, users} from "../MockupData";
 import {UserComponent} from "../Components/UserComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
-import {SegmentedControlItem} from "../Components/SegmentedControlItem";
+import {ProfileSegmentedControlItem} from "../Components/ProfileSegmentedControlItem";
 import strings from "../strings";
 
 function _toggleFollowUnfollow() {
@@ -108,15 +108,15 @@ export class ProfileScreen extends React.Component {
                         {/*TODO: Reformat numbers*/}
                         <View name={'segmentedcontrolwrapper'}
                               style={[{flexDirection: 'row'}, styles.containerPadding]}>
-                            <SegmentedControlItem name={'photos'} text={strings.photos} number='27'
-                                                  isSelected={this.state.selectedIndex === 0}
-                                                  action={this._onPressPhotos}/>
-                            <SegmentedControlItem name={'followers'} text={strings.followers}
-                                                  isSelected={this.state.selectedIndex === 1} number='200'
-                                                  action={this._onPressFollowers}/>
-                            <SegmentedControlItem name={'following'} text={strings.following}
-                                                  isSelected={this.state.selectedIndex === 2} number='31'
-                                                  action={this._onPressFollowing}/>
+                            <ProfileSegmentedControlItem name={'photos'} text={strings.photos} number='27'
+                                                         isSelected={this.state.selectedIndex === 0}
+                                                         action={this._onPressPhotos}/>
+                            <ProfileSegmentedControlItem name={'followers'} text={strings.followers}
+                                                         isSelected={this.state.selectedIndex === 1} number='200'
+                                                         action={this._onPressFollowers}/>
+                            <ProfileSegmentedControlItem name={'following'} text={strings.following}
+                                                         isSelected={this.state.selectedIndex === 2} number='31'
+                                                         action={this._onPressFollowing}/>
                         </View>
                     </View>
                     {
