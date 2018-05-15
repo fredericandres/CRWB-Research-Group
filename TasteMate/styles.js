@@ -16,6 +16,8 @@ const largeThumbnailSize = ((Dimensions.get('window').height - Header.HEIGHT - H
 const standardThumbnailSize = 40;
 const smallThumbnailSize = 25;
 
+const roundedEdges = Platform.OS === 'ios' ? 10 : 2;
+
 export default StyleSheet.create({
     containerPadding: {
         ...Platform.select({
@@ -24,7 +26,9 @@ export default StyleSheet.create({
                 margin: 2
             },
             android: {
-                padding: 6
+                //padding: 6
+                padding: 4,
+                margin: 2
             }
         }),
     },
@@ -39,6 +43,9 @@ export default StyleSheet.create({
     containerOpacityDark: {
         backgroundColor: brandContrast + opacity
     },
+    containerOpacityMain: {
+        backgroundColor: brandMain + opacity
+    },
 
     textTitleBoldDark: {
         fontSize: largeFontSize,
@@ -49,10 +56,20 @@ export default StyleSheet.create({
         fontSize: largeFontSize,
         fontWeight: bold,
     },
+    textTitleBoldLight: {
+        fontSize: largeFontSize,
+        fontWeight: bold,
+        color: brandBackground,
+    },
     textLargeBoldLight: {
         fontSize: extraLargeFontSize,
         fontWeight: bold,
         color: brandBackground,
+    },
+    textLargeBoldDark: {
+        fontSize: extraLargeFontSize,
+        fontWeight: bold,
+        color: brandContrast,
     },
     textLargeBold: {
         fontSize: extraLargeFontSize,
@@ -125,11 +142,11 @@ export default StyleSheet.create({
         color: brandContrast,
     },
     leftRoundedEdges: {
-        borderBottomLeftRadius: 10,
-        borderTopLeftRadius: 10,
+        borderBottomLeftRadius: roundedEdges,
+        borderTopLeftRadius: roundedEdges,
     },
     rightRoundedEdges: {
-        borderBottomRightRadius: 10,
-        borderTopRightRadius: 10,
+        borderBottomRightRadius: roundedEdges,
+        borderTopRightRadius: roundedEdges,
     },
 });

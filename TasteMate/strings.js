@@ -70,8 +70,17 @@ export default strings = new LocalizedStrings({
 
         list: 'List',
         map: 'Map',
-        noEatingOut: 'Seems like you have not added a dish to your list. Just click the cutlery icon to do so!'
+        noEatingOut: 'Seems like you have not added a dish to your list. Just click the cutlery icon to do so!',
 
+        welcomeTo: 'Welcome to',
+        tastemateDescription: 'the place to share your culinary experiences with others',
+        getEating: 'Let\'s get eating!',
+        signUp: 'Sign Up',
+        logIn: 'Log In',
+        password: 'password',
+        noAccount: 'Don\'t have an account yet? Sign up here!',
+        alreadyAccount: 'Already have an account? Log in here!',
+        skip: 'Skip',
     },
     fr: {
     },

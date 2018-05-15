@@ -38,19 +38,19 @@ export class SettingsScreen extends React.Component {
     }
 
     _onLikeNotificationChange(){
-        this.setState({likeNotification: !this.state.likeNotification})
+        this.setState({likeNotification: !this.state.likeNotification});
     }
 
     _onWantToEatNotificationChange(){
-        this.setState({wantToEatNotification: !this.state.wantToEatNotification})
+        this.setState({wantToEatNotification: !this.state.wantToEatNotification});
     }
 
     _onShareNotificationChange(){
-        this.setState({shareNotification: !this.state.shareNotification})
+        this.setState({shareNotification: !this.state.shareNotification});
     }
 
     _onFollowNotificationChange(){
-        this.setState({followNotification: !this.state.followNotification})
+        this.setState({followNotification: !this.state.followNotification});
     }
 
     _onPressSave() {
@@ -80,7 +80,6 @@ export class SettingsScreen extends React.Component {
                     </View>
                 </View>
                 <View name={'saveButtonWrapper'} style={[styles.containerPadding, {flex: 1}]}>
-
                     <Button name={'saveChangesButton'} onPress={this._onPressSave} title={strings.saveChanges} color={brandAccent}/>
                 </View>
             </ScrollView>

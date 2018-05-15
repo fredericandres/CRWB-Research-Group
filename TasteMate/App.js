@@ -9,10 +9,12 @@ import {ProfileScreen} from "./Screens/Profile";
 import {EatingOutListScreen} from "./Screens/EatingOutList";
 import {CreateObservationScreen} from "./Screens/CreateObservation";
 import {brandContrast, brandLight, brandMain, iconSizeStandard} from './constants/Constants';
-import {StyleSheet} from "react-native";
+import {StatusBar, StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
 import strings from "./strings";
+
+StatusBar.setHidden(false);
 
 const styles = StyleSheet.create({
     navHeaderStyle: {

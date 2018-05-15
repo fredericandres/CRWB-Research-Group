@@ -57,6 +57,7 @@ export class NavBarProfileButton extends React.Component {
     render() {
         const nav = this.props.nav;
         return (
+            // TODO: only go to my profile if logged in, else go to signup/login
             <NavBarButton nav={nav} screen={'MyProfile'} icon={'user-o'}/>
         );
     }

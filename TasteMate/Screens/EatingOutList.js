@@ -41,9 +41,6 @@ export class EatingOutListScreen extends React.Component {
         });
     }
 
-    _keyExtractor = (item, index) => item.key;
-
-
     render() {
         return (
             <View style={{ flex: 1 }}>
