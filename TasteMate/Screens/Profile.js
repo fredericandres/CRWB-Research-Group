@@ -123,7 +123,7 @@ export class ProfileScreen extends React.Component {
                         this.state.selectedIndex === 0 &&
                         <FlatList
                             style={styles.containerPadding}
-                            ListEmptyComponent={() => <Text style={styles.containerPadding}>{strings.noPictures}</Text>}
+                            ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noPictures}</Text>}
                             data={MockupData.observations}
                             renderItem={({item}) => <ObservationExploreComponent observation={item.value}
                                                                                  nav={this.props.navigation}/>}
@@ -135,7 +135,7 @@ export class ProfileScreen extends React.Component {
                         <FlatList
                             style={styles.containerPadding}
                             data={users}
-                            ListEmptyComponent={() => <Text style={styles.containerPadding}>{strings.noUsers}</Text>}
+                            ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noUsers}</Text>}
                             ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                             renderItem={({item}) => <UserComponent user={item.value} nav={this.props.navigation}/>}
                         />

@@ -58,7 +58,7 @@ export class EatingOutListScreen extends React.Component {
                     <FlatList
                         data={eatingOutObservations}
                         renderItem={({item}) => <EatingOutListComponent key={item.key} observationList={item.value} nav={this.props.navigation}/>}
-                        ListEmptyComponent={() => <Text style={styles.containerPadding}>{strings.noEatingOut}</Text>}
+                        ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noEatingOut}</Text>}
                         ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                     />
                 }

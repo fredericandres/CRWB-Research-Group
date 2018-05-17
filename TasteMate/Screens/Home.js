@@ -28,7 +28,7 @@ export class HomeScreen extends React.Component {
                 renderItem={({item}) => <ObservationComponent observation={item.value} nav={this.props.navigation}/>}
                 refreshing={false}
                 onRefresh={() => this._onRefreshPulled}
-                ListEmptyComponent={() => <Text style={styles.containerPadding}>{strings.emptyFeed}</Text>}
+                ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.emptyFeed}</Text>}
                 ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
             />
         );
