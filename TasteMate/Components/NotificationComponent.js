@@ -2,7 +2,7 @@ import React from "react";
 import styles from "../styles";
 import {Image, Text, TouchableOpacity, View} from "react-native";
 import TimeAgo from 'react-native-timeago'
-import {_formatNumber, _navigateToScreen, brandMain} from "../constants/Constants";
+import {_navigateToScreen, brandMain} from "../constants/Constants";
 import strings from "../strings";
 
 export class NotificationComponent extends React.Component {

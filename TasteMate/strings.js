@@ -81,6 +81,16 @@ export default strings = new LocalizedStrings({
         noAccount: 'Don\'t have an account yet? Sign up here!',
         alreadyAccount: 'Already have an account? Log in here!',
         skip: 'Skip',
+
+        next:'Next',
+        previous: 'Previous',
+        publish: 'Publish',
+        description: 'description',
+        dishname: 'dish name',
+        price: 'price',
+        rateExperience: 'How would you rate your overall experience?',
+        currency: 'Currency',
+        selectCurrency: 'Please select the currency of the price you stated.',
     },
     fr: {
     },

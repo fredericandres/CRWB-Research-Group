@@ -19,7 +19,8 @@ import {
     brandLight,
     brandMain,
     iconSizeSmall,
-    iconSizeStandard
+    iconSizeStandard,
+    SmileysEnum
 } from "../constants/Constants";
 import styles from "../styles";
 import BottomSheet from 'react-native-bottom-sheet';
@@ -104,10 +105,8 @@ export class ObservationComponent extends React.Component {
 
     _onPressMenuDetailButton(buttonIndex) {
         if (buttonIndex === 0) {
-            this._onPressShareButton();
+            this.props.nav.navigate('CreateObservation', {observation: this.observation});
         } else if (buttonIndex === 1) {
-            this.props.nav.navigate('CreateObservation', {item: this.observation});
-        } else if (buttonIndex === 2) {
             // TODO: Delete obs
         }
     }
@@ -165,8 +164,6 @@ export class ObservationComponent extends React.Component {
     }
 
     render() {
-        const SmileysEnum = Object.freeze({1:'😖', 2:'😟', 3:'🙁', 4:'😕', 5:'😶', 6:'🙂', 7:'😊', 8:'😄', 9:'😍'});
-
         let adjs = '';
         for (let i = 0; i < adjectives.length; i++) {
             adjs = adjs + '#' + adjectives[i].value.adjective + ' ';

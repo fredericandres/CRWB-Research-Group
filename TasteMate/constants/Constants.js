@@ -12,6 +12,8 @@ export const brandAccent = '#6699ff';
 export const iconSizeStandard = 25;
 export const iconSizeSmall = 15;
 
+export const SmileysEnum = Object.freeze({1:'😖', 2:'😟', 3:'🙁', 4:'😕', 5:'😶', 6:'🙂', 7:'😊', 8:'😄', 9:'😍'});
+
 export function _formatNumber(number, type) {
     let wordString = '';
     let numberString = '';
@@ -55,8 +57,8 @@ export function _navigateToScreen(screen, navigation, user, myProfile) {
     const pushAction = StackActions.push({
         routeName: screen,
         params: {
-            myProfile: myProfile,
-            user: user,
+            myProfile: myProfile ? myProfile : undefined,
+            user: user ? user : undefined,
         },
     });
     navigation.dispatch(pushAction);
