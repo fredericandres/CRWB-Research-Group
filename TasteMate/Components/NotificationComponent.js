@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "../styles";
-import {Image, Text, TouchableOpacity, View} from "react-native";
+import {Image, Text, TouchableOpacity, View, Animated} from "react-native";
 import TimeAgo from 'react-native-timeago'
-import {_navigateToScreen, brandMain} from "../constants/Constants";
+import {_navigateToScreen, brandAccent, brandMain} from "../constants/Constants";
 import strings from "../strings";
 
 export class NotificationComponent extends React.Component {
@@ -11,9 +11,20 @@ export class NotificationComponent extends React.Component {
         this._onPressProfile = this._onPressProfile.bind(this);
         this._onPresObservation = this._onPresObservation.bind(this);
         this.notification = this.props.notification;
+        this.state = {
+            fadeAnim: new Animated.Value(1)
+        }
     }
 
-    // TODO: onclick//view -> mark as read
+    componentDidMount() {
+        Animated.timing(                  // Animate over time
+            this.state.fadeAnim,            // The animated value to drive
+            {
+                toValue: 0,                   // Animate to opacity: 1 (opaque)
+                duration: 10000,              // Make it take a while
+            }
+        ).start();
+    }
 
     _onPressMultipleProfiles() {
         // TODO: When more than 2 people --> clicking on names leads to a list of users
@@ -54,7 +65,8 @@ export class NotificationComponent extends React.Component {
         }
 
         return (
-            <TouchableOpacity onPress={this.notification.type === 'FOLLOW' ? this._onPressProfile : this._onPresObservation} style={[{flexDirection:'row'}, !this.notification.read ? {backgroundColor:brandMain} : {}]}>
+            <TouchableOpacity onPress={this.notification.type === 'FOLLOW' ? this._onPressProfile : this._onPresObservation} style={[{flexDirection:'row'}]}>
+                {!this.notification.read && <Animated.View name={'fadingbackground'} style={{position: 'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:brandMain, opacity: this.state.fadeAnim}}/>}
                 <TouchableOpacity name={'userpic'} onPress={this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles} style={[styles.containerPadding, {flexDirection:'column', justifyContent:'center'}]}>
                     <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../user2.jpg')} style={styles.roundProfile}/>
                 </TouchableOpacity>
