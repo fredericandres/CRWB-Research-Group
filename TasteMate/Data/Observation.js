@@ -12,8 +12,10 @@ export default class Observation {
     rating;
     vocabulary;
     timestamp;
+    googleMapsId;
+    address;
 
-    constructor(userid, observationid, dishname, mypoc, mypoccorrector, location, description, image, price, currency, rating, vocabulary, timestamp) {
+    constructor(userid, observationid, dishname, mypoc, mypoccorrector, location, description, image, price, currency, rating, vocabulary, timestamp, googleMapsId, address) {
         this.userid = userid;
         this.observationid = observationid;
         this.dishname = dishname;
@@ -24,8 +26,10 @@ export default class Observation {
         this.image = image;
         this.price = price;
         this.currency = currency;
-        this.rating = rating;
-        this.vocabulary = vocabulary;
+        this.rating = rating ? rating : 5;
+        this.vocabulary = vocabulary ? vocabulary : {};
         this.timestamp = timestamp;
+        this.googleMapsId = googleMapsId;
+        this.address = address;
     }
 }

@@ -1,12 +1,11 @@
 import React from 'react';
-import {FlatList, TextInput, TouchableOpacity, View} from 'react-native';
+import {FlatList, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import styles from "../styles";
-import {brandBackground, brandContrast, brandLight, brandMain, iconSizeSmall} from "../constants/Constants";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import * as MockupData from "../MockupData";
 import strings from "../strings";
+import {SearchBar} from "../Components/SearchBar";
 
 const numColumns = 3;
 
@@ -28,24 +27,7 @@ export class SearchExploreScreen extends React.Component {
     render() {
         return (
             <View name={'wrapper'} >
-                <View name={'searchbar'} style={{backgroundColor: brandMain}}>
-                    <View style={[styles.containerPadding, {flexDirection:'row', alignItems: 'center'}]}>
-                        <TextInput style={[styles.textStandardDark, styles.containerPadding, {backgroundColor: brandBackground, flex: 1}]}
-                                   placeholder={strings.foodCraving}
-                                   placeholderTextColor={brandLight}
-                                   returnKeyType={'search'}
-                                   keyboardType={'default'}
-                                   clearButtonMode={'always'}
-                                   underlineColorAndroid={brandBackground}
-                                   selectionColor={brandContrast}
-                                   onSubmitEditing={this._onPressSendButton}
-                                   onChangeText={this._onPressSearchButton}
-                        />
-                        <TouchableOpacity onPress={this._onPressSearchButton} style={styles.containerPadding}>
-                            <FontAwesome name={'search'} size={iconSizeSmall} color={brandContrast}/>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <SearchBar placeholder={strings.foodCraving} onSubmitEditing={this._onPressSearchButton} onChangeText={this._onPressSearchButton} onPress={this._onPressSearchButton}/>
                 <FlatList
                     style={styles.containerPadding}
                     data={MockupData.observations}

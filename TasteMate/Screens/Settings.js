@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, ScrollView, Text, View} from 'react-native';
 import {NavBarButton} from "../Components/NavBarButton";
 import strings from "../strings";
-import {SettingsTextInputComponent} from "../Components/SettingsTextInputComponent";
+import {TextInputComponent} from "../Components/TextInputComponent";
 import {brandAccent, brandBackground} from "../constants/Constants";
 import styles from "../styles";
 import {SettingsSwitchComponent} from "../Components/SettingsSwitchComponent";
@@ -61,12 +61,12 @@ export class SettingsScreen extends React.Component {
         return (
             <ScrollView style={[{flex: 1}]}>
                 <View name={'inputWrapper'} style={styles.containerPadding}>
-                    <SettingsTextInputComponent placeholder={strings.username} value={this.state.username} onChangeText={(text) => this.setState({username: text})} icon={'user'} keyboardType={'default'} />
-                    <SettingsTextInputComponent placeholder={strings.emailAddress} value={this.state.email} onChangeText={(text) => this.setState({email: text})} icon={'envelope'} keyboardType={'email-address'} />
-                    <SettingsTextInputComponent placeholder={strings.location} value={this.state.location} onChangeText={(text) => this.setState({location: text})}  icon={'location-arrow'} keyboardType={'default'} />
-                    <SettingsTextInputComponent placeholder={strings.oldPassword} icon={'lock'} onChangeText={(text) => this.setState({oldPassword: text})} keyboardType={'default'} secureTextEntry={true} />
-                    <SettingsTextInputComponent placeholder={strings.newPassword} icon={'lock'} onChangeText={(text) => this.setState({newPassword: text})} keyboardType={'default'} secureTextEntry={true} />
-                    <SettingsTextInputComponent placeholder={strings.newPasswordRepeat} icon={'lock'} onChangeText={(text) => this.setState({newPasswordRepeat: text})} keyboardType={'default'} secureTextEntry={true} />
+                    <TextInputComponent placeholder={strings.username} value={this.state.username} onChangeText={(text) => this.setState({username: text})} icon={'user'} keyboardType={'default'} />
+                    <TextInputComponent placeholder={strings.emailAddress} value={this.state.email} onChangeText={(text) => this.setState({email: text})} icon={'envelope'} keyboardType={'email-address'} />
+                    <TextInputComponent placeholder={strings.location} value={this.state.location} onChangeText={(text) => this.setState({location: text})} icon={'location-arrow'} keyboardType={'default'} />
+                    <TextInputComponent placeholder={strings.oldPassword} icon={'lock'} onChangeText={(text) => this.setState({oldPassword: text})} keyboardType={'default'} secureTextEntry={true} />
+                    <TextInputComponent placeholder={strings.newPassword} icon={'lock'} onChangeText={(text) => this.setState({newPassword: text})} keyboardType={'default'} secureTextEntry={true} />
+                    <TextInputComponent placeholder={strings.newPasswordRepeat} icon={'lock'} onChangeText={(text) => this.setState({newPasswordRepeat: text})} keyboardType={'default'} secureTextEntry={true} />
                 </View>
                 <View name={'switchWrapper'} style={styles.containerPadding}>
                     <View style={[{flex: 1, backgroundColor:brandBackground}, styles.rightRoundedEdges, styles.leftRoundedEdges]}>

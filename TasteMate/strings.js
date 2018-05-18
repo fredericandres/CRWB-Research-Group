@@ -91,6 +91,8 @@ export default strings = new LocalizedStrings({
         rateExperience: 'How would you rate your overall experience?',
         currency: 'Currency',
         selectCurrency: 'Please select the currency of the price you stated.',
+        searchVocabulary: 'What was the taste, texture, and odor of the dish?',
+        noLocationResults: 'No matching location found, please enter more information.',
     },
     fr: {
     },

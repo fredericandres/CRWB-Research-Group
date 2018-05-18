@@ -13,6 +13,7 @@ export const iconSizeStandard = 25;
 export const iconSizeSmall = 15;
 
 export const SmileysEnum = Object.freeze({1:'😖', 2:'😟', 3:'🙁', 4:'😕', 5:'😶', 6:'🙂', 7:'😊', 8:'😄', 9:'😍'});
+export const VocabEnum = Object.freeze({TASTE:1, TEXTURE:2, ODOR:3});
 
 export function _formatNumber(number, type) {
     let wordString = '';

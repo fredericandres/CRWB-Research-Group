@@ -4,7 +4,7 @@ import {brandBackground, brandContrast, brandLight, brandMain, iconSizeStandard}
 import {TextInput, View} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-export class SettingsTextInputComponent extends React.Component {
+export class TextInputComponent extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -20,7 +20,7 @@ export class SettingsTextInputComponent extends React.Component {
                                placeholder={this.props.placeholder}
                                value={this.props.value}
                                placeholderTextColor={brandLight}
-                               returnKeyType={'done'}
+                               returnKeyType={this.props.returnKeyType ? this.props.returnKeyType: 'done'}
                                keyboardType={this.props.keyboardType}
                                clearButtonMode={'while-editing'}
                                underlineColorAndroid={brandBackground}
@@ -28,6 +28,7 @@ export class SettingsTextInputComponent extends React.Component {
                                secureTextEntry={this.props.secureTextEntry}
                                onChangeText={this.props.onChangeText}
                                multiline={this.props.multiline}
+                               onEndEditing={this.props.onEndEditing}
                     />
                 </View>
             </View>

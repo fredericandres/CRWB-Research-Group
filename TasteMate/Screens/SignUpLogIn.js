@@ -3,7 +3,7 @@ import {ImageBackground, StatusBar, Text, TouchableOpacity, View} from 'react-na
 import strings from "../strings";
 import styles from "../styles";
 import {brandAccent} from "../constants/Constants";
-import {SettingsTextInputComponent} from "../Components/SettingsTextInputComponent";
+import {TextInputComponent} from "../Components/TextInputComponent";
 
 export class SignUpLogInScreen extends React.Component {
     static navigationOptions = {
@@ -72,10 +72,10 @@ export class SignUpLogInScreen extends React.Component {
                     <View style={{flex: 1}}/>
                 </View>
                 <View name={'inputWrapper'} style={[styles.containerPadding, {flex: 1}]}>
-                    {this.state.signUpActive && <SettingsTextInputComponent placeholder={strings.username} value={this.state.username} onChangeText={(text) => this.setState({username: text})} icon={'user'} keyboardType={'default'} />}
-                    <SettingsTextInputComponent placeholder={strings.emailAddress} value={this.state.email} onChangeText={(text) => this.setState({email: text})} icon={'envelope'} keyboardType={'email-address'} />
-                    <SettingsTextInputComponent placeholder={strings.password} icon={'lock'} onChangeText={(text) => this.setState({password: text})} keyboardType={'default'} secureTextEntry={true} />
-                    {this.state.signUpActive && <SettingsTextInputComponent placeholder={strings.location} value={this.state.location} onChangeText={(text) => this.setState({location: text})}  icon={'location-arrow'} keyboardType={'default'} />}
+                    {this.state.signUpActive && <TextInputComponent placeholder={strings.username} value={this.state.username} onChangeText={(text) => this.setState({username: text})} icon={'user'} keyboardType={'default'} />}
+                    <TextInputComponent placeholder={strings.emailAddress} value={this.state.email} onChangeText={(text) => this.setState({email: text})} icon={'envelope'} keyboardType={'email-address'} />
+                    <TextInputComponent placeholder={strings.password} icon={'lock'} onChangeText={(text) => this.setState({password: text})} keyboardType={'default'} secureTextEntry={true} />
+                    {this.state.signUpActive && <TextInputComponent placeholder={strings.location} value={this.state.location} onChangeText={(text) => this.setState({location: text})} icon={'location-arrow'} keyboardType={'default'} />}
                 </View>
                 <View style={{flex: 1, flexDirection: 'column'}}>
                     <View style={{flex: 1}}/>
