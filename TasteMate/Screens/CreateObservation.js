@@ -8,10 +8,10 @@ import {
     brandAccent,
     brandBackground,
     brandContrast,
-    googleApiKey,
     iconSizeStandard,
     SmileysEnum
 } from "../constants/Constants";
+import {googleApiKey} from "../constants/GoogleApiKey";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import {allCurrencies} from "../constants/Currencies";
@@ -95,11 +95,9 @@ export class CreateObservationScreen extends React.Component {
 
     _onSubmitSearch() {
         let googleUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' + encodeURI(this.state.locationText) + '&key=' + googleApiKey;
-        console.log(googleUrl);
         fetch(googleUrl)
             .then((response) => response.json())
             .then((responseJson) => {
-                console.log(responseJson)
                 this.setState({locationResults: responseJson.results});
             })
             .catch((error) => {
@@ -251,7 +249,6 @@ export class CreateObservationScreen extends React.Component {
                             />
                         </View>
                     }
-
                 </ScrollView>
                 <View name={'interactionButtons'} style={[styles.containerPadding, {flexDirection: 'row', }]}>
                     <View name={'previousButtonWrapper'} style={ {flex: 1}}>
