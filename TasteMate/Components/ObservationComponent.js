@@ -20,7 +20,7 @@ import {
     brandMain,
     iconSizeSmall,
     iconSizeStandard,
-    SmileysEnum
+    EmojiEnum
 } from "../constants/Constants";
 import styles from "../styles";
 import BottomSheet from 'react-native-bottom-sheet';
@@ -191,7 +191,7 @@ export class ObservationComponent extends React.Component {
                         <Image name={'image'} resizeMode={'contain'} source={require('../carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
                     </TouchableOpacity>
                     <View style={[styles.containerOpacity, {position: 'absolute'}]}>
-                        <Text name={'smiley'} style={[styles.textTitleBoldDark, styles.containerPadding]}>{SmileysEnum[this.observation.rating]}</Text>
+                        <Text name={'smiley'} style={[styles.textTitleBoldDark, styles.containerPadding]}>{EmojiEnum[this.observation.rating]}</Text>
                     </View>
                     <View style={[styles.containerOpacity, {position: 'absolute', right:0, flexWrap:'wrap'}]}>
                         <Text name={'price'} style={[styles.textTitleBoldDark, styles.containerPadding]}>{this.observation.currency} {this.observation.price}</Text>

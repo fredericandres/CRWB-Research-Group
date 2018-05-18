@@ -1,16 +1,10 @@
 import React from 'react';
-import {Alert, FlatList, Picker, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Picker, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {NavBarCloseButton} from "../Components/NavBarButton";
 import Observation from "../Data/Observation";
 import strings from "../strings";
 import styles from "../styles";
-import {
-    brandAccent,
-    brandBackground,
-    brandContrast,
-    iconSizeStandard,
-    SmileysEnum
-} from "../constants/Constants";
+import {brandAccent, brandBackground, brandContrast, iconSizeStandard, EmojiEnum} from "../constants/Constants";
 import {googleApiKey} from "../constants/GoogleApiKey";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {TextInputComponent} from "../Components/TextInputComponent";
@@ -160,7 +154,7 @@ export class CreateObservationScreen extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1 }}>
                 <ScrollView name={'content'} style={{flex: 1}}>
                     {
                         this.state.activePageIndex === 0 &&
@@ -183,9 +177,9 @@ export class CreateObservationScreen extends React.Component {
                                 <Text style={[styles.textStandardDark, styles.containerPadding]}>{strings.rateExperience}</Text>
                                 <View style={[{flexDirection: 'row', flex: 1, flexWrap: 'wrap', justifyContent: 'center'}]}>
                                     {
-                                        Object.keys(SmileysEnum).map(index => (
+                                        Object.keys(EmojiEnum).map(index => (
                                             <TouchableOpacity style={{justifyContent: 'center'}} key={index} onPress={() => this._onPressSmiley(parseInt(index, 10))}>
-                                                <Text style={{fontSize: this.state.observation.rating === parseInt(index, 10) ? 40 : 32, color: brandContrast}}>{SmileysEnum[index]}</Text>
+                                                <Text style={{fontSize: this.state.observation.rating === parseInt(index, 10) ? 40 : 32, color: brandContrast}}>{EmojiEnum[index]}</Text>
                                             </TouchableOpacity>
                                         ))
                                     }
@@ -197,18 +191,18 @@ export class CreateObservationScreen extends React.Component {
                             {
                                 this.state.locationResults &&
                                 <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
-                                <FlatList
-                                    name={'locationresults'}
-                                    data={this.state.locationResults}
-                                    keyExtractor={this._locationResultKeyExtractor}
-                                    renderItem={({item}) =>
-                                        <TouchableOpacity style={[styles.containerPadding, {flex:1, flexDirection:'column'}]} onPress={() => this._onPressLocationResult(item)}>
-                                            <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.name}</Text>
-                                            {item.formatted_address && <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.formatted_address}</Text>}
-                                        </TouchableOpacity>
-                                    }
-                                    ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noLocationResults}</Text>}
-                                />
+                                    <FlatList
+                                        name={'locationresults'}
+                                        data={this.state.locationResults}
+                                        keyExtractor={this._locationResultKeyExtractor}
+                                        renderItem={({item}) =>
+                                            <TouchableOpacity style={[styles.containerPadding, {flex:1, flexDirection:'column'}]} onPress={() => this._onPressLocationResult(item)}>
+                                                <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.name}</Text>
+                                                {item.formatted_address && <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.formatted_address}</Text>}
+                                            </TouchableOpacity>
+                                        }
+                                        ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noLocationResults}</Text>}
+                                    />
                                 </View>
                             }
                             <TextInputComponent placeholder={strings.price} value={this.state.observation.price} onChangeText={(text) => this._onUpdatePrice(text)} icon={'money'} keyboardType={'numeric'} style={{flex:1}}/>
@@ -252,7 +246,7 @@ export class CreateObservationScreen extends React.Component {
                 </ScrollView>
                 <View name={'interactionButtons'} style={[styles.containerPadding, {flexDirection: 'row', }]}>
                     <View name={'previousButtonWrapper'} style={ {flex: 1}}>
-                        <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{backgroundColor:brandBackground, alignItems:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
+                        <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:brandBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
                             <Text style={[styles.textTitleDark, styles.containerPadding]}>{this.state.activePageIndex === 0 ? strings.cancel: strings.previous}</Text>
                         </TouchableOpacity>
                     </View>
@@ -262,7 +256,7 @@ export class CreateObservationScreen extends React.Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 }

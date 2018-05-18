@@ -76,6 +76,7 @@ export class SignUpLogInScreen extends React.Component {
                     <TextInputComponent placeholder={strings.emailAddress} value={this.state.email} onChangeText={(text) => this.setState({email: text})} icon={'envelope'} keyboardType={'email-address'} />
                     <TextInputComponent placeholder={strings.password} icon={'lock'} onChangeText={(text) => this.setState({password: text})} keyboardType={'default'} secureTextEntry={true} />
                     {this.state.signUpActive && <TextInputComponent placeholder={strings.location} value={this.state.location} onChangeText={(text) => this.setState({location: text})} icon={'location-arrow'} keyboardType={'default'} />}
+                    {!this.state.signUpActive && <View style={{flex:2}}/>}
                 </View>
                 <View style={{flex: 1, flexDirection: 'column'}}>
                     <View style={{flex: 1}}/>
