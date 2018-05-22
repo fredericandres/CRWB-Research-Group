@@ -93,6 +93,13 @@ export default strings = new LocalizedStrings({
         selectCurrency: 'Please select the currency of the price you stated.',
         searchVocabulary: 'What was the taste, texture, and odor of the dish?',
         noLocationResults: 'No matching location found, please enter more information.',
+        yes: 'Yes',
+        no: 'No',
+        openSettings: 'Open Settings',
+        accessCameraQuestion: 'May we access your camera?',
+        accessCameraExplanation: 'We need access so you can take and share pictures of your food',
+        accessPhotoQuestion: 'May we access your photo roll?',
+        accessPhotoExplanation: 'We need access so you can select and share pictures of your food',
     },
     fr: {
     },

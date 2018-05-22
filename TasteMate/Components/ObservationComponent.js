@@ -240,4 +240,4 @@ export class ObservationComponent extends React.Component {
         );
     }
 }
-// TODO: 3+ comments
+// TODO: Hide comments if more than 2

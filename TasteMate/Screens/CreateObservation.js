@@ -1,10 +1,10 @@
 import React from 'react';
-import {FlatList, Picker, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, FlatList, Picker, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {NavBarCloseButton} from "../Components/NavBarButton";
 import Observation from "../Data/Observation";
 import strings from "../strings";
 import styles from "../styles";
-import {brandAccent, brandBackground, brandContrast, iconSizeStandard, EmojiEnum} from "../constants/Constants";
+import {brandAccent, brandBackground, brandContrast, EmojiEnum, iconSizeStandard} from "../constants/Constants";
 import {googleApiKey} from "../constants/GoogleApiKey";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {TextInputComponent} from "../Components/TextInputComponent";
@@ -13,6 +13,7 @@ import {SearchBar} from "../Components/SearchBar";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {SettingsSwitchComponent} from "../Components/SettingsSwitchComponent";
 import {allVocabulary} from "../constants/Vocabulary";
+import Permissions from 'react-native-permissions'
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -37,6 +38,10 @@ export class CreateObservationScreen extends React.Component {
         this._onPressSmiley = this._onPressSmiley.bind(this);
         this._onCheckBoxChanged = this._onCheckBoxChanged.bind(this);
         this._onSubmitSearch = this._onSubmitSearch.bind(this);
+        this._onPressCameraButton = this._onPressCameraButton.bind(this);
+        this._onPressPhotoButton = this._onPressPhotoButton.bind(this);
+        this._requestPermission = this._requestPermission.bind(this);
+        this._alertForPermission = this._alertForPermission.bind(this);
 
         const edit = this.props.navigation.state.params && this.props.navigation.state.params.observation;
         this.state = {
@@ -44,6 +49,76 @@ export class CreateObservationScreen extends React.Component {
             activePageIndex: 0,
             locationText: edit ? (this.props.navigation.state.params.observation.location ? this.props.navigation.state.params.observation.location : '') + (this.props.navigation.state.params.observation.address ? ', ' + this.props.navigation.state.params.observation.address : '') : '',
         };
+    }
+
+    componentDidMount() {
+        Permissions.checkMultiple(['camera', 'photo']).then(response => {
+            this.setState({
+                // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+                cameraPermission: response.camera,
+                photoPermission: response.photo,
+            })
+        })
+    }
+
+    _requestPermission(type, successAction){
+        Permissions.request(type).then(response => {
+            if (type === 'camera') {
+                this.setState({ cameraPermission: response });
+            } else if (type === 'photo') {
+                this.setState({ photoPermission: response });
+            }
+
+            if (response === 'authorized') {
+                successAction();
+            }
+        })
+    }
+
+    _alertForPermission(type, question, explanation, action) {
+        const permState = type === 'camera' ? this.state.cameraPermission : this.state.photoPermission;
+        Alert.alert(
+            question,
+            explanation,
+            [
+                {
+                    text: strings.no,
+                    onPress: () => console.log('Permission denied'),
+                    style: 'cancel',
+                },
+                permState === 'undetermined'
+                    ? { text: strings.yes, onPress: action }
+                    : Permissions.canOpenSettings() ? { text: strings.openSettings, onPress: Permissions.openSettings } : { text: strings.openSettings, onPress: Permissions.openSettings },
+            ],
+        )
+    }
+
+    _onPressCameraButton(){
+        if (this.state.cameraPermission !== 'authorized') {
+            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, () => this._requestPermission('camera', this._onAuthorizedCamera));
+        } else {
+            this._onAuthorizedCamera();
+        }
+    }
+
+    _onPressPhotoButton(){
+        if (this.state.photoPermission !== 'authorized') {
+            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, () => this._requestPermission('photo', this._onAuthorizedPhoto));
+        } else {
+            this._onAuthorizedPhoto();
+        }
+    }
+
+    _onAuthorizedCamera() {
+        // TODO: Open camera module
+        // TODO: Take & save pic
+        // TODO: Send pic to myPoc
+    }
+
+    _onAuthorizedPhoto() {
+        // TODO: Open camera roll
+        // TODO: Select pic
+        // TODO: Send pic to myPoc
     }
 
     _onPressNext() {
@@ -141,7 +216,7 @@ export class CreateObservationScreen extends React.Component {
     }
 
     _onPressSearchButton(search) {
-        // TODO
+        // TODO filter items
     }
 
     _onCheckBoxChanged(id) {
@@ -159,7 +234,12 @@ export class CreateObservationScreen extends React.Component {
                     {
                         this.state.activePageIndex === 0 &&
                         <View>
-                            <Text>Create Observation Screen: A {this.state.observation.dishname}</Text>
+                            <TouchableOpacity name={'camerabutton'} onPress={this._onPressCameraButton} style={[{backgroundColor:brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges, styles.leftRoundedEdges]}>
+                                <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>Take a picture</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity name={'photobutton'} onPress={this._onPressPhotoButton} style={[{backgroundColor:brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges, styles.leftRoundedEdges]}>
+                                <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>Select from photos</Text>
+                            </TouchableOpacity>
                         </View>
                     }
                     {

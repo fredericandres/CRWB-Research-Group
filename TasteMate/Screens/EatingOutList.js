@@ -28,7 +28,6 @@ export class EatingOutListScreen extends React.Component {
     }
 
     _onPressList() {
-        // TODO
         this.setState(previousState => {
             return {selectedIndex: 0};
         });
