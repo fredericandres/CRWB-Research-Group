@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert, FlatList, Picker, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, FlatList, Picker, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {NavBarCloseButton} from "../Components/NavBarButton";
 import Observation from "../Data/Observation";
 import strings from "../strings";
@@ -75,27 +75,35 @@ export class CreateObservationScreen extends React.Component {
         })
     }
 
-    _alertForPermission(type, question, explanation, action) {
+    _alertForPermission(type, question, explanation, enable, action) {
         const permState = type === 'camera' ? this.state.cameraPermission : this.state.photoPermission;
-        Alert.alert(
-            question,
-            explanation,
-            [
-                {
-                    text: strings.no,
-                    onPress: () => console.log('Permission denied'),
-                    style: 'cancel',
-                },
-                permState === 'undetermined'
-                    ? { text: strings.yes, onPress: action }
-                    : Permissions.canOpenSettings() ? { text: strings.openSettings, onPress: Permissions.openSettings } : { text: strings.openSettings, onPress: Permissions.openSettings },
-            ],
-        )
+        if (permState === undefined || permState === 'restricted') {
+            Alert.alert(
+                strings.permissionDenied,
+                enable,
+                [{text: strings.ok}]
+            );
+        } else {
+            Alert.alert(
+                question,
+                explanation,
+                [
+                    {
+                        text: strings.no,
+                        onPress: () => console.log('Permission denied'),
+                        style: 'cancel',
+                    },
+                    permState === 'undetermined' || Platform.OS === 'android'
+                        ? {text: strings.yes, onPress: action}
+                        : {text: strings.openSettings, onPress: Permissions.openSettings},
+                ],
+            );
+        }
     }
 
     _onPressCameraButton(){
         if (this.state.cameraPermission !== 'authorized') {
-            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, () => this._requestPermission('camera', this._onAuthorizedCamera));
+            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.enableCamera, () => this._requestPermission('camera', this._onAuthorizedCamera));
         } else {
             this._onAuthorizedCamera();
         }
@@ -103,7 +111,7 @@ export class CreateObservationScreen extends React.Component {
 
     _onPressPhotoButton(){
         if (this.state.photoPermission !== 'authorized') {
-            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, () => this._requestPermission('photo', this._onAuthorizedPhoto));
+            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.enablePhoto, () => this._requestPermission('photo', this._onAuthorizedPhoto));
         } else {
             this._onAuthorizedPhoto();
         }
