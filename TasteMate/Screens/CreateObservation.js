@@ -1,10 +1,30 @@
 import React from 'react';
-import {Alert, FlatList, Picker, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+    Alert,
+    CameraRoll,
+    FlatList,
+    Image,
+    Picker,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import {NavBarCloseButton} from "../Components/NavBarButton";
 import Observation from "../Data/Observation";
 import strings from "../strings";
 import styles from "../styles";
-import {brandAccent, brandBackground, brandContrast, EmojiEnum, iconSizeStandard} from "../constants/Constants";
+import {
+    brandAccent,
+    brandBackground,
+    brandContrast,
+    brandMain,
+    EmojiEnum,
+    iconSizeLarge,
+    iconSizeStandard
+} from "../constants/Constants";
 import {googleApiKey} from "../constants/GoogleApiKey";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {TextInputComponent} from "../Components/TextInputComponent";
@@ -14,6 +34,9 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {SettingsSwitchComponent} from "../Components/SettingsSwitchComponent";
 import {allVocabulary} from "../constants/Vocabulary";
 import Permissions from 'react-native-permissions'
+import {RNCamera} from 'react-native-camera';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -29,27 +52,53 @@ export class CreateObservationScreen extends React.Component {
 
         this._onPressNext = this._onPressNext.bind(this);
         this._onPressPrevious = this._onPressPrevious.bind(this);
-        this._onUpdateDishname = this._onUpdateDishname.bind(this);
+
+        this._requestPermission = this._requestPermission.bind(this);
+        this._alertForPermission = this._alertForPermission.bind(this);
+
         this._onUpdateDescription = this._onUpdateDescription.bind(this);
+        this._onPressSmiley = this._onPressSmiley.bind(this);
+        this._onUpdateDishname = this._onUpdateDishname.bind(this);
         this._onUpdateLocation = this._onUpdateLocation.bind(this);
         this._onUpdateMypoc = this._onUpdateMypoc.bind(this);
         this._onUpdatePrice = this._onUpdatePrice.bind(this);
         this._onUpdateCurrency = this._onUpdateCurrency.bind(this);
-        this._onPressSmiley = this._onPressSmiley.bind(this);
+
         this._onCheckBoxChanged = this._onCheckBoxChanged.bind(this);
         this._onSubmitSearch = this._onSubmitSearch.bind(this);
-        this._onPressCameraButton = this._onPressCameraButton.bind(this);
-        this._onPressPhotoButton = this._onPressPhotoButton.bind(this);
-        this._requestPermission = this._requestPermission.bind(this);
-        this._alertForPermission = this._alertForPermission.bind(this);
 
         const edit = this.props.navigation.state.params && this.props.navigation.state.params.observation;
         this.state = {
             observation: edit ? this.props.navigation.state.params.observation : new Observation(),
             activePageIndex: 0,
             locationText: edit ? (this.props.navigation.state.params.observation.location ? this.props.navigation.state.params.observation.location : '') + (this.props.navigation.state.params.observation.address ? ', ' + this.props.navigation.state.params.observation.address : '') : '',
+            cameraActive: true,
+            cameraFront: true,
+            cameraFlash: true,
         };
     }
+
+    /************* NAVIGATION *************/
+
+    _onPressNext() {
+        if (this.state.activePageIndex === 2) {
+            // TODO sumbit & close
+            this.props.navigation.dismiss();
+        } else {
+            this.setState({activePageIndex: this.state.activePageIndex + 1});
+        }
+    }
+
+    _onPressPrevious() {
+        if (this.state.activePageIndex === 0) {
+            // TODO cancel & close
+            this.props.navigation.dismiss();
+        } else {
+            this.setState({activePageIndex: this.state.activePageIndex - 1});
+        }
+    }
+
+    /************* PERMISSIONS *************/
 
     componentDidMount() {
         Permissions.checkMultiple(['camera', 'photo']).then(response => {
@@ -57,21 +106,8 @@ export class CreateObservationScreen extends React.Component {
                 // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
                 cameraPermission: response.camera,
                 photoPermission: response.photo,
-            })
-        })
-    }
-
-    _requestPermission(type, successAction){
-        Permissions.request(type).then(response => {
-            if (type === 'camera') {
-                this.setState({ cameraPermission: response });
-            } else if (type === 'photo') {
-                this.setState({ photoPermission: response });
-            }
-
-            if (response === 'authorized') {
-                successAction();
-            }
+            });
+            this._onPressPermissionNeeded();
         })
     }
 
@@ -101,13 +137,58 @@ export class CreateObservationScreen extends React.Component {
         }
     }
 
-    _onPressCameraButton(){
+    _requestPermission(type, successAction){
+        Permissions.request(type).then(response => {
+            if (type === 'camera') {
+                this.setState({ cameraPermission: response });
+            } else if (type === 'photo') {
+                this.setState({ photoPermission: response });
+            }
+
+            if (response === 'authorized') {
+                successAction();
+            }
+        })
+    }
+
+    /************* CAMERA *************/
+
+    _onPressCameraButton() {
         if (this.state.cameraPermission !== 'authorized') {
-            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.enableCamera, () => this._requestPermission('camera', this._onAuthorizedCamera));
-        } else {
-            this._onAuthorizedCamera();
+            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.enableCamera, () => this._requestPermission('camera'));
+        }
+        this.setState({cameraActive: true});
+    }
+
+    _onPressPermissionNeeded() {
+        if (this.state.cameraPermission !== 'authorized') {
+            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.enableCamera, () => this._requestPermission('camera', () => console.log('Camera permission granted')));
+        }
+        if (this.state.photoPermission !== 'authorized') {
+            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.enablePhoto, () => this._requestPermission('photo', () => console.log('Photo permission granted')));
         }
     }
+
+    async takePicture() {
+        if (this.camera) {
+            const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true, mirrorImage: this.state.cameraFront};
+            const data = await this.camera.takePictureAsync(options);
+            console.log(data.uri);
+            console.log(CameraRoll.saveToCameraRoll(data.uri));
+            // TODO: Send pic to myPoc
+            // Upload pic
+        }
+    }
+
+    _onPressFlash() {
+        this.setState({ cameraFlash: !this.state.cameraFlash });
+    }
+
+    _onPressCameraSwitch() {
+        this.setState({ cameraFront: !this.state.cameraFront });
+    }
+
+    /************* CAMERA ROLL *************/
 
     _onPressPhotoButton(){
         if (this.state.photoPermission !== 'authorized') {
@@ -115,36 +196,38 @@ export class CreateObservationScreen extends React.Component {
         } else {
             this._onAuthorizedPhoto();
         }
-    }
-
-    _onAuthorizedCamera() {
-        // TODO: Open camera module
-        // TODO: Take & save pic
-        // TODO: Send pic to myPoc
+        this.setState({ cameraActive: false });
     }
 
     _onAuthorizedPhoto() {
         // TODO: Open camera roll
         // TODO: Select pic
         // TODO: Send pic to myPoc
+        // TODO: Present camera roll pics as 3 per row
+        CameraRoll.getPhotos({
+            first: 20,
+            assetType: 'Photos',
+        })
+            .then(r => {
+                this.setState({ photos: r.edges });
+            })
+            .catch((err) => {
+                console.log("Error while loading images from camera roll");
+            });
     }
 
-    _onPressNext() {
-        if (this.state.activePageIndex === 2) {
-            // TODO sumbit & close
-            this.props.navigation.dismiss();
-        } else {
-            this.setState({activePageIndex: this.state.activePageIndex + 1});
-        }
+    /************* DETAILS *************/
+
+    _onUpdateDescription(description) {
+        let obs = this.state.observation;
+        obs.description = description;
+        this._updateObservationState(obs);
     }
 
-    _onPressPrevious() {
-        if (this.state.activePageIndex === 0) {
-            // TODO cancel & close
-            this.props.navigation.dismiss();
-        } else {
-            this.setState({activePageIndex: this.state.activePageIndex - 1});
-        }
+    _onPressSmiley(index) {
+        let obs = this.state.observation;
+        obs.rating = index;
+        this._updateObservationState(obs);
     }
 
     _onUpdateDishname(dishname) {
@@ -153,9 +236,9 @@ export class CreateObservationScreen extends React.Component {
         this._updateObservationState(obs);
     }
 
-    _onUpdateDescription(description) {
+    _onUpdateMypoc(mypoc) {
         let obs = this.state.observation;
-        obs.description = description;
+        obs.mypoc = mypoc;
         this._updateObservationState(obs);
     }
 
@@ -182,10 +265,24 @@ export class CreateObservationScreen extends React.Component {
             });
     }
 
-    _onUpdateMypoc(mypoc) {
+    _onPressLocationResult(location) {
         let obs = this.state.observation;
-        obs.mypoc = mypoc;
+        obs.location = location.name;
+        obs.address = location.formatted_address;
+        obs.googleMapsId = location.place_id;
         this._updateObservationState(obs);
+        this._setLocationText();
+    }
+
+    _locationResultKeyExtractor = (item, index) => item.place_id;
+
+
+    _setLocationText(text) {
+        this.setState({locationText: text ? text : (this.state.observation.location ? this.state.observation.location : '') + (this.state.observation.address ? ', ' + this.state.observation.address : '')});
+    }
+
+    _updateObservationState(obs) {
+        this.setState({observation: obs});
     }
 
     _onUpdatePrice(price) {
@@ -200,28 +297,7 @@ export class CreateObservationScreen extends React.Component {
         this._updateObservationState(obs);
     }
 
-    _onPressSmiley(index) {
-        let obs = this.state.observation;
-        obs.rating = index;
-        this._updateObservationState(obs);
-    }
-
-    _onPressLocationResult(location) {
-        let obs = this.state.observation;
-        obs.location = location.name;
-        obs.address = location.formatted_address;
-        obs.googleMapsId = location.place_id;
-        this._updateObservationState(obs);
-        this._setLocationText();
-    }
-
-    _setLocationText(text) {
-        this.setState({locationText: text ? text : (this.state.observation.location ? this.state.observation.location : '') + (this.state.observation.address ? ', ' + this.state.observation.address : '')});
-    }
-
-    _updateObservationState(obs) {
-        this.setState({observation: obs});
-    }
+    /************* EATING EXPERIENCE *************/
 
     _onPressSearchButton(search) {
         // TODO filter items
@@ -233,26 +309,79 @@ export class CreateObservationScreen extends React.Component {
         this._updateObservationState(obs);
     }
 
-    _locationResultKeyExtractor = (item, index) => item.place_id;
-
     render() {
+        const cameraAuthorized = this.state.cameraPermission === 'authorized' && this.state.photoPermission === 'authorized';
+
         return (
             <SafeAreaView style={{ flex: 1 }}>
-                <ScrollView name={'content'} style={{flex: 1}}>
+                <View name={'content'} style={{flex: 1}}>
                     {
-                        this.state.activePageIndex === 0 &&
-                        <View>
-                            <TouchableOpacity name={'camerabutton'} onPress={this._onPressCameraButton} style={[{backgroundColor:brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges, styles.leftRoundedEdges]}>
-                                <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>Take a picture</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity name={'photobutton'} onPress={this._onPressPhotoButton} style={[{backgroundColor:brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges, styles.leftRoundedEdges]}>
-                                <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>Select from photos</Text>
-                            </TouchableOpacity>
+                        this.state.activePageIndex === 0 && cameraAuthorized &&
+                        <View style={{flex:1}}>
+                            <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center', backgroundColor: brandMain}}>
+                                {!this.state.cameraActive && <TouchableOpacity name={'camerabutton'} onPress={this._onPressCameraButton.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
+                                    <FontAwesome name={'camera-retro'} size={iconSizeStandard} color={brandContrast}/>
+                                </TouchableOpacity>}
+                                {this.state.cameraActive && <TouchableOpacity name={'flashbutton'} onPress={this._onPressFlash.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
+                                    <Ionicons name={this.state.cameraFlash ? 'ios-flash' : 'ios-flash-outline'} size={iconSizeStandard} color={brandContrast}/>
+                                </TouchableOpacity>}
+                                {this.state.cameraActive && <TouchableOpacity name={'photobutton'} onPress={this._onPressPhotoButton.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
+                                    <Ionicons name={'md-photos'} size={iconSizeStandard} color={brandContrast}/>
+                                </TouchableOpacity>}
+                                {this.state.cameraActive && <TouchableOpacity name={'switchbutton'} onPress={this._onPressCameraSwitch.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
+                                    <MaterialCommunityIcons name={this.state.cameraFront ? 'camera-front-variant' : 'camera-rear-variant'} size={iconSizeStandard} color={brandContrast}/>
+                                </TouchableOpacity>}
+                            </View>
+                            {
+                                this.state.cameraActive &&
+                                <RNCamera
+                                    ref={ref => {
+                                        this.camera = ref;
+                                    }}
+                                    permissionDialogTitle={strings.accessCameraQuestion}
+                                    permissionDialogMessage={strings.accessCameraExplanation}
+                                    style = {{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
+                                    type={this.state.cameraFront ? RNCamera.Constants.Type.front : RNCamera.Constants.Type.back}
+                                    flashMode={this.state.cameraFlash ? RNCamera.Constants.FlashMode.on : RNCamera.Constants.FlashMode.off}
+                                    autoFocus={RNCamera.Constants.AutoFocus.on}
+                                />
+                            }
+                            {
+                                !this.state.cameraActive && this.state.photos &&
+                                <ScrollView>
+                                    {this.state.photos.map((p, i) => {
+                                        return (
+                                            <Image
+                                                key={i}
+                                                style={{
+                                                    flex: 1, aspectRatio: 1
+                                                }}
+                                                resizeMode={'cover'}
+                                                source={{ uri: p.node.image.uri }}
+                                            />
+                                        );
+                                    })}
+                                </ScrollView>
+                            }
+                            {
+                                this.state.cameraActive &&
+                                <View style={[{position: 'absolute', bottom:0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'center'},styles.containerOpacity]}>
+                                    <TouchableOpacity name={'takepicturebutton'} onPress={this.takePicture.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
+                                        <FontAwesome name={'circle'} size={iconSizeLarge} color={brandContrast}/>
+                                    </TouchableOpacity>
+                                </View>
+                            }
                         </View>
                     }
                     {
+                        this.state.activePageIndex === 0 && !cameraAuthorized &&
+                        <TouchableOpacity onPress={this._onPressPermissionNeeded.bind(this)} style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                            <Text style={[styles.containerPadding, styles.textStandardDark, {textAlign:'center'}]}>{strings.enableCameraAndPhoto}</Text>
+                        </TouchableOpacity>
+                    }
+                    {
                         this.state.activePageIndex === 1 &&
-                        <View name={'detailsscreen'} style={[styles.containerPadding, {flex: 1}]}>
+                        <ScrollView name={'detailsscreen'} style={[styles.containerPadding, {flex: 1}]}>
                             <View name={'picanddescription'} style={{flexDirection:'row', flex: 1}}>
                                 <View style={{flex:1}}>
                                     <ObservationExploreComponent style={{flexShrink:1, flex: 1}}/>
@@ -312,7 +441,7 @@ export class CreateObservationScreen extends React.Component {
                                     </Picker>
                                 </View>
                             </View>
-                        </View>
+                        </ScrollView>
                     }
                     {
                         this.state.activePageIndex === 2 &&
@@ -331,8 +460,8 @@ export class CreateObservationScreen extends React.Component {
                             />
                         </View>
                     }
-                </ScrollView>
-                <View name={'interactionButtons'} style={[styles.containerPadding, {flexDirection: 'row', }]}>
+                </View>
+                <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
                     <View name={'previousButtonWrapper'} style={ {flex: 1}}>
                         <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:brandBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
                             <Text style={[styles.textTitleDark, styles.containerPadding]}>{this.state.activePageIndex === 0 ? strings.cancel: strings.previous}</Text>

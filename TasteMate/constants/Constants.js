@@ -9,6 +9,7 @@ export const brandBackground = '#f2f2f2';
 export const brandMainDark ='#feb71d';
 export const brandAccent = '#6699ff';
 
+export const iconSizeLarge = 50;
 export const iconSizeStandard = 25;
 export const iconSizeSmall = 15;
 
