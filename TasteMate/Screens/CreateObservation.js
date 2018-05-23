@@ -200,10 +200,6 @@ export class CreateObservationScreen extends React.Component {
     }
 
     _onAuthorizedPhoto() {
-        // TODO: Open camera roll
-        // TODO: Select pic
-        // TODO: Send pic to myPoc
-        // TODO: Present camera roll pics as 3 per row
         CameraRoll.getPhotos({
             first: 20,
             assetType: 'Photos',
@@ -214,6 +210,11 @@ export class CreateObservationScreen extends React.Component {
             .catch((err) => {
                 console.log("Error while loading images from camera roll");
             });
+    }
+
+    _onSelectImageFromCameraRoll(photo) {
+        // TODO: Select pic
+        // TODO: Send pic to myPoc
     }
 
     /************* DETAILS *************/
@@ -348,20 +349,17 @@ export class CreateObservationScreen extends React.Component {
                             }
                             {
                                 !this.state.cameraActive && this.state.photos &&
-                                <ScrollView>
-                                    {this.state.photos.map((p, i) => {
-                                        return (
-                                            <Image
-                                                key={i}
-                                                style={{
-                                                    flex: 1, aspectRatio: 1
-                                                }}
-                                                resizeMode={'cover'}
-                                                source={{ uri: p.node.image.uri }}
-                                            />
-                                        );
-                                    })}
-                                </ScrollView>
+                                <FlatList
+                                    name={'camerarollimages'}
+                                    style={[{flex: 1, flexDirection:'column'}]}
+                                    data={this.state.photos}
+                                    numColumns={2}
+                                    renderItem={({item}) =>
+                                        <TouchableOpacity onPress={() => this._onSelectImageFromCameraRoll(item)} style={{flex:1}}>
+                                            <Image style={{flex: 1, aspectRatio: 1}} resizeMode={'cover'} source={{uri: item.node.image.uri}}/>
+                                        </TouchableOpacity>
+                                    }
+                                />
                             }
                             {
                                 this.state.cameraActive &&
