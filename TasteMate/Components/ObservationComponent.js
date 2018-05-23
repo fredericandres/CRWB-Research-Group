@@ -1,6 +1,7 @@
 import React from "react";
 import {
     ActionSheetIOS,
+    Alert,
     FlatList,
     Image,
     Linking,
@@ -18,12 +19,12 @@ import {
     brandContrast,
     brandLight,
     brandMain,
+    EmojiEnum,
     iconSizeSmall,
-    iconSizeStandard,
-    EmojiEnum
+    iconSizeStandard
 } from "../constants/Constants";
 import styles from "../styles";
-import BottomSheet from 'react-native-bottom-sheet';
+//import BottomSheet from 'react-native-bottom-sheet';
 import {adjectives, comments} from "../MockupData";
 import TimeAgo from "react-native-timeago";
 import {CommentComponent} from "./CommentComponent";
@@ -79,16 +80,13 @@ export class ObservationComponent extends React.Component {
 
         // TODO: Customize ActionSheet depending on is logged in or not
         if (Platform.OS === 'android') {
-            BottomSheet.showBottomSheetWithOptions({
-                    title: title,
-                    message: message,
-                    options: options,
-                    cancelButtonIndex: cancelButtonIndex,
-                    destructiveButtonIndex: destructiveButtonIndex,
-                },
-                (buttonIndex) => {
-                    this._onPressMenuDetailButton(buttonIndex);
-                });
+            Alert.alert(title, message,
+                [
+                    {text: strings.cancel, onPress: () => this._onPressMenuDetailButton(cancelButtonIndex), style: 'cancel'},
+                    {text: strings.edit, onPress: () => this._onPressMenuDetailButton(0)},
+                    {text: strings.delete, onPress: () => this._onPressMenuDetailButton(destructiveButtonIndex)},
+                ]
+            );
         } else if (Platform.OS === 'ios') {
             ActionSheetIOS.showActionSheetWithOptions({
                     title: title,
@@ -119,17 +117,18 @@ export class ObservationComponent extends React.Component {
         //var excludedActivityTypes = '';
 
         if (Platform.OS === 'android') {
-            BottomSheet.showShareBottomSheetWithOptions({
-                    subject: subject,
-                    message: message,
-                    url: url,
-                },
-                () => {
-                    this._onSuccessfulShare();
-                },
-                () => {
-                    this._onUnsuccessfulShare();
-                });
+            // TODO: Share on Android
+            // BottomSheet.showShareBottomSheetWithOptions({
+            //         subject: subject,
+            //         message: message,
+            //         url: url,
+            //     },
+            //     () => {
+            //         this._onSuccessfulShare();
+            //     },
+            //     () => {
+            //         this._onUnsuccessfulShare();
+            //     });
         } else if (Platform.OS === 'ios') {
             ActionSheetIOS.showShareActionSheetWithOptions({
                     subject: subject,
