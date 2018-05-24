@@ -37,6 +37,9 @@ import Permissions from 'react-native-permissions'
 import {RNCamera} from 'react-native-camera';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import RNFetchBlob from 'react-native-fetch-blob'
+
+const PagesEnum = Object.freeze({SELECTIMAGE:0, CROPIMAGE:1, DETAILS:2, TASTE:3});
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -70,7 +73,7 @@ export class CreateObservationScreen extends React.Component {
         const edit = this.props.navigation.state.params && this.props.navigation.state.params.observation;
         this.state = {
             observation: edit ? this.props.navigation.state.params.observation : new Observation(),
-            activePageIndex: 0,
+            activePageIndex: PagesEnum.SELECTIMAGE,
             locationText: edit ? (this.props.navigation.state.params.observation.location ? this.props.navigation.state.params.observation.location : '') + (this.props.navigation.state.params.observation.address ? ', ' + this.props.navigation.state.params.observation.address : '') : '',
             cameraActive: true,
             cameraFront: true,
@@ -81,7 +84,7 @@ export class CreateObservationScreen extends React.Component {
     /************* NAVIGATION *************/
 
     _onPressNext() {
-        if (this.state.activePageIndex === 2) {
+        if (this.state.activePageIndex === PagesEnum.TASTE) {
             // TODO sumbit & close
             this.props.navigation.dismiss();
         } else {
@@ -90,7 +93,7 @@ export class CreateObservationScreen extends React.Component {
     }
 
     _onPressPrevious() {
-        if (this.state.activePageIndex === 0) {
+        if (this.state.activePageIndex === PagesEnum.SELECTIMAGE) {
             // TODO cancel & close
             this.props.navigation.dismiss();
         } else {
@@ -173,10 +176,11 @@ export class CreateObservationScreen extends React.Component {
         if (this.camera) {
             const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true, mirrorImage: this.state.cameraFront};
             const data = await this.camera.takePictureAsync(options);
-            console.log(data.uri);
-            console.log(CameraRoll.saveToCameraRoll(data.uri));
-            // TODO: Send pic to myPoc
-            // Upload pic
+            // TODO sound/image effects
+
+            CameraRoll.saveToCameraRoll(data.uri).then((uri) => {
+                this._sendToMyPoC(uri);
+            });
         }
     }
 
@@ -212,9 +216,21 @@ export class CreateObservationScreen extends React.Component {
             });
     }
 
+    _cameraRollKeyExtractor = (item, index) => item.node.image.uri;
+
     _onSelectImageFromCameraRoll(photo) {
-        // TODO: Select pic
-        // TODO: Send pic to myPoc
+        console.log(photo);
+        this._sendToMyPoC(photo.node.image.uri);
+    }
+
+    _sendToMyPoC(uri) {
+        RNFetchBlob.fs.readFile(uri, 'base64')
+            .then((data) => {
+                console.log(data);
+                // TODO: Send pic to myPoc
+                // Watanee: To get a dish name as feedback, I sent a picture  (in base64string format) to Anderson's API (RESTful api). I use the API via this link  http://odbenchmark.isima.fr/CRWB-Erina-web/resource/observation.
+                // TODO: Get response and display to user
+            });
     }
 
     /************* DETAILS *************/
@@ -317,7 +333,7 @@ export class CreateObservationScreen extends React.Component {
             <SafeAreaView style={{ flex: 1 }}>
                 <View name={'content'} style={{flex: 1}}>
                     {
-                        this.state.activePageIndex === 0 && cameraAuthorized &&
+                        this.state.activePageIndex === PagesEnum.SELECTIMAGE && cameraAuthorized &&
                         <View style={{flex:1}}>
                             <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center', backgroundColor: brandMain}}>
                                 {!this.state.cameraActive && <TouchableOpacity name={'camerabutton'} onPress={this._onPressCameraButton.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
@@ -354,6 +370,7 @@ export class CreateObservationScreen extends React.Component {
                                     style={[{flex: 1, flexDirection:'column'}]}
                                     data={this.state.photos}
                                     numColumns={2}
+                                    keyExtractor={this._cameraRollKeyExtractor}
                                     renderItem={({item}) =>
                                         <TouchableOpacity onPress={() => this._onSelectImageFromCameraRoll(item)} style={{flex:1}}>
                                             <Image style={{flex: 1, aspectRatio: 1}} resizeMode={'cover'} source={{uri: item.node.image.uri}}/>
@@ -372,13 +389,19 @@ export class CreateObservationScreen extends React.Component {
                         </View>
                     }
                     {
-                        this.state.activePageIndex === 0 && !cameraAuthorized &&
+                        this.state.activePageIndex === PagesEnum.SELECTIMAGE && !cameraAuthorized &&
                         <TouchableOpacity onPress={this._onPressPermissionNeeded.bind(this)} style={{flex:1, alignItems:'center', justifyContent:'center'}}>
                             <Text style={[styles.containerPadding, styles.textStandardDark, {textAlign:'center'}]}>{strings.enableCameraAndPhoto}</Text>
                         </TouchableOpacity>
                     }
                     {
-                        this.state.activePageIndex === 1 &&
+                        this.state.activePageIndex === PagesEnum.CROPIMAGE &&
+                        <View>
+
+                        </View>
+                    }
+                    {
+                        this.state.activePageIndex === PagesEnum.DETAILS &&
                         <ScrollView name={'detailsscreen'} style={[styles.containerPadding, {flex: 1}]}>
                             <View name={'picanddescription'} style={{flexDirection:'row', flex: 1}}>
                                 <View style={{flex:1}}>
@@ -442,7 +465,7 @@ export class CreateObservationScreen extends React.Component {
                         </ScrollView>
                     }
                     {
-                        this.state.activePageIndex === 2 &&
+                        this.state.activePageIndex === PagesEnum.TASTE &&
                         <View name={'adjectivesscreen'} style={{flex:1}}>
                             <SearchBar placeholder={strings.searchVocabulary} onSubmitEditing={this._onPressSearchButton} onChangeText={this._onPressSearchButton} onPress={this._onPressSearchButton}/>
                             <FlatList
@@ -462,12 +485,12 @@ export class CreateObservationScreen extends React.Component {
                 <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
                     <View name={'previousButtonWrapper'} style={ {flex: 1}}>
                         <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:brandBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
-                            <Text style={[styles.textTitleDark, styles.containerPadding]}>{this.state.activePageIndex === 0 ? strings.cancel: strings.previous}</Text>
+                            <Text style={[styles.textTitleDark, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>
                         </TouchableOpacity>
                     </View>
                     <View name={'nextButtonWrapper'} style={{flex: 1}}>
                         <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor:brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
-                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === 2 ? strings.publish: strings.next}</Text>
+                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? strings.publish: strings.next}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
