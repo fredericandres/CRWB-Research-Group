@@ -37,9 +37,9 @@ import Permissions from 'react-native-permissions'
 import {RNCamera} from 'react-native-camera';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import RNFetchBlob from 'react-native-fetch-blob'
+import RNFetchBlob from 'react-native-fetch-blob';
 
-const PagesEnum = Object.freeze({SELECTIMAGE:0, CROPIMAGE:1, DETAILS:2, TASTE:3});
+const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -179,7 +179,7 @@ export class CreateObservationScreen extends React.Component {
             // TODO sound/image effects
 
             CameraRoll.saveToCameraRoll(data.uri).then((uri) => {
-                this._sendToMyPoC(uri);
+                this._onImageSelected(uri);
             });
         }
     }
@@ -219,8 +219,17 @@ export class CreateObservationScreen extends React.Component {
     _cameraRollKeyExtractor = (item, index) => item.node.image.uri;
 
     _onSelectImageFromCameraRoll(photo) {
-        console.log(photo);
-        this._sendToMyPoC(photo.node.image.uri);
+        this._onImageSelected(photo.node.image.uri);
+    }
+
+    _onImageSelected(uri) {
+        let obs = this.state.observation;
+        obs.image = uri;
+        this._updateObservationState(obs);
+
+        this._sendToMyPoC(uri);
+
+        this._onPressNext();
     }
 
     _sendToMyPoC(uri) {
@@ -395,17 +404,11 @@ export class CreateObservationScreen extends React.Component {
                         </TouchableOpacity>
                     }
                     {
-                        this.state.activePageIndex === PagesEnum.CROPIMAGE &&
-                        <View>
-
-                        </View>
-                    }
-                    {
                         this.state.activePageIndex === PagesEnum.DETAILS &&
                         <ScrollView name={'detailsscreen'} style={[styles.containerPadding, {flex: 1}]}>
                             <View name={'picanddescription'} style={{flexDirection:'row', flex: 1}}>
                                 <View style={{flex:1}}>
-                                    <ObservationExploreComponent style={{flexShrink:1, flex: 1}}/>
+                                    <ObservationExploreComponent source={{uri: this.state.observation.image}} style={{flexShrink:1, flex: 1}}/>
                                 </View>
                                 <View style={{flex: 2}}>
                                     <TextInputComponent style={{flex: 1}} placeholder={this.state.observation.description} value={this.state.observation.dishname} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />
