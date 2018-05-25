@@ -174,12 +174,12 @@ export class CreateObservationScreen extends React.Component {
 
     async takePicture() {
         if (this.camera) {
-            const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true, mirrorImage: this.state.cameraFront};
+            const options = { quality: 0.75, base64: true, forceUpOrientation: true, fixOrientation: true, mirrorImage: this.state.cameraFront};
             const data = await this.camera.takePictureAsync(options);
             // TODO sound/image effects
 
             CameraRoll.saveToCameraRoll(data.uri).then((uri) => {
-                this._onImageSelected(uri);
+                this._onImageSelected(uri, data.base64);
             });
         }
     }
@@ -222,24 +222,28 @@ export class CreateObservationScreen extends React.Component {
         this._onImageSelected(photo.node.image.uri);
     }
 
-    _onImageSelected(uri) {
+    _onImageSelected(uri, base64) {
         let obs = this.state.observation;
         obs.image = uri;
         this._updateObservationState(obs);
 
-        this._sendToMyPoC(uri);
+        base64 ? this._sendToMyPoC(base64) : this._getBase64ForURi(uri, this._sendToMyPoC);
 
         this._onPressNext();
     }
 
-    _sendToMyPoC(uri) {
+    async _getBase64ForURi(uri, action) {
         RNFetchBlob.fs.readFile(uri, 'base64')
             .then((data) => {
-                console.log(data);
-                // TODO: Send pic to myPoc
-                // Watanee: To get a dish name as feedback, I sent a picture  (in base64string format) to Anderson's API (RESTful api). I use the API via this link  http://odbenchmark.isima.fr/CRWB-Erina-web/resource/observation.
-                // TODO: Get response and display to user
+                action(data);
             });
+    }
+
+    _sendToMyPoC(base64) {
+        console.log(base64);
+        // TODO: Send pic to myPoc
+        // Watanee: To get a dish name as feedback, I sent a picture  (in base64string format) to Anderson's API (RESTful api). I use the API via this link  http://odbenchmark.isima.fr/CRWB-Erina-web/resource/observation.
+        // TODO: Get response and display to user
     }
 
     /************* DETAILS *************/
