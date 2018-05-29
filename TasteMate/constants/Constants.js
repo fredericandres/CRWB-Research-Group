@@ -2,12 +2,12 @@ import {StackActions} from "react-navigation";
 import {NativeModules, Platform} from "react-native";
 import strings from "../strings";
 
-export const brandMain = '#ffcc66';
+export const brandMain = '#ffc658';
 export const brandContrast = '#333333';
 export const brandLight = '#999999';
 export const brandBackground = '#f2f2f2';
-export const brandMainDark ='#feb71d';
-export const brandAccent = '#6699ff';
+export const brandMainDark ='#fab150';
+export const brandAccent = '#578fff';
 
 export const iconSizeLarge = 50;
 export const iconSizeStandard = 25;
