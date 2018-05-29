@@ -21,11 +21,14 @@ export class HomeScreen extends React.Component {
         // TODO: pull to refresh
     }
 
+    _keyExtractor = (item, index) => item.observationid;
+
     render() {
         return (
             <FlatList
                 data={observations}
-                renderItem={({item}) => <ObservationComponent observation={item.value} nav={this.props.navigation}/>}
+                keyExtractor={this._keyExtractor}
+                renderItem={({item}) => <ObservationComponent observation={item} nav={this.props.navigation}/>}
                 refreshing={false}
                 onRefresh={() => this._onRefreshPulled}
                 ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.emptyFeed}</Text>}

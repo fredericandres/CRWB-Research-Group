@@ -56,7 +56,7 @@ export class ObservationComponent extends React.Component {
 
     _onPressLocationText() {
         // TODO: Possible maps integration, e.g. using https://github.com/react-community/react-native-maps
-        const url =  'https://www.google.com/maps/search/?api=1&query=' + this.observation.location + '&query_place_id=' + this.observation.googleMapsId;
+        const url =  'https://www.google.com/maps/search/?api=1&query=' + this.observation.location.name + '&query_place_id=' + this.observation.location.googleMapsId;
         Linking.canOpenURL(url).then(supported => {
             if (supported) {
                 Linking.openURL(url);
@@ -162,6 +162,8 @@ export class ObservationComponent extends React.Component {
         _navigateToScreen('Profile', this.props.nav, this.observation.userid, null);
     }
 
+    _keyExtractor = (item, index) => item.key;
+
     render() {
         let adjs = '';
         for (let i = 0; i < adjectives.length; i++) {
@@ -181,7 +183,7 @@ export class ObservationComponent extends React.Component {
                                 <Text name={'mypoc'} style={styles.textTitle}> ({this.observation.mypoc})</Text>
                             </Text>
                         </View>
-                        <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location}</Text>
+                        <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location.name}</Text>
                     </View>
                     <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
                 </View>
@@ -224,6 +226,7 @@ export class ObservationComponent extends React.Component {
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
                           data={comments}
+                          keyExtractor={this._keyExtractor}
                           renderItem={({item}) => <CommentComponent comment={item.value} nav={this.props.nav}/>}
                           ListFooterComponent={() =>
                               <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>

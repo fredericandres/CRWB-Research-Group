@@ -6,6 +6,7 @@ import {ObservationExploreComponent} from "../Components/ObservationExploreCompo
 import * as MockupData from "../MockupData";
 import strings from "../strings";
 import {SearchBar} from "../Components/SearchBar";
+import {observations} from "../MockupData";
 
 const numColumns = 3;
 
@@ -24,14 +25,17 @@ export class SearchExploreScreen extends React.Component {
         // TODO: search for matching posts
     }
 
+    _keyExtractor = (item, index) => item.observationid;
+
     render() {
         return (
             <View name={'wrapper'} >
                 <SearchBar placeholder={strings.foodCraving} onSubmitEditing={this._onPressSearchButton} onChangeText={this._onPressSearchButton} onPress={this._onPressSearchButton}/>
                 <FlatList
                     style={styles.containerPadding}
-                    data={MockupData.observations}
-                    renderItem={({item}) => <ObservationExploreComponent observation={item.value} nav={this.props.navigation}/>}
+                    keyExtractor={this._keyExtractor}
+                    data={observations}
+                    renderItem={({item}) => <ObservationExploreComponent observation={item} nav={this.props.navigation}/>}
                     numColumns={numColumns}
                 />
             </View>

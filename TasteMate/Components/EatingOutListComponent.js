@@ -9,7 +9,7 @@ export class EatingOutListComponent extends React.Component {
         super(props);
     }
 
-    _keyExtractor = (item, index) => this.props.key + item.key;
+    _keyExtractor = (item, index) => index + item.observationid;
 
     render() {
         return (
@@ -19,15 +19,16 @@ export class EatingOutListComponent extends React.Component {
                 </View>
                 <FlatList
                     name={'observationsList'}
+                    keyExtractor={this._keyExtractor}
                     data={observations}
                     renderItem={({item}) =>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             <View style={[styles.containerPadding, {flexDirection: 'column', flex: 2}]}>
                                 <View style={{flex: 2, justifyContent: 'center', alignItems:'center'}}>
-                                    <Text name={'placename'} style={[styles.textTitle, {textAlign: 'center'}]}>{item.value.location}</Text>
+                                    <Text name={'placename'} style={[styles.textTitle, {textAlign: 'center'}]}>{item.location.name}</Text>
                                 </View>
                                 <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
-                                    <Text name={'address'} style={[styles.textSmall, {textAlign: 'center'}]}>{item.value.address}</Text>
+                                    <Text name={'address'} style={[styles.textSmall, {textAlign: 'center'}]}>{item.location.address}</Text>
                                 </View>
 
                             </View>
