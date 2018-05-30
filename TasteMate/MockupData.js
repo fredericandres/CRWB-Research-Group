@@ -1,31 +1,32 @@
 import Observation from "./Data/Observation";
+import Location from "./Data/Location";
 
-const obs1 = new Observation(1, 1, 'Mr Frosty', 'Donut', '', 'Yoshinoya', 'Mmm this is so delicious seriously', '', '3.99', 'EUR', 9, {1:true, 3:true}, 1525842671630);
+const location1 = new Location('Yoshinoya', 'ChIJcfDfiROMGGARlXN3FRTivo8', 'Japan, 〒101-0051 Tōkyō-to, Chiyoda-ku, Kanda Jinbōchō, 2 Chome−７−７',  139.755246, 35.695688,);
+const location2 = new Location('Voodoo Doughnut', 'ChIJ81ogcae1RIYRPNSTL-oW9IY', '212 E 6th St, Austin, TX 78701, USA', 30.2676502, -97.7430909);
+
+const obs1 = new Observation('U1', 'O1', 'Mr Frosty', 'Donut', '', location1, 'Mmm this is so delicious seriously', '', '3.99', 'EUR', 9, {1:true, 3:true}, 1525842671630);
+const obs2 = new Observation('U1', 'O2', 'Mr Frosty', 'Donut', '', location2, 'Mmm this is so delicious seriously', '', '3.99', 'EUR', 9, {1:true, 3:true}, 1525842671630);
 
 export const observations = [
-    {key: '12343', value: { userid:213, dishname :'A  reall very long title will it fit what will the layout dor', mypoc:'Donut', location: 'Yoshinoya', googleMapsId: 'ChIJcfDfiROMGGARlXN3FRTivo8', rating:6, imageid:'asd', price: '3.99', currency:'USD', description:'Donut come for me if you want trouble...', timestamp:1525842681630, likes:200123, cutleries:5998, shares:1233, address: '3540 W 3rd St, Los Angeles, CA 90020, USA', vocabulary: {1:true, 3:true}}},
-    {key: '1234', value: { userid:213, dishname :'Mr Frosty', mypoc:'Donut',location: 'National Institute of Informatics', googleMapsId: 'ChIJ93oq5RGMGGARDvEMb6UBvlk', rating:5, imageid:'asd', price: '34.25', currency:'EUR', description:'Donut come for me if you want trouble...', timestamp:1525842681630, likes:1, cutleries:0, shares:0, address: '100 Universal City Plaza, Universal City, CA 91608, USA'}},
-    {key: '12342', value: { userid:213, dishname :'Carbonarinis', mypoc:'Donut', location: 'Yoshinoya', googleMapsId: 'ChIJcfDfiROMGGARlXN3FRTivo8', rating:1, imageid:'asd', price: '2,000', currency:'YEN', description:'Donut come for me if you want trouble...', timestamp:1525842681130, likes:123930930, cutleries:2123123, shares:1231231, address: '100 Universal City Plaza, Universal City, CA 91608, USA'}},
-    {key: '12344', value: { userid:213, dishname :'Mr Frosty', mypoc:'Donut', location: 'Yoshinoya', googleMapsId: 'ChIJcfDfiROMGGARlXN3FRTivo8', rating:2, imageid:'asd', price: '3.99', currency:'USD', description:'Donut come for me if you want trouble...', timestamp:1525842641630, likes:328, cutleries:607, shares:123, address: '100 Universal City Plaza, Universal City, CA 91608, USA'}},
-    {key: '12345', value: { userid:213, dishname :'Madam with the longest title ever imaginable but it is a very important dish so it totally makes sense ya know it is more than four lines long wow', mypoc:'Donut', location: 'Yoshinoya', googleMapsId: 'ChIJcfDfiROMGGARlXN3FRTivo8', rating:9, imageid:'asd', price: '3.99', currency:'USD', description:'Donut come for me if you want trouble...', timestamp:1525832681630, likes:110, cutleries:7, shares:4, address: '100 Universal City Plaza, Universal City, CA 91608, USA'}},
+    obs1, obs2
 ];
 
 export const adjectives = [
-    {key:'0', value: {adjective:'cinnamon'}},
-    {key:'1', value: {adjective:'ginger'}},
-    {key:'2', value: {adjective:'acidulated'}},
-    {key:'3', value: {adjective:'zesty'}},
-    {key:'4', value: {adjective:'crunchy'}},
-    {key:'5', value: {adjective:'tasty'}},
-    {key:'6', value: {adjective:'lemon'}},
-    {key:'7', value: {adjective:'sweet'}},
+    {key:'A0', value: {adjective:'cinnamon'}},
+    {key:'A1', value: {adjective:'ginger'}},
+    {key:'A2', value: {adjective:'acidulated'}},
+    {key:'A3', value: {adjective:'zesty'}},
+    {key:'A4', value: {adjective:'crunchy'}},
+    {key:'A5', value: {adjective:'tasty'}},
+    {key:'A6', value: {adjective:'lemon'}},
+    {key:'A7', value: {adjective:'sweet'}},
 ];
 
 export const comments = [
-    {key: '1', value:{userid:123, imageid:'123', message:'Delicious I bet!'}},
-    {key: '2', value:{userid:123, imageid:'123', message:'Mmh, so jelly! Hehe remember the last time we had that together? We were both maybe 10 years old and laughing so hard at everything.. lol!! Good times'}},
-    {key: '3', value:{userid:123, imageid:'123', message:'Oh my goodness, that truly looks amazing! I wish I was there eating this with you! xoxo'}},
-]
+    {key: 'C1', value:{userid:123, imageid:'123', message:'Delicious I bet!'}},
+    {key: 'C2', value:{userid:123, imageid:'123', message:'Mmh, so jelly! Hehe remember the last time we had that together? We were both maybe 10 years old and laughing so hard at everything.. lol!! Good times'}},
+    {key: 'C3', value:{userid:123, imageid:'123', message:'Oh my goodness, that truly looks amazing! I wish I was there eating this with you! xoxo'}},
+];
 
 let lotsOfUsers = [];
 for (let i = 0; i < 10001; i++){
@@ -33,18 +34,18 @@ for (let i = 0; i < 10001; i++){
 }
 
 export const notifications = [
-    {key:'0', value: {senderid:['julianthegreatestman'], type:'LIKE', observationid:'12343', timestamp:(new Date()).valueOf(), read:false}},
-    {key:'1', value: {senderid:['annabanana'], type:'WANTTOEAT', observationid:'1234', timestamp:1525842681630, read:false}},
-    {key:'2', value: {senderid:['123jump'], type:'FOLLOW', timestamp:1525842681230, read:false}},
-    {key:'3', value: {senderid:['watatat'], type:'SHARE', observationid:'12345', timestamp:1525842671630, read:false}},
-    {key:'4', value: {senderid:lotsOfUsers, type:'LIKE', observationid:'12344', timestamp:1525832681630, read:true}},
-    {key:'5', value: {senderid:['shelby', 'missy', 'nyum', 'watatat'], type:'SHARE', observationid:'1234', timestamp:1522842581630, read:true}},
-    {key:'6', value: {senderid:['missyuserwithasuperduperlongusernamewowthisissolongimnotsureifthesystemshouldallowthislength'], type:'LIKE', observationid:'1234', timestamp:1515841681630, read:true}},
-    {key:'7', value: {senderid:['ardnaxela', 'luisa'], type:'FOLLOW', timestamp:1425832681630, read:true}},
+    {key:'N0', value: {senderid:['julianthegreatestman'], type:'LIKE', observationid:'12343', timestamp:(new Date()).valueOf(), read:false}},
+    {key:'N1', value: {senderid:['annabanana'], type:'WANTTOEAT', observationid:'1234', timestamp:1525842681630, read:false}},
+    {key:'N2', value: {senderid:['123jump'], type:'FOLLOW', timestamp:1525842681230, read:false}},
+    {key:'N3', value: {senderid:['watatat'], type:'SHARE', observationid:'12345', timestamp:1525842671630, read:false}},
+    {key:'N4', value: {senderid:lotsOfUsers, type:'LIKE', observationid:'12344', timestamp:1525832681630, read:true}},
+    {key:'N5', value: {senderid:['shelby', 'missy', 'nyum', 'watatat'], type:'SHARE', observationid:'1234', timestamp:1522842581630, read:true}},
+    {key:'N6', value: {senderid:['missyuserwithasuperduperlongusernamewowthisissolongimnotsureifthesystemshouldallowthislength'], type:'LIKE', observationid:'1234', timestamp:1515841681630, read:true}},
+    {key:'N7', value: {senderid:['ardnaxela', 'luisa'], type:'FOLLOW', timestamp:1425832681630, read:true}},
 ];
 
 export const userr = {
-    userid: '123',
+    userid: 'U123',
     email: 'a@b.de',
     password: 'asdasd',
     username: 'isnotyourname',
@@ -55,19 +56,19 @@ export const userr = {
 };
 
 export const users = [
-    {key:'0', value: {username:'annabanana', location: 'Munich, Germany', isFollowing:true}},
-    {key:'1', value: {username:'julianthegreatestman', location: 'Stockholm, Sweden', isFollowing:false}},
-    {key:'2', value: {username:'123jump', location: 'Tokyo, Japan', isFollowing:false}},
-    {key:'3', value: {username:'watatat', location: 'Oslo, Norway', isFollowing:false}},
-    {key:'4', value: {username:'shelby', location: 'Denver, Colorado, USA', isFollowing:true}},
-    {key:'5', value: {username:'missyuserwithasuperduperlongusernamewowthisissolongimnotsureifthesystemshouldallowthislength', location: 'Melbourne, Australia', isFollowing:true}},
-    {key:'6', value: {username:'luisa', location: 'Stockholm, Sweden', isFollowing:true}},
-    {key:'7', value: {username:'ardnaxela', location: 'Stockholm, Sweden', isFollowing:true}},
+    {key:'U0', value: {username:'annabanana', location: 'Munich, Germany', isFollowing:true}},
+    {key:'U1', value: {username:'julianthegreatestman', location: 'Stockholm, Sweden', isFollowing:false}},
+    {key:'U2', value: {username:'123jump', location: 'Tokyo, Japan', isFollowing:false}},
+    {key:'U3', value: {username:'watatat', location: 'Oslo, Norway', isFollowing:false}},
+    {key:'U4', value: {username:'shelby', location: 'Denver, Colorado, USA', isFollowing:true}},
+    {key:'U5', value: {username:'missyuserwithasuperduperlongusernamewowthisissolongimnotsureifthesystemshouldallowthislength', location: 'Melbourne, Australia', isFollowing:true}},
+    {key:'U6', value: {username:'luisa', location: 'Stockholm, Sweden', isFollowing:true}},
+    {key:'U7', value: {username:'ardnaxela', location: 'Stockholm, Sweden', isFollowing:true}},
 ];
 
 export const eatingOutObservations = [
-    {key:'00', value: {location:'Los Angeles, CA, USA'}},
-    {key:'11', value: {location:'Munich, Germany'}},
-    {key:'22', value: {location:'Los Angeles, CA, USA'}},
-    {key:'33', value: {location:'Los Angeles, CA, USA'}},
+    {key:'E0', value: {location:'Los Angeles, CA, USA'}},
+    {key:'E1', value: {location:'Munich, Germany'}},
+    {key:'E2', value: {location:'Los Angeles, CA, USA'}},
+    {key:'E3', value: {location:'Los Angeles, CA, USA'}},
 ];

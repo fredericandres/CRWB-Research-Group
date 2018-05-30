@@ -4,8 +4,10 @@ import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarBu
 import strings from "../strings";
 import styles from "../styles";
 import {ProfileSegmentedControlItem} from "../Components/EatingOutListSegmentedControlItem";
-import {eatingOutObservations} from "../MockupData";
+import {eatingOutObservations, observations} from "../MockupData";
 import {EatingOutListComponent} from "../Components/EatingOutListComponent";
+import MapView from 'react-native-maps';
+import Permissions from "react-native-permissions";
 
 export class EatingOutListScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
@@ -20,8 +22,10 @@ export class EatingOutListScreen extends React.Component {
 
     constructor() {
         super();
+
         this.state = {
             selectedIndex: 0,
+            observations: observations,
         };
         this._onPressList = this._onPressList.bind(this);
         this._onPressMap = this._onPressMap.bind(this);
@@ -38,6 +42,20 @@ export class EatingOutListScreen extends React.Component {
         this.setState(previousState => {
             return {selectedIndex: 1};
         });
+    }
+
+    componentDidMount() {
+        Permissions.check('location').then(response => {
+            this.setState({
+                // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+                locationPermission: response,
+            });
+            if (response === 'authorized') {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    this.setState({ userlocation: position.coords });
+                });
+            }
+        })
     }
 
     render() {
@@ -63,7 +81,33 @@ export class EatingOutListScreen extends React.Component {
                 }
                 {
                     this.state.selectedIndex === 1 &&
-                    <View/>
+                    <MapView style={{flex: 1}}
+                             initialRegion={{
+                                 latitude: this.state.userlocation ? this.state.userlocation.latitude : this.state.observations[0].location.latitude,
+                                 longitude: this.state.userlocation ? this.state.userlocation.longitude : this.state.observations[0].location.longitude,
+                                 latitudeDelta: 1,
+                                 longitudeDelta: 1,
+                             }}
+                             showsCompass={true}
+                             showsScale={true}
+                             showsUserLocation={true}
+                             showsMyLocationButton={true}
+                             showsIndoors={false}
+                             showsBuildings={false}
+                             showsTraffic={false}
+                    >
+                        {this.state.observations.map(obs => (
+                            <MapView.Marker
+                                coordinate={{
+                                    latitude: obs.location.latitude,
+                                    longitude: obs.location.longitude
+                                }}
+                                title={obs.location.name}
+                                description={obs.description}
+                                key={obs.observationid}
+                            />
+                        ))}
+                    </MapView>
                 }
 
             </View>
