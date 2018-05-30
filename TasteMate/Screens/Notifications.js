@@ -20,14 +20,17 @@ export class NotificationsScreen extends React.Component {
         // TODO: pull to refresh
     }
 
+    _keyExtractor = (item, index) => item.notificationid;
+
     render() {
         return (
             <FlatList
                 data={notifications}
-                renderItem={({item}) => <NotificationComponent notification={item.value} nav={this.props.navigation}/>}
+                renderItem={({item}) => <NotificationComponent notification={item} {...this.props}/>}
                 refreshing={false}
                 onRefresh={() => this._onRefreshPulled}
                 ListEmptyComponent={() => <Text style={styles.containerPadding}>Seems like you do not have any notifications yet.</Text>}
+                keyExtractor={this._keyExtractor}
             />
         );
     }

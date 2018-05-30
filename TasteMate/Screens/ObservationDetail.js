@@ -11,7 +11,7 @@ export class ObservationDetailScreen extends React.Component {
     render() {
         return (
             <ScrollView>
-                <ObservationComponent nav={this.props.navigation} observation={this.props.navigation.getParam('observation', null)}/>
+                <ObservationComponent {...this.props} observation={this.props.navigation.getParam('observation', null)}/>
             </ScrollView>
         );
     }

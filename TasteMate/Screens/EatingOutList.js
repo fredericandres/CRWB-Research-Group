@@ -32,16 +32,11 @@ export class EatingOutListScreen extends React.Component {
     }
 
     _onPressList() {
-        this.setState(previousState => {
-            return {selectedIndex: 0};
-        });
+        this.setState({selectedIndex: 0});
     }
 
     _onPressMap() {
-        // TODO
-        this.setState(previousState => {
-            return {selectedIndex: 1};
-        });
+        this.setState({selectedIndex: 1});
     }
 
     componentDidMount() {
@@ -57,6 +52,8 @@ export class EatingOutListScreen extends React.Component {
             }
         })
     }
+
+    _keyExtractor = (item, index) => item.id;
 
     render() {
         return (
@@ -74,9 +71,10 @@ export class EatingOutListScreen extends React.Component {
                     this.state.selectedIndex === 0 &&
                     <FlatList
                         data={eatingOutObservations}
-                        renderItem={({item}) => <EatingOutListComponent key={item.key} observationList={item.value} nav={this.props.navigation}/>}
+                        renderItem={({item}) => <EatingOutListComponent observationList={item} {...this.props}/>}
                         ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noEatingOut}</Text>}
                         ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
+                        keyExtractor={this._keyExtractor}
                     />
                 }
                 {

@@ -34,9 +34,9 @@ export class EatingOutListComponent extends React.Component {
                             </View>
                             <View style={{flexDirection: 'row', flex: 5}}>
                                 <ScrollView style={{flexDirection: 'row'}} horizontal={true} pagingEnabled={true} contentContainerStyle={{flex: 1}}>
-                                    <ObservationExploreComponent observation={item.value} nav={this.props.nav}/>
-                                    <ObservationExploreComponent observation={item.value} nav={this.props.nav}/>
-                                    <ObservationExploreComponent observation={item.value} nav={this.props.nav}/>
+                                    <ObservationExploreComponent observation={item} {...this.props}/>
+                                    <ObservationExploreComponent observation={item} {...this.props}/>
+                                    <ObservationExploreComponent observation={item} {...this.props}/>
                                 </ScrollView>
                             </View>
                         </View>

@@ -103,7 +103,7 @@ export class ObservationComponent extends React.Component {
 
     _onPressMenuDetailButton(buttonIndex) {
         if (buttonIndex === 0) {
-            this.props.nav.navigate('CreateObservation', {observation: this.observation});
+            this.props.navigation.navigate('CreateObservation', {observation: this.observation});
         } else if (buttonIndex === 1) {
             // TODO: Delete obs
         }
@@ -159,7 +159,7 @@ export class ObservationComponent extends React.Component {
     }
 
     _onPressProfile() {
-        _navigateToScreen('Profile', this.props.nav, this.observation.userid, null);
+        _navigateToScreen('Profile', this.props.navigation, this.observation.userid, null);
     }
 
     _keyExtractor = (item, index) => item.key;
@@ -227,7 +227,7 @@ export class ObservationComponent extends React.Component {
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
                           data={comments}
                           keyExtractor={this._keyExtractor}
-                          renderItem={({item}) => <CommentComponent comment={item.value} nav={this.props.nav}/>}
+                          renderItem={({item}) => <CommentComponent comment={item.value} {...this.props}/>}
                           ListFooterComponent={() =>
                               <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
                                   <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user2.jpg')} />

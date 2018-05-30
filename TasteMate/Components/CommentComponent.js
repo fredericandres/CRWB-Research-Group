@@ -11,7 +11,7 @@ export class CommentComponent extends React.Component {
     }
 
     _onPressProfile() {
-        _navigateToScreen('Profile', this.props.nav, this.comment.userid, null);
+        _navigateToScreen('Profile', this.props.navigation, this.comment.userid, null);
     }
 
     render() {

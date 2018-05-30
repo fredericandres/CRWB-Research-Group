@@ -35,7 +35,7 @@ export class SearchExploreScreen extends React.Component {
                     style={styles.containerPadding}
                     keyExtractor={this._keyExtractor}
                     data={observations}
-                    renderItem={({item}) => <ObservationExploreComponent observation={item} nav={this.props.navigation}/>}
+                    renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
                     numColumns={numColumns}
                 />
             </View>

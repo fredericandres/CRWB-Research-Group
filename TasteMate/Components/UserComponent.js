@@ -11,7 +11,7 @@ export class UserComponent extends React.Component {
     }
 
     _onPressUser () {
-        _navigateToScreen('Profile', this.props.nav, this.user, null);
+        _navigateToScreen('Profile', this.props.navigation, this.user, null);
     }
 
     render() {

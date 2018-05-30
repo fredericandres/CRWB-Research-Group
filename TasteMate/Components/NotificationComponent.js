@@ -9,7 +9,7 @@ export class NotificationComponent extends React.Component {
     constructor(props) {
         super(props);
         this._onPressProfile = this._onPressProfile.bind(this);
-        this._onPresObservation = this._onPresObservation.bind(this);
+        this._onPressObservation = this._onPressObservation.bind(this);
         this.notification = this.props.notification;
         this.state = {
             fadeAnim: new Animated.Value(1)
@@ -31,11 +31,12 @@ export class NotificationComponent extends React.Component {
     }
 
     _onPressProfile(index) {
-        _navigateToScreen('Profile', this.props.nav, this.notification.senderid[index], null);
+        _navigateToScreen('Profile', this.props.navigation, this.notification.senderid[index], null);
     }
 
-    _onPresObservation() {
-        this.props.nav.navigate('ObservationDetail',  { observation: this.notification.observationid });
+    _onPressObservation() {
+        // TODO: get obs from DB and navigate there
+        this.props.navigation.navigate('ObservationDetail',  { observation: this.notification.observationid });
     }
 
     render() {
@@ -65,7 +66,7 @@ export class NotificationComponent extends React.Component {
         }
 
         return (
-            <TouchableOpacity onPress={this.notification.type === 'FOLLOW' ? this._onPressProfile : this._onPresObservation} style={[{flexDirection:'row'}]}>
+            <TouchableOpacity onPress={this.notification.type === 'FOLLOW' ? this._onPressProfile : this._onPressObservation} style={[{flexDirection:'row'}]}>
                 {!this.notification.read && <Animated.View name={'fadingbackground'} style={{position: 'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:brandMain, opacity: this.state.fadeAnim}}/>}
                 <TouchableOpacity name={'userpic'} onPress={this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles} style={[styles.containerPadding, {flexDirection:'column', justifyContent:'center'}]}>
                     <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../user2.jpg')} style={styles.roundProfile}/>
@@ -89,7 +90,7 @@ export class NotificationComponent extends React.Component {
                     <TimeAgo name={'time'} style={styles.textSmall} time={this.notification.timestamp}/>
                 </View>
                 {this.notification.type !== 'FOLLOW' &&
-                <TouchableOpacity name={'image'} onPress={this._onPresObservation} style={[styles.containerPadding, {flex: 0, flexDirection:'column', justifyContent:'center'}]}>
+                <TouchableOpacity name={'image'} onPress={this._onPressObservation} style={[styles.containerPadding, {flex: 0, flexDirection:'column', justifyContent:'center'}]}>
                     <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../carbonara.png')} style={styles.squareThumbnail}/>
                 </TouchableOpacity>}
             </TouchableOpacity>

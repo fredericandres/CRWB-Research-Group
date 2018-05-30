@@ -5,11 +5,11 @@ export default class Location {
     longitude;
     latitude;
 
-    constructor(name, googleMapsId, address, longitude, latitude) {
+    constructor(name, googleMapsId, address, latitude, longitude) {
         this.name = name;
         this.googleMapsId = googleMapsId;
         this.address = address;
-        this.longitude = longitude;
         this.latitude = latitude;
+        this.longitude = longitude;
     }
 }

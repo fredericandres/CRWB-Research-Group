@@ -77,6 +77,9 @@ export class ProfileScreen extends React.Component {
         });
     }
 
+    _observationKeyExtractor = (item, index) => item.observationid;
+    _followingKeyExtractor = (item, index) => item.userid;
+
     render() {
         const user = userr; //this.props.navigation.getParam('userid')
 
@@ -125,9 +128,9 @@ export class ProfileScreen extends React.Component {
                             style={styles.containerPadding}
                             ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noPictures}</Text>}
                             data={MockupData.observations}
-                            renderItem={({item}) => <ObservationExploreComponent observation={item.value}
-                                                                                 nav={this.props.navigation}/>}
+                            renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
                             numColumns={3}
+                            keyExtractor={this._observationKeyExtractor}
                         />
                     }
                     {
@@ -137,7 +140,8 @@ export class ProfileScreen extends React.Component {
                             data={users}
                             ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noUsers}</Text>}
                             ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
-                            renderItem={({item}) => <UserComponent user={item.value} nav={this.props.navigation}/>}
+                            renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
+                            keyExtractor={this._followingKeyExtractor}
                         />
                     }
                 </View>
