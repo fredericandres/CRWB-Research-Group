@@ -19,6 +19,7 @@ export default strings = new LocalizedStrings({
         observationDetail: 'Detail',
         createObservation: 'Create Observation',
         signUpLogIn: 'Sign Up Log In',
+        mapDetail: 'Map Detail',
 
         emptyFeed: 'Seems like your feed is empty. Why not follow some tastemates?',
         selectAction: 'Select an action',

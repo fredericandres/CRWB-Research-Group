@@ -13,6 +13,7 @@ import {StatusBar, StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
 import strings from "./strings";
+import {MapScreen} from "./Screens/Map";
 
 StatusBar.setHidden(false);
 
@@ -29,6 +30,7 @@ const HomeStack = createStackNavigator({
         Home: { screen: HomeScreen },
         Profile: { screen: ProfileScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
+        Map: { screen: MapScreen },
     },
     {
         initialRouteName: 'Home',
@@ -44,6 +46,7 @@ const ExploreSearchStack = createStackNavigator({
         Explore: { screen: SearchExploreScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
         Profile: { screen: ProfileScreen },
+        Map: { screen: MapScreen },
     },
     {
         initialRouteName: 'Explore',
@@ -59,6 +62,7 @@ const NotificationsStack = createStackNavigator({
         Notifications: { screen: NotificationsScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
         Profile: { screen: ProfileScreen },
+        Map: { screen: MapScreen },
     },
     {
         initialRouteName: 'Notifications',
@@ -74,6 +78,7 @@ const EatingOutListStack = createStackNavigator({
         EatingOutList: { screen: EatingOutListScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
         Profile: { screen: ProfileScreen },
+        Map: { screen: MapScreen },
     },
     {
         initialRouteName: 'EatingOutList',
@@ -90,6 +95,7 @@ const ProfileStack = createStackNavigator({
         Settings: { screen: SettingsScreen },
         SignUpLogIn: { screen: SignUpLogInScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
+        Map: { screen: MapScreen },
     },
     {
         initialRouteName: 'Profile',

@@ -28,7 +28,7 @@ export class HomeScreen extends React.Component {
             <FlatList
                 data={observations}
                 keyExtractor={this._keyExtractor}
-                renderItem={({item}) => <ObservationComponent observation={item} nav={this.props.navigation}/>}
+                renderItem={({item}) => <ObservationComponent observation={item} {...this.props}/>}
                 refreshing={false}
                 onRefresh={() => this._onRefreshPulled}
                 ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.emptyFeed}</Text>}

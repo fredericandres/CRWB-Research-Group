@@ -58,23 +58,17 @@ export class ProfileScreen extends React.Component {
 
     _onPressPhotos() {
         // TODO
-        this.setState(previousState => {
-            return {selectedIndex: 0};
-        });
+        this.setState({selectedIndex: 0});
     }
 
     _onPressFollowers() {
         // TODO
-        this.setState(previousState => {
-            return {selectedIndex: 1};
-        });
+        this.setState({selectedIndex: 1});
     }
 
     _onPressFollowing() {
         // TODO
-        this.setState(previousState => {
-            return {selectedIndex: 2};
-        });
+        this.setState({selectedIndex: 2});
     }
 
     _observationKeyExtractor = (item, index) => item.observationid;

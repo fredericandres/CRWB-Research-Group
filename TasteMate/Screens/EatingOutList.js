@@ -93,6 +93,7 @@ export class EatingOutListScreen extends React.Component {
                              showsIndoors={false}
                              showsBuildings={false}
                              showsTraffic={false}
+                             userLocationAnnotationTitle={''}
                     >
                         {this.state.observations.map(obs => (
                             <MapView.Marker
@@ -100,7 +101,7 @@ export class EatingOutListScreen extends React.Component {
                                     latitude: obs.location.latitude,
                                     longitude: obs.location.longitude
                                 }}
-                                title={obs.location.name}
+                                title={obs.dishname}
                                 description={obs.description}
                                 key={obs.observationid}
                             />

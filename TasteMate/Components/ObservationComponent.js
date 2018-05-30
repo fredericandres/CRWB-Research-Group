@@ -55,15 +55,7 @@ export class ObservationComponent extends React.Component {
     }
 
     _onPressLocationText() {
-        // TODO: Possible maps integration, e.g. using https://github.com/react-community/react-native-maps
-        const url =  'https://www.google.com/maps/search/?api=1&query=' + this.observation.location.name + '&query_place_id=' + this.observation.location.googleMapsId;
-        Linking.canOpenURL(url).then(supported => {
-            if (supported) {
-                Linking.openURL(url);
-            } else {
-                console.log("Don't know how to open URI: " + url);
-            }
-        });
+        this.props.navigation.navigate('Map', {observation: this.observation});
     }
 
     _onPressMenuButton() {
