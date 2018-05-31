@@ -6,6 +6,7 @@ YellowBox.ignoreWarnings([
     'Warning: isMounted(...) is deprecated',
     'Module RCTImageLoader requires main queue setup',
     'Module RNFetchBlob requires main queue setup',
-    'Class RCTCxxModule was not exported'
+    'Class RCTCxxModule was not exported',
+    'RCTBridge required dispatch_sync'
 ]);
 AppRegistry.registerComponent('TasteMate', () => App);
