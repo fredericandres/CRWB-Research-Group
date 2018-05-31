@@ -2,14 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+  <key>LSApplicationQueriesSchemes</key>
+  <array>
+    <string>whatsapp</string>
+    <string>mailto</string>
+  </array>
 	<key>NSCameraUsageDescription</key>
 	<string>TasteMate lets you take pictures within the app.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>TasteMate lets you select pictures from your photo library.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>TasteMate adds pictures you take to your photo library.</string>
-  <key>NSLocationWhenInUseUsageDescription</key>
-  <string>TasteMate displays your location on a map of food observations so you know which ones are nearby.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>TasteMate displays your location on a map of food observations so you know which ones are nearby.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>

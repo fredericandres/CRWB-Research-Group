@@ -89,6 +89,9 @@
 		A894B9FD209ACEAE00077543 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A894B9AE209ACEAD00077543 /* Zocial.ttf */; };
 		A894B9FE209ACEAE00077543 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A894B9AE209ACEAD00077543 /* Zocial.ttf */; };
 		A894B9FF209ACEAE00077543 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A894B9AE209ACEAD00077543 /* Zocial.ttf */; };
+		A89A92B320BF7E5E001F92C3 /* libRNShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A89A92B120BF7E1E001F92C3 /* libRNShare.a */; };
+		A89A92B520BF7E7C001F92C3 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A89A92B420BF7E7C001F92C3 /* Social.framework */; };
+		A89A92B720BF7E84001F92C3 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A89A92B620BF7E84001F92C3 /* MessageUI.framework */; };
 		A8FE9DB120B5178400C0AF49 /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A8FE9D8C20B50D3A00C0AF49 /* libRCTCameraRoll.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		AED3D282807A4DB3B1D4BCF5 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 101C0B1955274543A5B22EDF /* Feather.ttf */; };
@@ -390,6 +393,13 @@
 			remoteGlobalIDString = 4107012F1ACB723B00C6AA39;
 			remoteInfo = RNCamera;
 		};
+		A89A92B020BF7E1E001F92C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A89A928220BF7E1E001F92C3 /* RNShare.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNShare;
+		};
 		A8B174D620A6D23100AB9562 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6689165235354E87848AC676 /* ReactNativeLocalization.xcodeproj */;
@@ -476,6 +486,9 @@
 		A894B9AC209ACEAD00077543 /* Octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Octicons.ttf; sourceTree = "<group>"; };
 		A894B9AD209ACEAD00077543 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SimpleLineIcons.ttf; sourceTree = "<group>"; };
 		A894B9AE209ACEAD00077543 /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
+		A89A928220BF7E1E001F92C3 /* RNShare.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNShare.xcodeproj; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; };
+		A89A92B420BF7E7C001F92C3 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		A89A92B620BF7E84001F92C3 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		B1929E30B2864C919C097E84 /* libReactNativeLocalization.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libReactNativeLocalization.a; sourceTree = "<group>"; };
 		BF85BBF0A3DF4AEFAF5A4551 /* libRNCamera.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNCamera.a; sourceTree = "<group>"; };
@@ -498,6 +511,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A89A92B720BF7E84001F92C3 /* MessageUI.framework in Frameworks */,
+				A89A92B520BF7E7C001F92C3 /* Social.framework in Frameworks */,
+				A89A92B320BF7E5E001F92C3 /* libRNShare.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				A8FE9DB120B5178400C0AF49 /* libRCTCameraRoll.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
@@ -675,6 +691,8 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A89A92B620BF7E84001F92C3 /* MessageUI.framework */,
+				A89A92B420BF7E7C001F92C3 /* Social.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
 				600D84C8D008E3683CA52DBA /* libPods-TasteMate.a */,
 			);
@@ -720,6 +738,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				A89A928220BF7E1E001F92C3 /* RNShare.xcodeproj */,
 				A845648F20B4EC0200A0E0A5 /* RCTCameraRoll.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -841,6 +860,14 @@
 			);
 			name = Fonts;
 			path = "../node_modules/react-native-vector-icons/Fonts";
+			sourceTree = "<group>";
+		};
+		A89A928320BF7E1E001F92C3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A89A92B120BF7E1E001F92C3 /* libRNShare.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		A8B174D320A6D23100AB9562 /* Products */ = {
@@ -1050,6 +1077,10 @@
 				{
 					ProductGroup = A8FE9F0220B64ECB00C0AF49 /* Products */;
 					ProjectRef = 86DA9E1F194942F9B871B78D /* RNFetchBlob.xcodeproj */;
+				},
+				{
+					ProductGroup = A89A928320BF7E1E001F92C3 /* Products */;
+					ProjectRef = A89A928220BF7E1E001F92C3 /* RNShare.xcodeproj */;
 				},
 				{
 					ProductGroup = A81EF65620A4111E00E8935B /* Products */;
@@ -1338,6 +1369,13 @@
 			fileType = archive.ar;
 			path = libRNCamera.a;
 			remoteRef = A84563C620B40C3700A0E0A5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A89A92B120BF7E1E001F92C3 /* libRNShare.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNShare.a;
+			remoteRef = A89A92B020BF7E1E001F92C3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A8B174D720A6D23100AB9562 /* libReactNativeLocalization.a */ = {

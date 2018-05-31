@@ -16,6 +16,7 @@
     "react-native-localization": "^1.0.9",
     "react-native-maps": "^0.21.0",
     "react-native-permissions": "^1.1.1",
+    "react-native-share": "^1.0.27",
     "react-native-timeago": "^0.4.0",
     "react-native-vector-icons": "^4.6.0",
     "react-navigation": "^2.0.4"

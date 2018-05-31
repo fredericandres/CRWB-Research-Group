@@ -3,6 +3,8 @@ package com.tastemate;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import cl.json.RNSharePackage;
+import cl.json.ShareApplication;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.babisoft.ReactNativeLocalization.ReactNativeLocalizationPackage;
@@ -16,7 +18,7 @@ import com.airbnb.android.react.maps.MapsPackage;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainApplication extends Application implements ReactApplication {
+public class MainApplication extends Application implements ReactApplication, ShareApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -28,6 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSharePackage(),
             new RNFetchBlobPackage(),
             new RNCameraPackage(),
             new ReactNativeLocalizationPackage(),
@@ -41,6 +44,11 @@ public class MainApplication extends Application implements ReactApplication {
       return "index";
     }
   };
+
+    @Override
+    public String getFileProviderAuthority() {
+        return "com.tastemate.provider";
+    }
 
   @Override
   public ReactNativeHost getReactNativeHost() {
