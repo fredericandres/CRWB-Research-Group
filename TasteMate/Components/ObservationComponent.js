@@ -4,7 +4,6 @@ import {
     Alert,
     FlatList,
     Image,
-    Linking,
     Platform,
     ScrollView,
     Text,
@@ -24,11 +23,11 @@ import {
     iconSizeStandard
 } from "../constants/Constants";
 import styles from "../styles";
-//import BottomSheet from 'react-native-bottom-sheet';
 import {adjectives, comments} from "../MockupData";
 import TimeAgo from "react-native-timeago";
 import {CommentComponent} from "./CommentComponent";
 import strings from "../strings";
+import Share from 'react-native-share';
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -70,7 +69,6 @@ export class ObservationComponent extends React.Component {
         const cancelButtonIndex = 2;
         const destructiveButtonIndex = 1;
 
-        // TODO: Customize ActionSheet depending on is logged in or not
         if (Platform.OS === 'android') {
             Alert.alert(title, message,
                 [
@@ -101,47 +99,19 @@ export class ObservationComponent extends React.Component {
         }
     }
 
-    _onPressShareButton() {
+    async _onPressShareButton() {
         // TODO: What is being shared? Link?
-        const subject = strings.share;
-        const message = strings.shareQuestion;
-        const url = '';
-        //var excludedActivityTypes = '';
-
-        if (Platform.OS === 'android') {
-            // TODO: Share on Android
-            // BottomSheet.showShareBottomSheetWithOptions({
-            //         subject: subject,
-            //         message: message,
-            //         url: url,
-            //     },
-            //     () => {
-            //         this._onSuccessfulShare();
-            //     },
-            //     () => {
-            //         this._onUnsuccessfulShare();
-            //     });
-        } else if (Platform.OS === 'ios') {
-            ActionSheetIOS.showShareActionSheetWithOptions({
-                    subject: subject,
-                    message: message,
-                    url: url,
-                },
-                () => {
-                    this._onSuccessfulShare();
-                },
-                () => {
-                    this._onUnsuccessfulShare();
-                });
-        }
-    }
-
-    _onSuccessfulShare(buttonIndex) {
-        // TODO: ??
-    }
-
-    _onUnsuccessfulShare(buttonIndex) {
-        // TODO: ??
+        Share.open({
+            title: strings.share,
+            subject: strings.shareSubject,
+            message: strings.shareMessage,
+            dialogTitle: strings.shareDialogTitle,
+            url: ''//this.observation.image,
+        }).catch(
+            (err) => {
+                err && console.log(err);
+            }
+        );
     }
 
     _toggleOverlay() {
