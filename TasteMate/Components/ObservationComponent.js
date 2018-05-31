@@ -15,6 +15,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {
     _formatNumber,
     _navigateToScreen,
+    ActivityEnum,
     brandContrast,
     brandLight,
     brandMain,
@@ -183,7 +184,7 @@ export class ObservationComponent extends React.Component {
                     {/*TODO: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                     <View name={'information'} style={{flexDirection: 'row'}}>
                         <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
-                        <Text name={'details'} style={styles.textSmall}> • {_formatNumber(this.observation.likes, 'LIKE')} • {_formatNumber(this.observation.cutleries, 'CUTLERY')} • {_formatNumber(this.observation.shares, 'SHARE')}</Text>
+                        <Text name={'details'} style={styles.textSmall}> • {_formatNumber(this.observation.likes, ActivityEnum.LIKE)} • {_formatNumber(this.observation.cutleries, ActivityEnum.CUTLERY)} • {_formatNumber(this.observation.shares, ActivityEnum.SHARE)}</Text>
                     </View>
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
