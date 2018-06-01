@@ -108,6 +108,9 @@ export default strings = new LocalizedStrings({
         enablePhoto: 'Please enable the storage permission in the Tastemate settings of your phone to use this feature.',
         enableCameraAndPhoto: 'To upload a picture, we first need access to your camera and to the camera roll. Please click here to open the permission dialog! Alternatively, you can go to the Tastemate settings of your smartphone and grant the permissions there.',
         permissionDenied: 'Permission Denied',
+        mypocExplanationTitle: 'The MyPoC Text Field',
+        mypocExplanationText: 'This field displays a general dish name as predicted by our MyPoC system. Feel free to edit the name if the prediction is incorrect!',
+        more: 'More',
 
         accessLocationQuestion: 'May we access your location?',
         accessLocationExplanation: 'We need access so you can see which saved observations are nearby.',

@@ -4,6 +4,7 @@ import {
     CameraRoll,
     FlatList,
     Image,
+    Linking,
     Picker,
     Platform,
     SafeAreaView,
@@ -373,6 +374,10 @@ export class CreateObservationScreen extends React.Component {
 
     render() {
         const cameraAuthorized = this.state.cameraPermission === 'authorized' && this.state.photoPermission === 'authorized';
+        const myPocAlertButtons = [
+            {text: strings.ok},
+            {text: strings.more, onPress: () => Linking.openURL('https://github.com/fredericandres/CRWB-Research-Group/wiki/MyPoC-App')}
+        ];
 
         return (
             <SafeAreaView style={{ flex: 1 }}>
@@ -464,7 +469,7 @@ export class CreateObservationScreen extends React.Component {
                             </View>
                             <TextInputComponent placeholder={strings.dishname} value={this.state.observation.dishname} onChangeText={(text) => this._onUpdateDishname(text)} icon={'cutlery'} keyboardType={'default'} />
                             {/*TODO: Display ? + popup explanation of what mypoc is*/}
-                            <TextInputComponent placeholder={this.state.observation.mypoc || 'prediction loading...'} value={this.state.observation.mypoccorrector || this.state.observation.mypoc} onChangeText={(text) => this._onUpdateMypoc(text)} icon={'question'} keyboardType={'default'} />
+                            <TextInputComponent info={true} infoTitle={strings.mypocExplanationTitle} infoText={strings.mypocExplanationText} infoButtons={myPocAlertButtons} placeholder={this.state.observation.mypoc || 'prediction loading...'} value={this.state.observation.mypoccorrector || this.state.observation.mypoc} onChangeText={(text) => this._onUpdateMypoc(text)} icon={'question'} keyboardType={'default'} />
                             <TextInputComponent placeholder={strings.location} value={this.state.locationText} onEndEditing={this._onSubmitSearch} onChangeText={(text) => this._onUpdateLocation(text)} icon={'location-arrow'} keyboardType={'default'} returnKeyType={'search'} />
                             {
                                 this.state.locationResults &&
