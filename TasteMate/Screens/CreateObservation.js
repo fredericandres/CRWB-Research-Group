@@ -38,6 +38,7 @@ import {RNCamera} from 'react-native-camera';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RNFetchBlob from 'react-native-fetch-blob';
+import XMLParser from 'react-xml-parser';
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 
@@ -214,6 +215,7 @@ export class CreateObservationScreen extends React.Component {
             .catch((err) => {
                 console.log("Error while loading images from camera roll");
             });
+        // TODO: load next photos when at bottom of flat list
     }
 
     _cameraRollKeyExtractor = (item, index) => item.node.image.uri;
@@ -227,23 +229,48 @@ export class CreateObservationScreen extends React.Component {
         obs.image = uri;
         this._updateObservationState(obs);
 
-        base64 ? this._sendToMyPoC(base64) : this._getBase64ForURi(uri, this._sendToMyPoC);
+        base64 ? this._sendToMyPoC(base64, this._onUpdateMypoc) : this._getBase64ForURi(this._sendToMyPoC);
 
         this._onPressNext();
     }
 
-    async _getBase64ForURi(uri, action) {
+    _getBase64ForURi(uri, action) {
         RNFetchBlob.fs.readFile(uri, 'base64')
             .then((data) => {
-                action(data);
+                action(data, this._onUpdateMypoc);
             });
     }
 
-    _sendToMyPoC(base64) {
-        console.log(base64);
-        // TODO: Send pic to myPoc
-        // Watanee: To get a dish name as feedback, I sent a picture  (in base64string format) to Anderson's API (RESTful api). I use the API via this link  http://odbenchmark.isima.fr/CRWB-Erina-web/resource/observation.
-        // TODO: Get response and display to user
+    _sendToMyPoC(base64, action) {
+        // Create blob from base64
+        const Blob = RNFetchBlob.polyfill.Blob;
+        Blob.build(base64, { type : 'image/jpg;BASE64' }).then((blob) => {
+            // Send blob as octet-stream POST request to MyPoC server
+            let xhr = new RNFetchBlob.polyfill.XMLHttpRequest();
+            xhr.open('POST', 'http://odbenchmark.isima.fr/CRWB-Erina-web/resource/observation');
+            xhr.setRequestHeader("Content-Type", "application/octet-stream");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === xhr.DONE) {
+                    if (xhr.status === 200) {
+                        // GET xml file for observation
+                        fetch(xhr.response)
+                            .then((response) => response.text())
+                            .then((xmlText) => {
+                                // Parse xml text into object and look for 'text' element --> MyPoC prediction of image
+                                const xml = new XMLParser().parseFromString(xmlText);
+                                const mypoc = xml.getElementsByTagName("text")[0].value;
+                                action(mypoc);
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });
+                    } else {
+                        console.error('An error occurred while sending image to MyPoC server: ' + xhr);
+                    }
+                }
+            };
+            xhr.send(blob);
+        });
     }
 
     /************* DETAILS *************/
@@ -268,7 +295,12 @@ export class CreateObservationScreen extends React.Component {
 
     _onUpdateMypoc(mypoc) {
         let obs = this.state.observation;
-        obs.mypoc = mypoc;
+        if (!this.state.observation.mypoc) {
+            obs.mypoc = mypoc;
+        } else {
+            obs.mypoccorrector = mypoc;
+            // TODO: Send corrected info to mypoc server
+        }
         this._updateObservationState(obs);
     }
 
@@ -431,7 +463,8 @@ export class CreateObservationScreen extends React.Component {
                                 </View>
                             </View>
                             <TextInputComponent placeholder={strings.dishname} value={this.state.observation.dishname} onChangeText={(text) => this._onUpdateDishname(text)} icon={'cutlery'} keyboardType={'default'} />
-                            <TextInputComponent placeholder={this.state.observation.mypoc} value={this.state.observation.mypoc} onChangeText={(text) => this._onUpdateMypoc(text)} icon={'question'} keyboardType={'default'} />
+                            {/*TODO: Display ? + popup explanation of what mypoc is*/}
+                            <TextInputComponent placeholder={this.state.observation.mypoc || 'prediction loading...'} value={this.state.observation.mypoccorrector || this.state.observation.mypoc} onChangeText={(text) => this._onUpdateMypoc(text)} icon={'question'} keyboardType={'default'} />
                             <TextInputComponent placeholder={strings.location} value={this.state.locationText} onEndEditing={this._onSubmitSearch} onChangeText={(text) => this._onUpdateLocation(text)} icon={'location-arrow'} keyboardType={'default'} returnKeyType={'search'} />
                             {
                                 this.state.locationResults &&
