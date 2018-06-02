@@ -92,10 +92,12 @@
 		A89A92B320BF7E5E001F92C3 /* libRNShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A89A92B120BF7E1E001F92C3 /* libRNShare.a */; };
 		A89A92B520BF7E7C001F92C3 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A89A92B420BF7E7C001F92C3 /* Social.framework */; };
 		A89A92B720BF7E84001F92C3 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A89A92B620BF7E84001F92C3 /* MessageUI.framework */; };
+		A89A933320BFE402001F92C3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A89A933220BFE402001F92C3 /* GoogleService-Info.plist */; };
 		A8FE9DB120B5178400C0AF49 /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A8FE9D8C20B50D3A00C0AF49 /* libRCTCameraRoll.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		AED3D282807A4DB3B1D4BCF5 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 101C0B1955274543A5B22EDF /* Feather.ttf */; };
 		D70B42A8C0BB41F6936C3592 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A5EE73F107CC4C4388541E87 /* Zocial.ttf */; };
+		E503DE8BDEBC42F9ABEDEFB1 /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EEF015082A62422DA23271B7 /* libRNFirebase.a */; };
 		E5E544DF2BDD486A8E95233D /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6630407DF8C64DCB959685D3 /* SimpleLineIcons.ttf */; };
 		E704416FE709F9ABD2AD010E /* libPods-TasteMate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 600D84C8D008E3683CA52DBA /* libPods-TasteMate.a */; };
 		EC89ED324CF849879F5BB42E /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C9CA7ACBD3F640B990A583DB /* MaterialIcons.ttf */; };
@@ -400,6 +402,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNShare;
 		};
+		A89A938920BFF25D001F92C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867ED42B07644E1BED441EC /* RNFirebase.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNFirebase;
+		};
 		A8B174D620A6D23100AB9562 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6689165235354E87848AC676 /* ReactNativeLocalization.xcodeproj */;
@@ -440,6 +449,7 @@
 		00E356EE1AD99517003FC87E /* TasteMateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TasteMateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* TasteMateTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TasteMateTests.m; sourceTree = "<group>"; };
+		0867ED42B07644E1BED441EC /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
 		101C0B1955274543A5B22EDF /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		11486BB5145B40DF966F8822 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
@@ -489,12 +499,14 @@
 		A89A928220BF7E1E001F92C3 /* RNShare.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNShare.xcodeproj; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; };
 		A89A92B420BF7E7C001F92C3 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		A89A92B620BF7E84001F92C3 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		A89A933220BFE402001F92C3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		B1929E30B2864C919C097E84 /* libReactNativeLocalization.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libReactNativeLocalization.a; sourceTree = "<group>"; };
 		BF85BBF0A3DF4AEFAF5A4551 /* libRNCamera.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNCamera.a; sourceTree = "<group>"; };
 		C978FBD65F05428F9B519B95 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		C9CA7ACBD3F640B990A583DB /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		DDD5FE4CF10640648605AA6A /* libReactNativePermissions.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libReactNativePermissions.a; sourceTree = "<group>"; };
+		EEF015082A62422DA23271B7 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
 		F48F8A583E1F4878890B9562 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -534,6 +546,7 @@
 				F545F03225CF4CA2B7430B42 /* libRNCamera.a in Frameworks */,
 				36BBA52B8DD04C318020A6BE /* libRNFetchBlob.a in Frameworks */,
 				E704416FE709F9ABD2AD010E /* libPods-TasteMate.a in Frameworks */,
+				E503DE8BDEBC42F9ABEDEFB1 /* libRNFirebase.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -661,6 +674,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				A89A933220BFE402001F92C3 /* GoogleService-Info.plist */,
 			);
 			name = TasteMate;
 			sourceTree = "<group>";
@@ -757,6 +771,7 @@
 				9477343D96184447BDDDEEE2 /* ReactNativePermissions.xcodeproj */,
 				6A638C589FB94B119DE3CA0F /* RNCamera.xcodeproj */,
 				86DA9E1F194942F9B871B78D /* RNFetchBlob.xcodeproj */,
+				0867ED42B07644E1BED441EC /* RNFirebase.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -815,6 +830,7 @@
 				DDD5FE4CF10640648605AA6A /* libReactNativePermissions.a */,
 				BF85BBF0A3DF4AEFAF5A4551 /* libRNCamera.a */,
 				8A7F323308834937BA2AFF90 /* libRNFetchBlob.a */,
+				EEF015082A62422DA23271B7 /* libRNFirebase.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -866,6 +882,14 @@
 			isa = PBXGroup;
 			children = (
 				A89A92B120BF7E1E001F92C3 /* libRNShare.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A89A938620BFF25D001F92C3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A89A938A20BFF25D001F92C3 /* libRNFirebase.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1077,6 +1101,10 @@
 				{
 					ProductGroup = A8FE9F0220B64ECB00C0AF49 /* Products */;
 					ProjectRef = 86DA9E1F194942F9B871B78D /* RNFetchBlob.xcodeproj */;
+				},
+				{
+					ProductGroup = A89A938620BFF25D001F92C3 /* Products */;
+					ProjectRef = 0867ED42B07644E1BED441EC /* RNFirebase.xcodeproj */;
 				},
 				{
 					ProductGroup = A89A928320BF7E1E001F92C3 /* Products */;
@@ -1378,6 +1406,13 @@
 			remoteRef = A89A92B020BF7E1E001F92C3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		A89A938A20BFF25D001F92C3 /* libRNFirebase.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNFirebase.a;
+			remoteRef = A89A938920BFF25D001F92C3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		A8B174D720A6D23100AB9562 /* libReactNativeLocalization.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1433,6 +1468,7 @@
 			files = (
 				A894B9F4209ACEAE00077543 /* Octicons.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				A89A933320BFE402001F92C3 /* GoogleService-Info.plist in Resources */,
 				A894B9E4209ACEAE00077543 /* Foundation.ttf in Resources */,
 				A894B9F0209ACEAE00077543 /* MaterialIcons.ttf in Resources */,
 				A894B9FC209ACEAE00077543 /* Zocial.ttf in Resources */,
@@ -1642,12 +1678,14 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = TasteMateTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1673,12 +1711,14 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = TasteMateTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1706,6 +1746,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = TasteMate/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1714,6 +1755,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nii.TasteMate;
 				PRODUCT_NAME = TasteMate;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1732,6 +1774,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = TasteMate/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1740,6 +1783,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nii.TasteMate;
 				PRODUCT_NAME = TasteMate;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1764,11 +1808,13 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = "TasteMate-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -1803,11 +1849,13 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = "TasteMate-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -1841,11 +1889,13 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = "TasteMate-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -1879,11 +1929,13 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = "TasteMate-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
