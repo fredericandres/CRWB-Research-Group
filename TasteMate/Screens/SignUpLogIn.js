@@ -4,6 +4,7 @@ import strings from "../strings";
 import styles from "../styles";
 import {brandAccent} from "../constants/Constants";
 import {TextInputComponent} from "../Components/TextInputComponent";
+import firebase from 'react-native-firebase';
 
 export class SignUpLogInScreen extends React.Component {
     static navigationOptions = {
@@ -17,27 +18,102 @@ export class SignUpLogInScreen extends React.Component {
         this._onPressSubmit = this._onPressSubmit.bind(this);
         this._onPressSkip = this._onPressSkip.bind(this);
 
-        // TODO: get user info from DB
         this.state = {
             username: undefined,
             email: undefined,
             location: undefined,
             password: undefined,
             signUpActive: false,
+            error: null
         };
+
+        this.unsubscriber = null;
+    }
+
+    componentDidMount() {
+        this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
+            console.log(user);
+            if (user) {
+                this.props.navigation.goBack(null);
+            }
+        });
     }
 
     componentWillMount() {
         StatusBar.setHidden(true);
     }
+
     componentWillUnmount() {
         StatusBar.setHidden(false);
+        if (this.unsubscriber) {
+            this.unsubscriber();
+        }
     }
 
     _onPressSubmit() {
-        // TODO: Check with DB
-        // TODO: Display error/success msg
-        this.props.navigation.dismiss();
+        let errorMessage = '';
+        if (!this.state.email) {
+            errorMessage = strings.errorMessageEnterEmail;
+        } else if (!this.state.password) {
+            errorMessage = strings.errorMessageEnterPassword;
+        } else {
+            if (this.state.signUpActive) {
+                if (!this.state.username) {
+                    errorMessage = strings.errorMessageEnterUsername;
+                } else if  (!this.state.location) {
+                    errorMessage = strings.errorMessageEnterLocation;
+                } else {
+                    // TODO: also set location of user somehow
+                    firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then(() => {
+                        console.log('Successfully signed up.');
+                    }).catch((error) => {
+                        console.error('Error during signup.');
+                        console.error(error);
+                        this._handleAuthError(error);
+                    });
+                }
+            } else {
+                firebase.auth().signInAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then(() => {
+                    console.log('Successfully logged in.');
+                }).catch((error) => {
+                    console.error('Error during login.');
+                    console.error(error);
+                    this._handleAuthError(error);
+                });
+            }
+        }
+
+        this.setState({error: errorMessage});
+    }
+
+    _handleAuthError(error) {
+        console.log('asdad');
+        console.log(error.code);
+
+        let errorMessage = '';
+
+        switch (error.code) {
+            case 'auth/invalid-email':
+                errorMessage = strings.errorMessageInvalidEmail;
+                break;
+            case 'auth/user-disabled':
+                errorMessage = strings.errorMessageUserDisabled;
+                break;
+            case 'auth/user-not-found':
+                errorMessage = strings.errorMessageUserNotFound;
+                break;
+            case 'auth/wrong-password':
+                errorMessage = strings.errorMessageWrongPassword;
+                break;
+            case 'auth/weak-password':
+                errorMessage = strings.errorMessageWeakPassword;
+                break;
+                case 'auth/email-already-in-use':
+                errorMessage = strings.errorMessageEmailAlreadyInUse;
+                break;
+        }
+
+        this.setState({error: errorMessage});
     }
 
     _onPressSwitch() {
@@ -45,11 +121,16 @@ export class SignUpLogInScreen extends React.Component {
     }
 
     _onPressSkip() {
-        this.props.navigation.dismiss();
+        firebase.auth().signInAnonymouslyAndRetrieveData().then(() => {
+            console.log('Successfully signed up.');
+        }).catch((error) => {
+            console.error('Error during signup.');
+            console.error(error);
+            this._handleAuthError(error);
+        });
     }
 
     render() {
-        // TODO: skip button
         return (
             <ImageBackground source={require('../background.png')} resizeMode={'cover'}  style={{flex: 1}}>
                 <View style={[styles.containerOpacityMain, {position:'absolute', left: 0, right: 0, top: 0, bottom: 0}]}/>
@@ -72,14 +153,17 @@ export class SignUpLogInScreen extends React.Component {
                     <View style={{flex: 1}}/>
                 </View>
                 <View name={'inputWrapper'} style={[styles.containerPadding, {flex: 1}]}>
-                    {this.state.signUpActive && <TextInputComponent placeholder={strings.username} value={this.state.username} onChangeText={(text) => this.setState({username: text})} icon={'user'} keyboardType={'default'} />}
+                    {this.state.signUpActive && <TextInputComponent placeholder={strings.username} value={this.state.username} onChangeText={(text) => this.setState({username: text.toLowerCase()})} icon={'user'} keyboardType={'default'} />}
                     <TextInputComponent placeholder={strings.emailAddress} value={this.state.email} onChangeText={(text) => this.setState({email: text})} icon={'envelope'} keyboardType={'email-address'} />
                     <TextInputComponent placeholder={strings.password} icon={'lock'} onChangeText={(text) => this.setState({password: text})} keyboardType={'default'} secureTextEntry={true} />
                     {this.state.signUpActive && <TextInputComponent placeholder={strings.location} value={this.state.location} onChangeText={(text) => this.setState({location: text})} icon={'location-arrow'} keyboardType={'default'} />}
                     {!this.state.signUpActive && <View style={{flex:2}}/>}
                 </View>
-                <View style={{flex: 1, flexDirection: 'column'}}>
-                    <View style={{flex: 1}}/>
+                <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
+                    <View style={[styles.containerOpacityMain, {flex: 1, flexDirection:'row', alignItems: 'center'}]}>
+                        {this.state.error &&
+                        <Text style={[styles.textStandard, styles.containerPadding, {textAlign: 'center', color:brandAccent}]}>{this.state.error}</Text>}
+                    </View>
                     <View style={{flex: 6, alignItems: 'center'}}>
                         <View name={'submitButtonWrapper'} style={[styles.containerPadding]}>
                             <TouchableOpacity name={'saveChangesButton'} onPress={this._onPressSubmit} style={[{backgroundColor:brandAccent}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>

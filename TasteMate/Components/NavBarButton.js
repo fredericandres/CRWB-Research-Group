@@ -1,10 +1,11 @@
 import React from 'react';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {_navigateToScreen, brandContrast, iconSizeStandard} from "../constants/Constants";
 import StandardStyle from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import strings from "../strings";
+import firebase from 'react-native-firebase';
 
 export class NavBarButton extends React.Component {
     _openScreen(screen) {
@@ -12,14 +13,12 @@ export class NavBarButton extends React.Component {
     }
 
     render() {
-        const nav = this.props.nav;
         const screen = this.props.screen;
         const icon = this.props.icon;
         const image = this.props.image;
         const text = this.props.text;
-        const isModal = this.props.isModal;
         const iconType = this.props.iconType;
-        const action = this.props.actionn;
+        const action = this.props.actionn || (() => this._openScreen(screen));
 
         // Content
         let content = <Text>{text}</Text>;
@@ -33,22 +32,10 @@ export class NavBarButton extends React.Component {
             content = <Image/>;
         }
 
-        // Action
-        let wrapper = <TouchableOpacity/>;
-        if (isModal) {
-            wrapper =
-                <TouchableOpacity onPress={() => nav.goBack(null)} style={StandardStyle.containerPadding}>
-                    {content}
-                </TouchableOpacity>
-        } else {
-            wrapper =
-                <TouchableOpacity onPress={screen === undefined ? action : (()=> this._openScreen(screen))} style={StandardStyle.containerPadding}>
-                    {content}
-                </TouchableOpacity>;
-        }
-
         return (
-            wrapper
+            <TouchableOpacity onPress={action} style={StandardStyle.containerPadding}>
+                {content}
+            </TouchableOpacity>
         );
     }
 }
@@ -67,7 +54,7 @@ export class NavBarCreateObsButton extends React.Component {
     render() {
         const nav = this.props.nav;
         return (
-            <NavBarButton nav={nav} screen={'CreateObservation'} icon={'plus'} />
+            <NavBarButton nav={nav} screen={'CreateObservation'} icon={'plus'}/>
         );
     }
 }
@@ -76,7 +63,16 @@ export class NavBarCloseButton extends React.Component {
     render() {
         const nav = this.props.nav;
         return (
-            <NavBarButton nav={nav} text={strings.close} isModal={true} />
+            <NavBarButton nav={nav} text={strings.close} actionn={() => nav.goBack(null)}/>
+        );
+    }
+}
+
+export class NavBarLogoutButton extends React.Component {
+    render() {
+        const nav = this.props.nav;
+        return (
+            <NavBarButton nav={nav} icon={'sign-out'} actionn={() => {firebase.auth().signOut(); nav.dismiss();}}/>
         );
     }
 }

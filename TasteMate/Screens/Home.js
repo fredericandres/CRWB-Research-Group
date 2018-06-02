@@ -5,6 +5,8 @@ import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";
 import {observations} from "../MockupData";
 import strings from "../strings";
+import firebase from 'react-native-firebase';
+import {_navigateToScreen} from "../constants/Constants";
 
 export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
@@ -16,6 +18,31 @@ export class HomeScreen extends React.Component {
             <NavBarCreateObsButton nav={navigation}/>
         ),
     });
+
+    constructor() {
+        super();
+        this.unsubscriber = null;
+        this.state = {
+            user: null,
+        };
+    }
+
+    componentDidMount() {
+        this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
+            this.setState({ user });
+            console.log(user);
+            if (!user) {
+                // Open SingUpLogIn screen if no account associated (not even anonymous)
+                _navigateToScreen('SignUpLogIn', this.props.navigation);
+            }
+        });
+    }
+
+    componentWillUnmount() {
+        if (this.unsubscriber) {
+            this.unsubscriber();
+        }
+    }
 
     _onRefreshPulled() {
         // TODO: pull to refresh
@@ -37,4 +64,4 @@ export class HomeScreen extends React.Component {
         );
     }
 }
-// TODO: empty list component with suggestions for followees/observations
+// TODO [FEATURE]: empty list component with suggestions for followees/observations
