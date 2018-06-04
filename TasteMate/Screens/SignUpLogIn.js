@@ -65,9 +65,22 @@ export class SignUpLogInScreen extends React.Component {
                 } else if  (!this.state.location) {
                     errorMessage = strings.errorMessageEnterLocation;
                 } else {
-                    // TODO: also set location of user somehow
-                    firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then(() => {
+                    firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then((credentials) => {
                         console.log('Successfully signed up.');
+
+                        // Add user's username & location to database
+                        firebase.database().ref('users').child(credentials.user.uid).set({
+                            username: this.state.username,
+                            location: this.state.location
+                        }, (error) => {
+                            if (error) {
+                                console.error('Error during user information transmission.');
+                                console.error(error);
+                                this._handleAuthError(error);
+                            } else {
+                                console.log('Successfully added user information to DB.');
+                            }
+                        });
                     }).catch((error) => {
                         console.error('Error during signup.');
                         console.error(error);
@@ -110,7 +123,7 @@ export class SignUpLogInScreen extends React.Component {
             case 'auth/weak-password':
                 errorMessage = strings.errorMessageWeakPassword;
                 break;
-                case 'auth/email-already-in-use':
+            case 'auth/email-already-in-use':
                 errorMessage = strings.errorMessageEmailAlreadyInUse;
                 break;
         }
