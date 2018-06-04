@@ -1,6 +1,6 @@
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
-import {NavBarButton, NavBarCloseButton, NavBarFollowUnfollowButton} from "../Components/NavBarButton";
+import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
 import {brandMain} from "../constants/Constants";
 import styles from "../styles";
 import * as MockupData from "../MockupData";
@@ -12,16 +12,51 @@ import strings from "../strings";
 import {currentUser, currentUserInformation} from "../App";
 import firebase from 'react-native-firebase';
 
-function _toggleFollowUnfollow() {
-    // TODO
-    this.user = !this.user;
-    return undefined;
+function _toggleFollowUnfollow(navigation) {
+    const isFollowing = navigation.getParam('isFollowing');
+    const follower = currentUser.uid;
+    const followee = userid;
+    const combined = _generateCombinedKey(follower, followee);
+
+    if (isFollowing === null) {
+        // Do nothing, we are not sure yet if current user is following this user or not
+    } else if (isFollowing) {
+        console.log('Removing relationship of ' + follower + ' following ' + followee);
+        const ref = firebase.database().ref('follow/' + combined);
+        console.log(ref);
+        ref.remove(
+            (error) => {
+                if (error) {
+                    error.log(error);
+                } else {
+                    console.log('Successfully removed relationship of ' + follower + ' following ' + followee);
+                    navigation.setParams({ isFollowing: false });
+                }
+            }
+        );
+    } else {
+        firebase.database().ref('follow').child(combined).set({
+            follower: follower,
+            followee: followee,
+        }, (error) => {
+            if (error) {
+                console.error('Error during user following relationship transmission.');
+                console.error(error);
+                this._handleAuthError(error);
+            } else {
+                console.log('Successfully added ' + follower + ' to follow ' + followee);
+                navigation.setParams({ isFollowing: true });
+            }
+        });
+    }
+}
+
+function _generateCombinedKey(follower, followee) {
+    return follower + '_' + followee;
 }
 
 const FOLLOW_LOAD_DEPTH = 10;
-let followersIds = {};
-let followingIds = {};
-let isFollowing = false;
+let userid = null;
 
 export class ProfileScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -35,10 +70,10 @@ export class ProfileScreen extends React.Component {
                 <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'} myProfile={true}/>
                 :
                 !(navigation.getParam('user') === currentUser.uid) && !(navigation.getParam('user') && navigation.getParam('user').userid === currentUser.uid) ? <View>
-                        {isFollowing &&
-                        <NavBarFollowUnfollowButton icon={'user-following'} actionn={() => _toggleFollowUnfollow(navigation)}/>}
-                        {!isFollowing &&
-                        <NavBarFollowUnfollowButton icon={'user-follow'} actionn={() => _toggleFollowUnfollow(navigation)}/>}
+                        {navigation.getParam('isFollowing') &&
+                        <NavBarFollowUnFollowButton icon={'user-following'} actionn={() => _toggleFollowUnfollow(navigation)}/>}
+                        {!navigation.getParam('isFollowing') &&
+                        <NavBarFollowUnFollowButton icon={'user-follow'} actionn={() => _toggleFollowUnfollow(navigation)}/>}
                     </View>
                     : <View/>
         ),
@@ -66,15 +101,14 @@ export class ProfileScreen extends React.Component {
         this._loadFollowing = this._loadFollowing.bind(this);
         this._loadFollowers = this._loadFollowers.bind(this);
 
-        this.userid = props.navigation.getParam('myProfile') ? currentUser.uid : props.navigation.getParam('user').userid ? props.navigation.getParam('user').userid : props.navigation.getParam('user');
+        userid = props.navigation.getParam('myProfile') ? currentUser.uid : props.navigation.getParam('user').userid ? props.navigation.getParam('user').userid : props.navigation.getParam('user');
 
-        followingIds = {};
-        followersIds = {};
-
-
+        this.followingIds = {};
+        this.followersIds = {};
+        
         if (!props.navigation.getParam('myProfile') && !props.navigation.getParam('user').userid) {
             // Get user from DB
-            firebase.database().ref('users').child(this.userid).once(
+            firebase.database().ref('users').child(userid).once(
                 'value',
                 (dataSnapshot) => {
                     console.log('Successfully retrieved user data');
@@ -88,23 +122,41 @@ export class ProfileScreen extends React.Component {
             );
         }
 
+        if (this.userid !== currentUser.uid) {
+            // Is current user following this user?
+            console.log('Retrieving follower status...');
+            const ref = firebase.database().ref('follow').child(_generateCombinedKey(currentUser.uid, userid));
+            ref.once(
+                'value',
+                (dataSnapshot) => {
+                    console.log('Successfully retrieved follower status');
+                    console.log(dataSnapshot.toJSON());
+                    this.props.navigation.setParams({ isFollowing: dataSnapshot.toJSON() !== null })
+                },
+                (error) => {
+                    console.error('Error while retrieving follower status');
+                    console.error(error);
+                }
+            );
+        }
+
         this._loadFollowers();
         this._loadFollowing();
     }
 
     _loadFollowers() {
-        const followersSize = Object.keys(followersIds).length;
+        const followersSize = Object.keys(this.followersIds).length;
         if (followersSize === 0 || followersSize % FOLLOW_LOAD_DEPTH === 0) {
             console.log('Loading followers...');
-            this._loadUsers('followee', this.userid, followersIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => {this.setState(prevState => ({followers: [...prevState.followers, dataSnapshot]}))});
+            this._loadUsers('followee', userid, this.followersIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => {this.setState(prevState => ({followers: [...prevState.followers, dataSnapshot]}))});
         }
     }
 
     _loadFollowing() {
-        const followingSize = Object.keys(followingIds).length;
+        const followingSize = Object.keys(this.followingIds).length;
         if (followingSize === 0 || followingSize % FOLLOW_LOAD_DEPTH === 0) {
             console.log('Loading following...');
-            this._loadUsers('follower', this.userid, followingIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => {this.setState(prevState => ({following: [...prevState.following, dataSnapshot]}))});
+            this._loadUsers('follower', userid, this.followingIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => {this.setState(prevState => ({following: [...prevState.following, dataSnapshot]}))});
         }
     }
 

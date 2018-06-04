@@ -80,14 +80,14 @@ export class NavBarLogoutButton extends React.Component {
     }
 }
 
-export class NavBarFollowUnfollowButton extends React.Component {
+export class NavBarFollowUnFollowButton extends React.Component {
     constructor(props) {
         super(props);
     }
     render() {
         const actionn = this.props.actionn;
         return (
-            <NavBarButton icon={'user-following'} iconType={'SimpleLineIcons'} actionn={actionn}/>
+            <NavBarButton icon={this.props.icon} iconType={'SimpleLineIcons'} actionn={actionn}/>
         );
     }
 }

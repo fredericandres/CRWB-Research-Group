@@ -4,8 +4,8 @@ import Location from "./Data/Location";
 const location1 = new Location('Yoshinoya', 'ChIJcfDfiROMGGARlXN3FRTivo8', 'Japan, 〒101-0051 Tōkyō-to, Chiyoda-ku, Kanda Jinbōchō, 2 Chome−７−７', 35.695688, 139.755246);
 const location2 = new Location('Voodoo Doughnut', 'ChIJ81ogcae1RIYRPNSTL-oW9IY', '212 E 6th St, Austin, TX 78701, USA', 30.2676502, -97.7430909);
 
-const obs1 = new Observation('dzt47KWDHrR0ysFdCccdYvctUOb2', 'O1', 'Mr Frosty', 'Donut', '', location1, 'Mmm this is so delicious seriously', '', '3.99', 'EUR', 9, {1:true, 3:true}, 1525842671630);
-const obs2 = new Observation('sssss', 'O2', 'Mr Frosty', 'Donut', '', location2, 'Mmm this is so delicious seriously', '', '3.99', 'EUR', 9, {1:true, 3:true}, 1525842671630);
+const obs1 = new Observation('asdasdasd', 'O1', 'Mr Frosty', 'Donut', '', location1, 'Mmm this is so delicious seriously', '', '3.99', 'EUR', 9, {1:true, 3:true}, 1525842671630);
+const obs2 = new Observation('dzt47KWDHrR0ysFdCccdYvctUOb2', 'O2', 'Mr Frosty', 'Donut', '', location2, 'Mmm this is so delicious seriously', '', '3.99', 'EUR', 9, {1:true, 3:true}, 1525842671630);
 
 export const observations = [
     obs1, obs2
