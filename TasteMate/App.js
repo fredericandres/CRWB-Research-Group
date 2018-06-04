@@ -28,8 +28,19 @@ const styles = StyleSheet.create({
 });
 
 export let currentUser = null;
+export let currentUserInformation = null;
 firebase.auth().onAuthStateChanged((user) => {
     currentUser = user;
+    firebase.database().ref('users').child(currentUser.uid).on(
+        'value',
+        (dataSnapshot) => {
+            currentUserInformation = dataSnapshot.toJSON();
+        },
+        (error) => {
+            console.error('Could not load user data');
+            console.error(error);
+        }
+    );
 });
 
 const HomeStack = createStackNavigator({

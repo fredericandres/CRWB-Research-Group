@@ -9,6 +9,8 @@ import {UserComponent} from "../Components/UserComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {ProfileSegmentedControlItem} from "../Components/ProfileSegmentedControlItem";
 import strings from "../strings";
+import {currentUserInformation} from "../App";
+import firebase from 'react-native-firebase';
 
 function _toggleFollowUnfollow() {
     // TODO
@@ -33,7 +35,6 @@ export class ProfileScreen extends React.Component {
                     {!userr.isFollowing &&
                     <NavBarFollowUnfollowButton icon={'user-follow'} actionn={_toggleFollowUnfollow}/>}
                 </View>
-
         ),
         headerStyle: {
             borderBottomWidth: 0,
@@ -45,15 +46,32 @@ export class ProfileScreen extends React.Component {
         },
     });
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             selectedIndex: 0,
+            user: props.navigation.getParam('myProfile') ? currentUserInformation : props.navigation.getParam('user') || {}
         };
         this._onPressFollowers = this._onPressFollowers.bind(this);
         this._onPressPhotos = this._onPressPhotos.bind(this);
         this._onPressFollowing = this._onPressFollowing.bind(this);
-        this.user = userr;
+
+        if (!props.navigation.getParam('user') && !props.navigation.getParam('myProfile')) {
+            // Get user from DB
+            const userid = props.navigation.getParam('userId');
+            firebase.database().ref('users').child(userid).once(
+                'value',
+                (dataSnapshot) => {
+                    console.log('Successfully retrieved user data');
+                    this.setState({user: dataSnapshot.toJSON()});
+                },
+                (error) => {
+                    console.error('Error while retrieving user data');
+                    console.error(error);
+                }
+            );
+
+        }
     }
 
     _onPressPhotos() {
@@ -75,8 +93,6 @@ export class ProfileScreen extends React.Component {
     _followingKeyExtractor = (item, index) => item.userid;
 
     render() {
-        const user = userr; //this.props.navigation.getParam('userid')
-
         return (
             <View style={{flex: 1,}}>
                 <View name={'header'} style={{flex: 2, backgroundColor: brandMain}}>
@@ -90,10 +106,10 @@ export class ProfileScreen extends React.Component {
                     </View>
                     <View name={'username'} style={{flex: 1, alignItems: 'flex-end', flexDirection: 'row'}}>
                         <Text name={'username'}
-                              style={[styles.textTitleBoldDark, {textAlign: 'center', flex: 1}]}>{user.username}</Text>
+                              style={[styles.textTitleBoldDark, {textAlign: 'center', flex: 1}]}>{this.state.user.username}</Text>
                     </View>
                     <Text name={'location'}
-                          style={[styles.textTitle, {flex: 1, textAlign: 'center'}]}>{user.location}</Text>
+                          style={[styles.textTitle, {flex: 1, textAlign: 'center'}]}>{this.state.user.location}</Text>
                 </View>
                 <View name={'content'} style={{flex: 5}}>
                     <View name={'segmentedcontrolwrapper'}>
