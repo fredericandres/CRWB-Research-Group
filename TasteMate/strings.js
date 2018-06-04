@@ -21,6 +21,11 @@ export default strings = new LocalizedStrings({
         signUpLogIn: 'Sign Up Log In',
         mapDetail: 'Map Detail',
 
+        hiThere: 'Hi there,',
+        welcomeToTastemate: 'Welcome to Tastemate! ',
+        limitedContentExplanation: 'Unfortunately, you\'re not logged in, so we can only show you limited content and functionality. Once you\'re ready to explore more of the app, click the user icon button in the top left corner to log in or create a new account. In the meantime, ',
+        haveFun: 'Have fun!',
+
         emptyFeed: 'Seems like your feed is empty. Why not follow some tastemates?',
         selectAction: 'Select an action',
         doWithPost: 'What would you like to do with the post \"{0}\" by {1}',

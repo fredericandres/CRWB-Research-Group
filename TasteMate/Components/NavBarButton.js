@@ -1,7 +1,8 @@
 import React from 'react';
-import {Image, Text, TouchableOpacity} from 'react-native';
+import {Image, StatusBar, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {_navigateToScreen, brandContrast, iconSizeStandard} from "../constants/Constants";
+import {currentUser} from "../App";
 import StandardStyle from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import strings from "../strings";
@@ -13,12 +14,15 @@ export class NavBarButton extends React.Component {
     }
 
     render() {
+        // TODO: Fix bug where logged out -> login -> click on top buttons -> should be profile but is signup
+        // User is only logged in if he is NOT anonymous
+        const isLoggedIn = currentUser ? !currentUser.isAnonymous : false;
         const screen = this.props.screen;
         const icon = this.props.icon;
         const image = this.props.image;
         const text = this.props.text;
         const iconType = this.props.iconType;
-        const action = this.props.actionn || (() => this._openScreen(screen));
+        const action = this.props.actionn || (isLoggedIn ? (() => this._openScreen(screen)): () => this._openScreen('SignUpLogIn'));
 
         // Content
         let content = <Text>{text}</Text>;
@@ -44,7 +48,6 @@ export class NavBarProfileButton extends React.Component {
     render() {
         const nav = this.props.nav;
         return (
-            // TODO: only go to my profile if logged in, else go to signup/login
             <NavBarButton nav={nav} screen={'MyProfile'} icon={'user-o'}/>
         );
     }

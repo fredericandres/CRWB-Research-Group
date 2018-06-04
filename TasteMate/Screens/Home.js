@@ -7,6 +7,7 @@ import {observations} from "../MockupData";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
 import {_navigateToScreen} from "../constants/Constants";
+import {LogInMessage} from "../Components/LogInMessage";
 
 export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
@@ -23,17 +24,17 @@ export class HomeScreen extends React.Component {
         super();
         this.unsubscriber = null;
         this.state = {
-            user: null,
+            user: null
         };
     }
 
     componentDidMount() {
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-            this.setState({ user });
-            console.log(user);
             if (!user) {
                 // Open SingUpLogIn screen if no account associated (not even anonymous)
                 _navigateToScreen('SignUpLogIn', this.props.navigation);
+            } else {
+                this.setState({user: user});
             }
         });
     }
@@ -52,15 +53,24 @@ export class HomeScreen extends React.Component {
 
     render() {
         return (
-            <FlatList
-                data={observations}
-                keyExtractor={this._keyExtractor}
-                renderItem={({item}) => <ObservationComponent observation={item} {...this.props}/>}
-                refreshing={false}
-                onRefresh={() => this._onRefreshPulled}
-                ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.emptyFeed}</Text>}
-                ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
-            />
+            <View style={{flex:1}}>
+                {
+                    this.state.user && !this.state.user.isAnonymous &&
+                    <FlatList
+                        data={observations}
+                        keyExtractor={this._keyExtractor}
+                        renderItem={({item}) => <ObservationComponent observation={item} {...this.props}/>}
+                        refreshing={false}
+                        onRefresh={() => this._onRefreshPulled}
+                        ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.emptyFeed}</Text>}
+                        ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
+                    />
+                }
+                {
+                    !this.state.user || this.state.user.isAnonymous &&
+                    <LogInMessage style={{flex:1}}/>
+                }
+            </View>
         );
     }
 }

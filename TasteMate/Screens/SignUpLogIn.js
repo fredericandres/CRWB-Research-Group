@@ -24,17 +24,19 @@ export class SignUpLogInScreen extends React.Component {
             location: undefined,
             password: undefined,
             signUpActive: false,
-            error: null
+            error: null,
+            user: null
         };
 
         this.unsubscriber = null;
+        this.skipPressed = false;
     }
 
     componentDidMount() {
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-            console.log(user);
-            if (user) {
-                this.props.navigation.goBack(null);
+            this.setState({user: user});
+            if (user && (!user.isAnonymous || this.skipPressed)) {
+                this._close();
             }
         });
     }
@@ -121,13 +123,22 @@ export class SignUpLogInScreen extends React.Component {
     }
 
     _onPressSkip() {
-        firebase.auth().signInAnonymouslyAndRetrieveData().then(() => {
-            console.log('Successfully signed up.');
-        }).catch((error) => {
-            console.error('Error during signup.');
-            console.error(error);
-            this._handleAuthError(error);
-        });
+        this.skipPressed = true;
+        if (this.state.user) {
+            this._close();
+        } else {
+            firebase.auth().signInAnonymouslyAndRetrieveData().then(() => {
+                console.log('Successfully signed up.');
+            }).catch((error) => {
+                console.error('Error during signup.');
+                console.error(error);
+                this._handleAuthError(error);
+            });
+        }
+    }
+
+    _close() {
+        this.props.navigation.goBack(null);
     }
 
     render() {

@@ -14,6 +14,7 @@ import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
 import strings from "./strings";
 import {MapScreen} from "./Screens/Map";
+import firebase from 'react-native-firebase';
 
 StatusBar.setHidden(false);
 
@@ -24,6 +25,11 @@ const styles = StyleSheet.create({
     navHeaderTitleStyle: {
         fontWeight: 'bold',
     },
+});
+
+export let currentUser = null;
+firebase.auth().onAuthStateChanged((user) => {
+    currentUser = user;
 });
 
 const HomeStack = createStackNavigator({
