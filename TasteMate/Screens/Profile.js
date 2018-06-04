@@ -9,7 +9,7 @@ import {UserComponent} from "../Components/UserComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {ProfileSegmentedControlItem} from "../Components/ProfileSegmentedControlItem";
 import strings from "../strings";
-import {currentUserInformation} from "../App";
+import {currentUser, currentUserInformation} from "../App";
 import firebase from 'react-native-firebase';
 
 function _toggleFollowUnfollow() {
@@ -17,6 +17,11 @@ function _toggleFollowUnfollow() {
     this.user = !this.user;
     return undefined;
 }
+
+const FOLLOW_LOAD_DEPTH = 10;
+let followersIds = {};
+let followingIds = {};
+let isFollowing = false;
 
 export class ProfileScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -29,12 +34,13 @@ export class ProfileScreen extends React.Component {
             navigation.getParam('myProfile') ?
                 <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'} myProfile={true}/>
                 :
-                <View>
-                    {userr.isFollowing &&
-                    <NavBarFollowUnfollowButton icon={'user-following'} actionn={_toggleFollowUnfollow}/>}
-                    {!userr.isFollowing &&
-                    <NavBarFollowUnfollowButton icon={'user-follow'} actionn={_toggleFollowUnfollow}/>}
-                </View>
+                !(navigation.getParam('user') === currentUser.uid) && !(navigation.getParam('user') && navigation.getParam('user').userid === currentUser.uid) ? <View>
+                        {isFollowing &&
+                        <NavBarFollowUnfollowButton icon={'user-following'} actionn={() => _toggleFollowUnfollow(navigation)}/>}
+                        {!isFollowing &&
+                        <NavBarFollowUnfollowButton icon={'user-follow'} actionn={() => _toggleFollowUnfollow(navigation)}/>}
+                    </View>
+                    : <View/>
         ),
         headerStyle: {
             borderBottomWidth: 0,
@@ -50,47 +56,111 @@ export class ProfileScreen extends React.Component {
         super(props);
         this.state = {
             selectedIndex: 0,
-            user: props.navigation.getParam('myProfile') ? currentUserInformation : props.navigation.getParam('user') || {}
+            user: props.navigation.getParam('myProfile') ? currentUserInformation : props.navigation.getParam('user') || {},
+            followers: [],
+            following: []
         };
         this._onPressFollowers = this._onPressFollowers.bind(this);
         this._onPressPhotos = this._onPressPhotos.bind(this);
         this._onPressFollowing = this._onPressFollowing.bind(this);
+        this._loadFollowing = this._loadFollowing.bind(this);
+        this._loadFollowers = this._loadFollowers.bind(this);
 
-        if (!props.navigation.getParam('user') && !props.navigation.getParam('myProfile')) {
+        this.userid = props.navigation.getParam('myProfile') ? currentUser.uid : props.navigation.getParam('user').userid ? props.navigation.getParam('user').userid : props.navigation.getParam('user');
+
+        followingIds = {};
+        followersIds = {};
+
+
+        if (!props.navigation.getParam('myProfile') && !props.navigation.getParam('user').userid) {
             // Get user from DB
-            const userid = props.navigation.getParam('userId');
-            firebase.database().ref('users').child(userid).once(
+            firebase.database().ref('users').child(this.userid).once(
                 'value',
                 (dataSnapshot) => {
                     console.log('Successfully retrieved user data');
-                    this.setState({user: dataSnapshot.toJSON()});
+                    const user = dataSnapshot.toJSON();
+                    this.setState({user: user});
                 },
                 (error) => {
                     console.error('Error while retrieving user data');
                     console.error(error);
                 }
             );
+        }
 
+        this._loadFollowers();
+        this._loadFollowing();
+    }
+
+    _loadFollowers() {
+        const followersSize = Object.keys(followersIds).length;
+        if (followersSize === 0 || followersSize % FOLLOW_LOAD_DEPTH === 0) {
+            console.log('Loading followers...');
+            this._loadUsers('followee', this.userid, followersIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => {this.setState(prevState => ({followers: [...prevState.followers, dataSnapshot]}))});
         }
     }
 
+    _loadFollowing() {
+        const followingSize = Object.keys(followingIds).length;
+        if (followingSize === 0 || followingSize % FOLLOW_LOAD_DEPTH === 0) {
+            console.log('Loading following...');
+            this._loadUsers('follower', this.userid, followingIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => {this.setState(prevState => ({following: [...prevState.following, dataSnapshot]}))});
+        }
+    }
+
+    _loadUsers(type, userid, idarray, loadDepth, callback) {
+        // Load all matches of userid in combination of type
+        console.log(type + ', ' + userid + ', ' + callback);
+        const ref = firebase.database().ref('follow').orderByChild(type).equalTo(userid).limitToFirst(loadDepth);
+        ref.once(
+            'value',
+            (dataSnapshot) => {
+                if (dataSnapshot.numChildren() !== idarray.size) {
+                    // Loop through results to get all users
+                    dataSnapshot.forEach(function (childSnapshot) {
+                        const uid = type === 'follower' ? childSnapshot.toJSON().followee : childSnapshot.toJSON().follower;
+                        if (!idarray[uid]) {
+                            idarray[uid] = true;
+                            firebase.database().ref('users').child(uid).once(
+                                'value',
+                                (dataSnapshot) => {
+                                    const user = dataSnapshot ? dataSnapshot.toJSON() : null;
+                                    if (user !== null) {
+                                        callback(user);
+                                    } else {
+                                        console.error('Error while retrieving user with id ' + uid)
+                                    }
+                                },
+                                (error) => {
+                                    console.error(error);
+                                }
+                            );
+                        }
+                    });
+                }
+            },
+            (error) => {
+                console.error('Error while retrieving ' + type + ' of ' + userid);
+                console.error(error);
+            }
+        );
+    }
+
     _onPressPhotos() {
-        // TODO
+        // TODO: Load user's observations from DB
         this.setState({selectedIndex: 0});
     }
 
     _onPressFollowers() {
-        // TODO
         this.setState({selectedIndex: 1});
     }
 
     _onPressFollowing() {
-        // TODO
         this.setState({selectedIndex: 2});
     }
 
     _observationKeyExtractor = (item, index) => item.observationid;
-    _followingKeyExtractor = (item, index) => item.userid;
+    _followingKeyExtractor = (item, index) => item.username;
 
     render() {
         return (
@@ -144,14 +214,27 @@ export class ProfileScreen extends React.Component {
                         />
                     }
                     {
-                        this.state.selectedIndex !== 0 &&
+                        this.state.selectedIndex === 1 &&
                         <FlatList
                             style={styles.containerPadding}
-                            data={users}
+                            data={this.state.followers}
                             ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noUsers}</Text>}
                             ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                             renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
                             keyExtractor={this._followingKeyExtractor}
+                            onEndReached={this._loadFollowers}
+                        />
+                    }
+                    {
+                        this.state.selectedIndex === 2 &&
+                        <FlatList
+                            style={styles.containerPadding}
+                            data={this.state.following}
+                            ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noUsers}</Text>}
+                            ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
+                            renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
+                            keyExtractor={this._followingKeyExtractor}
+                            onEndReached={this._loadFollowing}
                         />
                     }
                 </View>
