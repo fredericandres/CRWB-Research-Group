@@ -41,6 +41,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import RNFetchBlob from 'react-native-fetch-blob';
 import XMLParser from 'react-xml-parser';
 import firebase from 'react-native-firebase';
+import {currentUser} from "../App";
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 
@@ -88,8 +89,11 @@ export class CreateObservationScreen extends React.Component {
 
     _onPressNext() {
         if (this.state.activePageIndex === PagesEnum.TASTE) {
-            // TODO sumbit & close
-            firebase.database().ref('observations').push(this.state.observation, (error) => {
+            let observation = this.state.observation;
+            observation.userid = currentUser.uid;
+            observation.timestamp = firebase.database().getServerTime();
+            console.log(observation.timestamp);
+            firebase.database().ref('observations').push(observation, (error) => {
                 if (error) {
                     console.error('Error during observation transmission.');
                     console.error(error);
