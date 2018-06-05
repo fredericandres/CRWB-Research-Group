@@ -40,6 +40,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RNFetchBlob from 'react-native-fetch-blob';
 import XMLParser from 'react-xml-parser';
+import firebase from 'react-native-firebase';
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 
@@ -88,7 +89,18 @@ export class CreateObservationScreen extends React.Component {
     _onPressNext() {
         if (this.state.activePageIndex === PagesEnum.TASTE) {
             // TODO sumbit & close
-            this.props.navigation.dismiss();
+            firebase.database().ref('observations').push(this.state.observation, (error) => {
+                if (error) {
+                    console.error('Error during observation transmission.');
+                    console.error(error);
+                    this._handleAuthError(error);
+                    
+                    // TODO: display error message
+                } else {
+                    console.log('Successfully added observation to DB.');
+                    this.props.navigation.dismiss();
+                }
+            });
         } else {
             this.setState({activePageIndex: this.state.activePageIndex + 1});
         }
@@ -230,7 +242,9 @@ export class CreateObservationScreen extends React.Component {
         obs.image = uri;
         this._updateObservationState(obs);
 
-        base64 ? this._sendToMyPoC(base64, this._onUpdateMypoc) : this._getBase64ForURi(this._sendToMyPoC);
+        // TODO: save image base64 to Firebase storage or similar
+
+        base64 ? this._sendToMyPoC(base64, this._onUpdateMypoc) : this._getBase64ForURi(uri, this._sendToMyPoC);
 
         this._onPressNext();
     }
@@ -266,7 +280,8 @@ export class CreateObservationScreen extends React.Component {
                                 console.error(error);
                             });
                     } else {
-                        console.error('An error occurred while sending image to MyPoC server: ' + xhr);
+                        console.error('An error occurred while sending image to MyPoC server');
+                        console.error(xhr);
                     }
                 }
             };
@@ -452,7 +467,7 @@ export class CreateObservationScreen extends React.Component {
                                     <ObservationExploreComponent source={{uri: this.state.observation.image}} style={{flexShrink:1, flex: 1}}/>
                                 </View>
                                 <View style={{flex: 2}}>
-                                    <TextInputComponent style={{flex: 1}} placeholder={this.state.observation.description} value={this.state.observation.dishname} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />
+                                    <TextInputComponent style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />
                                 </View>
                             </View>
                             <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
