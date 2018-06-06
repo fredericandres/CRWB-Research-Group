@@ -47,7 +47,7 @@ const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
-        title: strings.createObservation,
+        title: navigation.getParam('edit') ? strings.editObservation : strings.createObservation,
         headerLeft: (
             <NavBarCloseButton nav={navigation}/>
         ),
@@ -55,7 +55,7 @@ export class CreateObservationScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        // TODO: get observation info from DB
+        // TODO: load image?
 
         this._onPressNext = this._onPressNext.bind(this);
         this._onPressPrevious = this._onPressPrevious.bind(this);
@@ -89,22 +89,38 @@ export class CreateObservationScreen extends React.Component {
 
     _onPressNext() {
         if (this.state.activePageIndex === PagesEnum.TASTE) {
-            let observation = this.state.observation;
-            observation.userid = currentUser.uid;
-            observation.timestamp = firebase.database().getServerTime();
-            console.log(observation.timestamp);
-            firebase.database().ref(pathObservations).push(observation, (error) => {
-                if (error) {
-                    console.error('Error during observation transmission.');
-                    console.error(error);
-                    this._handleAuthError(error);
-                    
-                    // TODO: display error message
-                } else {
-                    console.log('Successfully added observation to DB.');
-                    this.props.navigation.dismiss();
-                }
-            });
+            if (this.props.navigation.getParam('edit')) {
+                firebase.database().ref(pathObservations + '/' + this.state.observation.observationid).update(this.state.observation, (error) => {
+                    if (error) {
+                        console.error('Error during observation update transmission.');
+                        console.error(error);
+                        this._handleAuthError(error);
+
+                        // TODO: display error message
+                    } else {
+                        console.log('Successfully updated observation at DB.');
+                        this.props.navigation.dismiss();
+                    }
+                });
+
+            } else {
+                let observation = this.state.observation;
+                observation.userid = currentUser.uid;
+                observation.timestamp = firebase.database().getServerTime();
+
+                firebase.database().ref(pathObservations).push(observation, (error) => {
+                    if (error) {
+                        console.error('Error during observation transmission.');
+                        console.error(error);
+                        this._handleAuthError(error);
+
+                        // TODO: display error message
+                    } else {
+                        console.log('Successfully added observation to DB.');
+                        this.props.navigation.dismiss();
+                    }
+                });
+            }
         } else {
             this.setState({activePageIndex: this.state.activePageIndex + 1});
         }
@@ -553,7 +569,7 @@ export class CreateObservationScreen extends React.Component {
                     </View>
                     <View name={'nextButtonWrapper'} style={{flex: 1}}>
                         <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor:brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
-                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? strings.publish: strings.next}</Text>
+                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? (this.props.navigation.getParam('edit') ? strings.save : strings.publish): strings.next}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
