@@ -21,7 +21,7 @@ import {
     brandMain,
     EmojiEnum,
     iconSizeSmall,
-    iconSizeStandard, pathActions, pathCutleries, pathLikes, pathShares
+    iconSizeStandard, pathActions, pathCutleries, pathFollow, pathLikes, pathObservations, pathShares
 } from "../constants/Constants";
 import styles from "../styles";
 import {adjectives, comments} from "../MockupData";
@@ -104,7 +104,6 @@ export class ObservationComponent extends React.Component {
         content[currentUser.uid] = true;
 
         firebase.database().ref(pathActions + '/' + this.observation.observationid + '/' + path).update(content
-            //user: currentUser.uid
             , (error) => {
                 if (error) {
                     console.error('Error during ' + path + ' transmission.');
@@ -115,7 +114,6 @@ export class ObservationComponent extends React.Component {
                 } else {
                     console.log('Successfully ' + path + ' observation.');
                     this._updateActionState(path, true);
-                    // TODO: set like state
                 }
             });
     }
@@ -148,9 +146,8 @@ export class ObservationComponent extends React.Component {
     }
 
     _onPressMenuButton() {
-        // TODO: Only show menu when it is my own post
         const title = strings.selectAction;
-        const message = strings.formatString(strings.doWithPost, this.observation.dishname, this.observation.userid);
+        const message = strings.formatString(strings.doWithPost, String(this.observation.dishname), this.observation.userid);
         const options = [
             strings.edit,
             strings.delete,
@@ -185,7 +182,19 @@ export class ObservationComponent extends React.Component {
         if (buttonIndex === 0) {
             this.props.navigation.navigate('CreateObservation', {observation: this.observation});
         } else if (buttonIndex === 1) {
-            // TODO: Delete obs
+            const ref = firebase.database().ref(pathObservations + '/' + this.observation.observationid);
+            ref.remove(
+                (error) => {
+                    if (error) {
+                        error.log(error);
+                    } else {
+                        console.log('Successfully removed observation');
+                        this.props.onDelete(this.observation);
+                    }
+                }
+            );
+
+
         }
     }
 
@@ -239,7 +248,7 @@ export class ObservationComponent extends React.Component {
                         </View>
                         <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location}</Text>
                     </View>
-                    <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
+                    {currentUser && this.observation.userid === currentUser.uid && <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>}
                 </View>
                 <View name={'picture'} style={{flexDirection:'row'}}>
                     <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>

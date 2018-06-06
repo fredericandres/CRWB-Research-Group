@@ -30,6 +30,7 @@ export class HomeScreen extends React.Component {
         this._loadMoreObservations = this._loadMoreObservations.bind(this);
         this._onEndReached = this._onEndReached.bind(this);
         this._onRefresh = this._onRefresh.bind(this);
+        this._onDelete = this._onDelete.bind(this);
 
         this.unsubscriber = null;
         this.state = {
@@ -124,7 +125,15 @@ export class HomeScreen extends React.Component {
         this._loadMoreObservations();
     }
 
-    _keyExtractor = (item, index) => this.state.observations[index].userid + this.state.observations[index].timestamp;
+    _keyExtractor = (item, index) => this.state.observations[index].observationid;
+
+    _onDelete(observation) {
+        let array = [...this.state.observations];
+        let index = array.indexOf(observation);
+        array.splice(index, 1);
+        this.setState({observations: array});
+    }
+
 
     render() {
         return (
@@ -134,7 +143,7 @@ export class HomeScreen extends React.Component {
                     <FlatList
                         data={this.state.observations}
                         keyExtractor={this._keyExtractor}
-                        renderItem={({item}) => <ObservationComponent observation={item} {...this.props}/>}
+                        renderItem={({item}) => <ObservationComponent observation={item} {...this.props} onDelete={this._onDelete}/>}
                         refreshing={this.state.isRefreshing}
                         onRefresh={this._onRefresh}
                         ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.emptyFeed}</Text>}

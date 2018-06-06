@@ -112,7 +112,6 @@ export class CreateObservationScreen extends React.Component {
 
     _onPressPrevious() {
         if (this.state.activePageIndex === PagesEnum.SELECTIMAGE) {
-            // TODO cancel & close
             this.props.navigation.dismiss();
         } else {
             this.setState({activePageIndex: this.state.activePageIndex - 1});

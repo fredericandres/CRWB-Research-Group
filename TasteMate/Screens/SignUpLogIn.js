@@ -92,8 +92,8 @@ export class SignUpLogInScreen extends React.Component {
                 firebase.auth().signInAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then(() => {
                     console.log('Successfully logged in.');
                 }).catch((error) => {
-                    console.error('Error during login.');
-                    console.error(error);
+                    console.log('Error during login.');
+                    console.log(error);
                     this._handleAuthError(error);
                 });
             }
