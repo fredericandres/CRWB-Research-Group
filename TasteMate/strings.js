@@ -139,6 +139,10 @@ export default strings = new LocalizedStrings({
         accessLocationQuestion: 'May we access your location?',
         accessLocationExplanation: 'We need access so you can see which saved observations are nearby.',
         enableLocation: 'Please enable the location permission in the Tastemate settings of your phone to use this feature.',
+
+        // NEW
+        editObservation: 'Edit Observation',
+        save: 'Save',
     },
     fr: {
     },

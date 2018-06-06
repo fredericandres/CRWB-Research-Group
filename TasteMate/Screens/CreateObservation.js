@@ -74,11 +74,11 @@ export class CreateObservationScreen extends React.Component {
         this._onCheckBoxChanged = this._onCheckBoxChanged.bind(this);
         this._onSubmitSearch = this._onSubmitSearch.bind(this);
 
-        const edit = this.props.navigation.state.params && this.props.navigation.state.params.observation;
+        this.isEditing = this.props.navigation.getParam('edit');
         this.state = {
-            observation: edit ? this.props.navigation.state.params.observation : new Observation(),
-            activePageIndex: PagesEnum.SELECTIMAGE,
-            locationText: edit ? (this.props.navigation.state.params.observation.location ? this.props.navigation.state.params.observation.location : '') + (this.props.navigation.state.params.observation.address ? ', ' + this.props.navigation.state.params.observation.address : '') : '',
+            observation: this.isEditing ? this.props.navigation.state.params.observation : new Observation(),
+            activePageIndex: this.isEditing ? PagesEnum.DETAILS : PagesEnum.SELECTIMAGE,
+            locationText: this.isEditing ? (this.props.navigation.state.params.observation.location ? this.props.navigation.state.params.observation.location : '') + (this.props.navigation.state.params.observation.address ? ', ' + this.props.navigation.state.params.observation.address : '') : '',
             cameraActive: true,
             cameraFront: true,
             cameraFlash: true,
@@ -89,7 +89,7 @@ export class CreateObservationScreen extends React.Component {
 
     _onPressNext() {
         if (this.state.activePageIndex === PagesEnum.TASTE) {
-            if (this.props.navigation.getParam('edit')) {
+            if (this.isEditing) {
                 firebase.database().ref(pathObservations + '/' + this.state.observation.observationid).update(this.state.observation, (error) => {
                     if (error) {
                         console.error('Error during observation update transmission.');
@@ -127,7 +127,7 @@ export class CreateObservationScreen extends React.Component {
     }
 
     _onPressPrevious() {
-        if (this.state.activePageIndex === PagesEnum.SELECTIMAGE) {
+        if ((this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE) {
             this.props.navigation.dismiss();
         } else {
             this.setState({activePageIndex: this.state.activePageIndex - 1});
@@ -564,12 +564,12 @@ export class CreateObservationScreen extends React.Component {
                 <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
                     <View name={'previousButtonWrapper'} style={ {flex: 1}}>
                         <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:brandBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
-                            <Text style={[styles.textTitleDark, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>
+                            <Text style={[styles.textTitleDark, styles.containerPadding]}>{(this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>
                         </TouchableOpacity>
                     </View>
                     <View name={'nextButtonWrapper'} style={{flex: 1}}>
                         <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor:brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
-                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? (this.props.navigation.getParam('edit') ? strings.save : strings.publish): strings.next}</Text>
+                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? (this.isEditing ? strings.save : strings.publish): strings.next}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
