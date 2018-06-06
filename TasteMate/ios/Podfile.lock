@@ -12,6 +12,9 @@ PODS:
   - Firebase/Database (5.1.0):
     - Firebase/CoreOnly
     - FirebaseDatabase (= 5.0.1)
+  - Firebase/Functions (5.1.0):
+    - Firebase/CoreOnly
+    - FirebaseFunctions (= 2.0.0)
   - FirebaseAnalytics (5.0.1):
     - FirebaseCore (~> 5.0)
     - FirebaseInstanceID (~> 3.0)
@@ -25,6 +28,9 @@ PODS:
   - FirebaseDatabase (5.0.1):
     - FirebaseCore (~> 5.0)
     - leveldb-library (~> 1.18)
+  - FirebaseFunctions (2.0.0):
+    - FirebaseCore (~> 5.0)
+    - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseInstanceID (3.0.0):
     - FirebaseCore (~> 5.0)
   - Folly (2016.09.26.00):
@@ -123,6 +129,7 @@ DEPENDENCIES:
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Database
+  - Firebase/Functions
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils
@@ -152,6 +159,7 @@ SPEC REPOS:
     - FirebaseAuth
     - FirebaseCore
     - FirebaseDatabase
+    - FirebaseFunctions
     - FirebaseInstanceID
     - Google-Maps-iOS-Utils
     - GoogleMaps
@@ -184,6 +192,7 @@ SPEC CHECKSUMS:
   FirebaseAuth: acbeef02fe7c3a26624e309849f3fe30c84115af
   FirebaseCore: b81044df1044c0857a0737c6324678b72d4f7f00
   FirebaseDatabase: 482bad9c2abd422bb2321194fb8c937e67426a89
+  FirebaseFunctions: 141da172b7491276d9da8715b8ca88f9e439ffb6
   FirebaseInstanceID: 83e0040351565df711a5db3d8ebe5ea21aca998a
   Folly: 211775e49d8da0ca658aebc8eab89d642935755c
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
@@ -198,6 +207,6 @@ SPEC CHECKSUMS:
   react-native-maps: 066c2afcc89e18726377bcc685315f989ca22449
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: af86660919a81a24ed57b864e021a525361e37c7
+PODFILE CHECKSUM: 2f838a9ec3a31bb07375afb2969c07d740d1e5cc
 
 COCOAPODS: 1.5.2

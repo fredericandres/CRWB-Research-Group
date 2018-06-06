@@ -1,7 +1,7 @@
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
-import {brandMain} from "../constants/Constants";
+import {brandMain, pathFollow, pathUsers} from "../constants/Constants";
 import styles from "../styles";
 import * as MockupData from "../MockupData";
 import {userr, users} from "../MockupData";
@@ -22,8 +22,7 @@ function _toggleFollowUnfollow(navigation) {
         // Do nothing, we are not sure yet if current user is following this user or not
     } else if (isFollowing) {
         console.log('Removing relationship of ' + follower + ' following ' + followee);
-        const ref = firebase.database().ref('follow/' + combined);
-        console.log(ref);
+        const ref = firebase.database().ref(pathFollow + '/' + combined);
         ref.remove(
             (error) => {
                 if (error) {
@@ -35,7 +34,7 @@ function _toggleFollowUnfollow(navigation) {
             }
         );
     } else {
-        firebase.database().ref('follow').child(combined).set({
+        firebase.database().ref(pathFollow).child(combined).set({
             follower: follower,
             followee: followee,
         }, (error) => {
@@ -108,7 +107,7 @@ export class ProfileScreen extends React.Component {
 
         if (!props.navigation.getParam('myProfile') && !props.navigation.getParam('user').userid) {
             // Get user from DB
-            firebase.database().ref('users').child(userid).once(
+            firebase.database().ref(pathUsers).child(userid).once(
                 'value',
                 (dataSnapshot) => {
                     console.log('Successfully retrieved user data');
@@ -125,7 +124,7 @@ export class ProfileScreen extends React.Component {
         if (currentUser && this.userid !== currentUser.uid) {
             // Is current user following this user?
             console.log('Retrieving follower status...');
-            const ref = firebase.database().ref('follow').child(_generateCombinedKey(currentUser.uid, userid));
+            const ref = firebase.database().ref(pathFollow).child(_generateCombinedKey(currentUser.uid, userid));
             ref.once(
                 'value',
                 (dataSnapshot) => {
@@ -162,7 +161,7 @@ export class ProfileScreen extends React.Component {
 
     _loadUsers(type, userid, idarray, loadDepth, callback) {
         // Load all matches of userid in combination of type
-        const ref = firebase.database().ref('follow').orderByChild(type).equalTo(userid).limitToFirst(loadDepth);
+        const ref = firebase.database().ref(pathFollow).orderByChild(type).equalTo(userid).limitToFirst(loadDepth);
         ref.once(
             'value',
             (dataSnapshot) => {
@@ -172,7 +171,7 @@ export class ProfileScreen extends React.Component {
                         const uid = type === 'follower' ? childSnapshot.toJSON().followee : childSnapshot.toJSON().follower;
                         if (uid && !idarray[uid]) {
                             idarray[uid] = true;
-                            firebase.database().ref('users').child(uid).once(
+                            firebase.database().ref(pathUsers).child(uid).once(
                                 'value',
                                 (dataSnapshot) => {
                                     const user = dataSnapshot ? dataSnapshot.toJSON() : null;

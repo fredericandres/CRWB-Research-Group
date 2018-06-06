@@ -5,7 +5,7 @@ import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
-import {_navigateToScreen} from "../constants/Constants";
+import {_navigateToScreen, pathObservations} from "../constants/Constants";
 import {LogInMessage} from "../Components/LogInMessage";
 
 const FEED_LOAD_DEPTH = 3.6e6;
@@ -44,9 +44,6 @@ export class HomeScreen extends React.Component {
         // TODO: Load profile pics
         // TODO: Load Food pics
         // TODO: Load comments
-        // TODO: Load likes
-        // TODO: Load shares
-        // TODO: Load cutleries
     }
 
     componentDidMount() {
@@ -74,7 +71,7 @@ export class HomeScreen extends React.Component {
 
     _loadObservations(followees, action, oldObservations, loadDepth, isRefreshing) {
         console.log('Loading observations...');
-        const refObservations = firebase.database().ref('observations').orderByChild('timestamp').limitToLast(loadDepth);
+        const refObservations = firebase.database().ref(pathObservations).orderByChild('timestamp').limitToLast(loadDepth);
         refObservations.once(
             'value',
             (dataSnapshot) => {

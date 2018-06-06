@@ -2,7 +2,7 @@ import React from 'react';
 import {ImageBackground, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import strings from "../strings";
 import styles from "../styles";
-import {brandAccent} from "../constants/Constants";
+import {brandAccent, pathUsers} from "../constants/Constants";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import firebase from 'react-native-firebase';
 
@@ -61,6 +61,7 @@ export class SignUpLogInScreen extends React.Component {
         } else {
             if (this.state.signUpActive) {
                 if (!this.state.username) {
+                    // TODO: check if username already taken
                     errorMessage = strings.errorMessageEnterUsername;
                 } else if  (!this.state.location) {
                     errorMessage = strings.errorMessageEnterLocation;
@@ -69,7 +70,7 @@ export class SignUpLogInScreen extends React.Component {
                         console.log('Successfully signed up.');
 
                         // Add user's username & location to database
-                        firebase.database().ref('users').child(credentials.user.uid).set({
+                        firebase.database().ref(pathUsers).child(credentials.user.uid).set({
                             username: this.state.username,
                             location: this.state.location
                         }, (error) => {

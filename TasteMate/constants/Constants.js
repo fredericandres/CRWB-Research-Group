@@ -17,6 +17,14 @@ export const EmojiEnum = Object.freeze({1: '🤢', 2:'😖', 3:'😟', 4:'😕',
 export const VocabEnum = Object.freeze({TASTE:1, TEXTURE:2, ODOR:3});
 export const ActivityEnum = Object.freeze({LIKE:1, SHARE:2, CUTLERY:3});
 
+export const pathObservations = 'observations';
+export const pathUsers = 'users';
+export const pathActions = 'actions';
+export const pathFollow = 'follow';
+export const pathLikes = 'likes';
+export const pathShares = 'shares';
+export const pathCutleries = 'cutleries';
+
 export function _formatNumber(number, type) {
     let wordString = '';
     let numberString = '';

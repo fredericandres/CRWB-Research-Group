@@ -24,7 +24,7 @@ import {
     brandMain,
     EmojiEnum,
     iconSizeLarge,
-    iconSizeStandard
+    iconSizeStandard, pathObservations
 } from "../constants/Constants";
 import {googleApiKey} from "../constants/GoogleApiKey";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
@@ -93,7 +93,7 @@ export class CreateObservationScreen extends React.Component {
             observation.userid = currentUser.uid;
             observation.timestamp = firebase.database().getServerTime();
             console.log(observation.timestamp);
-            firebase.database().ref('observations').push(observation, (error) => {
+            firebase.database().ref(pathObservations).push(observation, (error) => {
                 if (error) {
                     console.error('Error during observation transmission.');
                     console.error(error);

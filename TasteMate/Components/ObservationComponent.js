@@ -21,7 +21,7 @@ import {
     brandMain,
     EmojiEnum,
     iconSizeSmall,
-    iconSizeStandard
+    iconSizeStandard, pathActions, pathCutleries, pathLikes, pathShares
 } from "../constants/Constants";
 import styles from "../styles";
 import {adjectives, comments} from "../MockupData";
@@ -29,6 +29,8 @@ import TimeAgo from "react-native-timeago";
 import {CommentComponent} from "./CommentComponent";
 import strings from "../strings";
 import Share from 'react-native-share';
+import firebase from 'react-native-firebase';
+import {currentUser} from "../App";
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -38,20 +40,107 @@ export class ObservationComponent extends React.Component {
         this._onPressLocationText = this._onPressLocationText.bind(this);
         this._onPressShareButton = this._onPressShareButton.bind(this);
         this._onPressProfile = this._onPressProfile.bind(this);
-        this.state = {overlayIsHidden: true};
+        this._onPressLikeButton = this._onPressLikeButton.bind(this);
+        this._onPressCutleryButton = this._onPressCutleryButton.bind(this);
+        this.state = {
+            overlayIsHidden: true,
+            liked: false,
+            // TODO: Does shared make sense as 1-0 var? No.
+            shared: false,
+            cutleried: false,
+        };
         this.observation = this.props.observation;
+
+        console.log('Loading actions...');
+        const refObservations = firebase.database().ref(pathActions + '/' + this.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
+        refObservations.once(
+            'value',
+            (dataSnapshot) => {
+                console.log('Received actions.');
+                const actions = dataSnapshot.toJSON();
+                if (actions) {
+                    if (actions.likes) {
+                        this.setState({liked: true});
+                    }
+                    if (actions.shares) {
+                        this.setState({shared: true});
+                    }
+                    if (actions.cutleries) {
+                        this.setState({cutleried: true});
+                    }
+                }
+            },
+            (error) => {
+                console.error('Error while retrieving observations in feed');
+                console.error(error);
+            }
+        );
     }
 
     _onPressLikeButton() {
-        // TODO: Like action
+        if (this.state.liked) {
+            this._removeAction(pathLikes);
+        } else {
+            console.log('Sending like...');
+            this._sendAction(pathLikes);
+        }
     }
 
     _onPressCutleryButton() {
-        // TODO: Cutlery action
+        if (this.state.cutleried) {
+            this._removeAction(pathCutleries);
+        } else {
+            console.log('Sending cutlery...');
+            this._sendAction(pathCutleries);
+        }
     }
 
     _onPressSendButton() {
-        // TODO: Send action
+        // TODO: Send comment action
+    }
+
+    _sendAction(path) {
+        let content = {};
+        content[currentUser.uid] = true;
+
+        firebase.database().ref(pathActions + '/' + this.observation.observationid + '/' + path).update(content
+            //user: currentUser.uid
+            , (error) => {
+                if (error) {
+                    console.error('Error during ' + path + ' transmission.');
+                    console.error(error);
+                    this._handleAuthError(error);
+
+                    // TODO: display error message
+                } else {
+                    console.log('Successfully ' + path + ' observation.');
+                    this._updateActionState(path, true);
+                    // TODO: set like state
+                }
+            });
+    }
+
+    _removeAction(path) {
+        firebase.database().ref(pathActions + '/' + this.observation.observationid + '/' + path + '/' + currentUser.uid).remove(
+            (error) => {
+                if (error) {
+                    error.log(error);
+                } else {
+                    console.log('Successfully removed ' + path);
+                    this._updateActionState(path, false);
+                }
+            }
+        );
+    }
+
+    _updateActionState(path, value) {
+        if (path === pathLikes) {
+            this.setState({liked: value});
+        } else if (path === pathShares) {
+            this.setState({shared: value});
+        } else if (path === pathCutleries) {
+            this.setState({cutleried: value});
+        }
     }
 
     _onPressLocationText() {
@@ -101,13 +190,15 @@ export class ObservationComponent extends React.Component {
     }
 
     async _onPressShareButton() {
+        this._sendAction(pathShares);
+
         // TODO: What is being shared? Link?
         Share.open({
             title: strings.share,
             subject: strings.shareSubject,
             message: strings.shareMessage,
             dialogTitle: strings.shareDialogTitle,
-            url: ''//this.observation.image,
+            url: this.observation.image,
         }).catch(
             (err) => {
                 err && console.log(err);
@@ -146,7 +237,7 @@ export class ObservationComponent extends React.Component {
                                 <Text name={'mypoc'} style={styles.textTitle}> ({this.observation.mypoc})</Text>
                             </Text>
                         </View>
-                        <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location.name}</Text>
+                        <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location}</Text>
                     </View>
                     <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>
                 </View>
@@ -162,13 +253,13 @@ export class ObservationComponent extends React.Component {
                     </View>
                     <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', bottom: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
-                            <FontAwesome name={'thumbs-o-up'} size={iconSizeStandard} color={brandContrast}/>
+                            <FontAwesome name={'thumbs-o-up'} size={iconSizeStandard} color={this.state.liked ? brandMain : brandContrast}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressCutleryButton}>
-                            <FontAwesome name={'cutlery'} size={iconSizeStandard} color={brandContrast}/>
+                            <FontAwesome name={'cutlery'} size={iconSizeStandard} color={this.state.cutleried ? brandMain : brandContrast}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressShareButton}>
-                            <FontAwesome name={'share'} size={iconSizeStandard} color={brandContrast}/>
+                            <FontAwesome name={'share'} size={iconSizeStandard} color={this.state.shared ? brandMain : brandContrast}/>
                         </TouchableOpacity>
                     </View>
                     {!this.state.overlayIsHidden &&
@@ -181,10 +272,10 @@ export class ObservationComponent extends React.Component {
                 </View>
                 <View name={'description'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'column'}]}>
                     <Text name={'description'} style={styles.textStandardDark}>{this.observation.description}</Text>
-                    {/*TODO: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
+                    {/*TODO [FEATURE]: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                     <View name={'information'} style={{flexDirection: 'row'}}>
                         <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
-                        <Text name={'details'} style={styles.textSmall}> • {_formatNumber(this.observation.likes, ActivityEnum.LIKE)} • {_formatNumber(this.observation.cutleries, ActivityEnum.CUTLERY)} • {_formatNumber(this.observation.shares, ActivityEnum.SHARE)}</Text>
+                        <Text name={'details'} style={styles.textSmall}> • {_formatNumber(this.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumber(this.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumber(this.observation.sharesCount, ActivityEnum.SHARE)}</Text>
                     </View>
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
