@@ -180,7 +180,7 @@ export class ObservationComponent extends React.Component {
 
     _onPressMenuDetailButton(buttonIndex) {
         if (buttonIndex === 0) {
-            this.props.navigation.navigate('CreateObservation', {observation: this.observation});
+            this.props.navigation.navigate('CreateObservation', {observation: this.observation, edit: true});
         } else if (buttonIndex === 1) {
             const ref = firebase.database().ref(pathObservations + '/' + this.observation.observationid);
             ref.remove(
