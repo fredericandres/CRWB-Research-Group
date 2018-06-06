@@ -25,7 +25,7 @@ export const pathLikes = 'likes';
 export const pathShares = 'shares';
 export const pathCutleries = 'cutleries';
 
-export function _formatNumber(number, type) {
+export function _formatNumberWithString(number, type) {
     let wordString = '';
     let numberString = '';
 
@@ -66,6 +66,18 @@ export function _formatNumber(number, type) {
         }
     }
     return strings.formatString(wordString, numberString);
+}
+
+export function _formatNumber(number) {
+    if (number === undefined) {
+        return '0';
+    } else if (number < 1000) {
+        return number;
+    } else if (number < 1000000) {
+        return Math.floor(number / 1000);
+    } else {
+        return Math.floor(number / 1000000);
+    }
 }
 
 export function _navigateToScreen(screen, navigation, user, myProfile) {

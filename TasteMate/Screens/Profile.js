@@ -1,10 +1,10 @@
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
-import {brandMain, pathFollow, pathUsers} from "../constants/Constants";
+import {_formatNumber, brandMain, pathFollow, pathUsers} from "../constants/Constants";
 import styles from "../styles";
 import * as MockupData from "../MockupData";
-import {userr, users} from "../MockupData";
+import {userr} from "../MockupData";
 import {UserComponent} from "../Components/UserComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {ProfileSegmentedControlItem} from "../Components/ProfileSegmentedControlItem";
@@ -197,7 +197,7 @@ export class ProfileScreen extends React.Component {
     }
 
     _onPressPhotos() {
-        // TODO: Load user's observations from DB
+        // TODO: Load user's observations from DB & set observation count
         this.setState({selectedIndex: 0});
     }
 
@@ -238,17 +238,16 @@ export class ProfileScreen extends React.Component {
                             <View style={{flex: 1, backgroundColor: brandMain}}/>
                             <View style={{flex: 1}}/>
                         </View>
-                        {/*TODO: Reformat numbers*/}
                         <View name={'segmentedcontrolwrapper'}
                               style={[{flexDirection: 'row'}, styles.containerPadding]}>
-                            <ProfileSegmentedControlItem name={'photos'} text={strings.photos} number='27'
+                            <ProfileSegmentedControlItem name={'photos'} text={strings.photos} number={_formatNumber(123)}
                                                          isSelected={this.state.selectedIndex === 0}
                                                          action={this._onPressPhotos}/>
                             <ProfileSegmentedControlItem name={'followers'} text={strings.followers}
-                                                         isSelected={this.state.selectedIndex === 1} number='200'
+                                                         isSelected={this.state.selectedIndex === 1} number={_formatNumber(this.state.user.followers)}
                                                          action={this._onPressFollowers}/>
                             <ProfileSegmentedControlItem name={'following'} text={strings.following}
-                                                         isSelected={this.state.selectedIndex === 2} number='31'
+                                                         isSelected={this.state.selectedIndex === 2} number={_formatNumber(this.state.user.followers)}
                                                          action={this._onPressFollowing}/>
                         </View>
                     </View>

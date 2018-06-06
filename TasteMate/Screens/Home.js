@@ -121,7 +121,7 @@ export class HomeScreen extends React.Component {
     }
 
     _onEndReached() {
-        console.log('Loading more...');
+        console.log('Loading more observations...');
         this._loadMoreObservations();
     }
 
