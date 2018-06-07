@@ -92,7 +92,7 @@ export class CreateObservationScreen extends React.Component {
     _onPressNext() {
         if (this.state.activePageIndex === PagesEnum.TASTE) {
             if (this.isEditing) {
-                firebase.database().ref(pathObservations + '/' + this.state.observation.observationid).update(this.state.observation, (error) => {
+                firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + this.state.observation.observationid).update(this.state.observation, (error) => {
                     if (error) {
                         console.error('Error during observation update transmission.');
                         console.error(error);
@@ -110,7 +110,7 @@ export class CreateObservationScreen extends React.Component {
                 observation.userid = currentUser.uid;
                 observation.timestamp = firebase.database().getServerTime();
 
-                firebase.database().ref(pathObservations).push(observation, (error) => {
+                firebase.database().ref(pathObservations + '/' + currentUser.uid).push(observation, (error) => {
                     if (error) {
                         console.error('Error during observation transmission.');
                         console.error(error);

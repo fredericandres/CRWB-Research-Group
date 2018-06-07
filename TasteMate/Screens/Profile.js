@@ -1,7 +1,7 @@
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
-import {_formatNumber, brandMain, pathFollow, pathUsers} from "../constants/Constants";
+import {_formatNumber, brandMain, pathFollow, pathObservations, pathUsers} from "../constants/Constants";
 import styles from "../styles";
 import * as MockupData from "../MockupData";
 import {userr} from "../MockupData";
@@ -55,6 +55,7 @@ function _generateCombinedKey(follower, followee) {
 }
 
 const FOLLOW_LOAD_DEPTH = 10;
+const OBS_LOAD_DEPTH = 6;
 let userid = null;
 
 export class ProfileScreen extends React.Component {
@@ -89,16 +90,18 @@ export class ProfileScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedIndex: 0,
+            //selectedIndex: 0,
             user: props.navigation.getParam('myProfile') ? currentUserInformation : props.navigation.getParam('user') || {},
             followers: [],
-            following: []
+            following: [],
+            observations: []
         };
         this._onPressFollowers = this._onPressFollowers.bind(this);
         this._onPressPhotos = this._onPressPhotos.bind(this);
         this._onPressFollowing = this._onPressFollowing.bind(this);
         this._loadFollowing = this._loadFollowing.bind(this);
         this._loadFollowers = this._loadFollowers.bind(this);
+        this._loadObservations = this._loadObservations.bind(this);
 
         userid = props.navigation.getParam('myProfile') && currentUser ? currentUser.uid : props.navigation.getParam('user') && props.navigation.getParam('user').userid ? props.navigation.getParam('user').userid : props.navigation.getParam('user');
 
@@ -121,7 +124,7 @@ export class ProfileScreen extends React.Component {
             );
         }
 
-        if (currentUser && this.userid !== currentUser.uid) {
+        if (currentUser && userid !== currentUser.uid) {
             // Is current user following this user?
             console.log('Retrieving follower status...');
             const ref = firebase.database().ref(pathFollow).child(_generateCombinedKey(currentUser.uid, userid));
@@ -129,7 +132,6 @@ export class ProfileScreen extends React.Component {
                 'value',
                 (dataSnapshot) => {
                     console.log('Successfully retrieved follower status');
-                    console.log(dataSnapshot.toJSON());
                     this.props.navigation.setParams({ isFollowing: dataSnapshot.toJSON() !== null })
                 },
                 (error) => {
@@ -139,6 +141,7 @@ export class ProfileScreen extends React.Component {
             );
         }
 
+        this._loadObservations(true);
         this._loadFollowers();
         this._loadFollowing();
     }
@@ -156,6 +159,51 @@ export class ProfileScreen extends React.Component {
         if (followingSize === 0 || followingSize % FOLLOW_LOAD_DEPTH === 0) {
             console.log('Loading following...');
             this._loadUsers('follower', userid, this.followingIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => {this.setState(prevState => ({following: [...prevState.following, dataSnapshot]}))});
+        }
+    }
+
+    _loadObservations(onStartup) {
+        const obsSize = this.state.observations.length;
+        if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0)) {
+            const index = this.state.observations.length;
+
+            console.log('Loading observations... Starting at ' + index + ' to ' + (index + OBS_LOAD_DEPTH));
+            this.isLoadingObservations = true;
+
+            const httpsCallable = firebase.functions().httpsCallable('getXMostRecentObsForUserWithId');
+            httpsCallable({
+                userid: userid,
+                from: index,
+                to: index + OBS_LOAD_DEPTH
+            }).then(({data}) => {
+                this.isLoadingObservations = false;
+                this._addToObservationState(data.observations, onStartup);
+            }).catch(httpsError => {
+                console.log(httpsError.code);
+                console.log(httpsError.message);
+                this.isLoadingObservations = false;
+            })
+        }
+    }
+
+    _addToObservationState(newObservations, onStartup) {
+        let observations = newObservations ? Object.values(newObservations) : null;
+
+        if (observations && observations.length > 0) {
+            observations.sort(function (a, b) {
+                if (a.timestamp < b.timestamp)
+                    return 1;
+                if (a.timestamp > b.timestamp)
+                    return -1;
+                return 0;
+            });
+
+            if (onStartup) {
+                this.setState({observations: observations});
+                this._onPressPhotos();
+            } else {
+                this.setState(prevState => ({observations: prevState.observations.concat(observations)}));
+            }
         }
     }
 
@@ -197,7 +245,7 @@ export class ProfileScreen extends React.Component {
     }
 
     _onPressPhotos() {
-        // TODO: Load user's observations from DB & set observation count
+        // TODO: set observation count
         this.setState({selectedIndex: 0});
     }
 
@@ -240,7 +288,7 @@ export class ProfileScreen extends React.Component {
                         </View>
                         <View name={'segmentedcontrolwrapper'}
                               style={[{flexDirection: 'row'}, styles.containerPadding]}>
-                            <ProfileSegmentedControlItem name={'photos'} text={strings.photos} number={_formatNumber(123)}
+                            <ProfileSegmentedControlItem name={'photos'} text={strings.photos} number={_formatNumber(this.state.user.observations)}
                                                          isSelected={this.state.selectedIndex === 0}
                                                          action={this._onPressPhotos}/>
                             <ProfileSegmentedControlItem name={'followers'} text={strings.followers}
@@ -256,10 +304,11 @@ export class ProfileScreen extends React.Component {
                         <FlatList
                             style={styles.containerPadding}
                             ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noPictures}</Text>}
-                            data={MockupData.observations}
+                            data={this.state.observations}
                             renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
-                            numColumns={3}
+                            numColumns={2}
                             keyExtractor={this._observationKeyExtractor}
+                            onEndReached={this._loadObservations()}
                         />
                     }
                     {

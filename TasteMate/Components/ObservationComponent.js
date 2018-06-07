@@ -52,7 +52,7 @@ export class ObservationComponent extends React.Component {
         this.observation = this.props.observation;
 
         console.log('Loading actions...');
-        const refObservations = firebase.database().ref(pathActions + '/' + this.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
+        const refObservations = firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
         refObservations.once(
             'value',
             (dataSnapshot) => {
@@ -103,7 +103,7 @@ export class ObservationComponent extends React.Component {
         let content = {};
         content[currentUser.uid] = true;
 
-        firebase.database().ref(pathActions + '/' + this.observation.observationid + '/' + path).update(content
+        firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid + '/' + path).update(content
             , (error) => {
                 if (error) {
                     console.error('Error during ' + path + ' transmission.');
@@ -119,7 +119,7 @@ export class ObservationComponent extends React.Component {
     }
 
     _removeAction(path) {
-        firebase.database().ref(pathActions + '/' + this.observation.observationid + '/' + path + '/' + currentUser.uid).remove(
+        firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid + '/' + path + '/' + currentUser.uid).remove(
             (error) => {
                 if (error) {
                     error.log(error);
