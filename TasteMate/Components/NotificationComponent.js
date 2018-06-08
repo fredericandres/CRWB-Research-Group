@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "../styles";
-import {Image, Text, TouchableOpacity, View, Animated} from "react-native";
+import {Animated, Image, Text, TouchableOpacity, View} from "react-native";
 import TimeAgo from 'react-native-timeago'
-import {_navigateToScreen, brandAccent, brandMain} from "../constants/Constants";
+import {_navigateToScreen, brandMain} from "../constants/Constants";
 import strings from "../strings";
 
 export class NotificationComponent extends React.Component {
@@ -24,6 +24,7 @@ export class NotificationComponent extends React.Component {
                 duration: 10000,              // Make it take a while
             }
         ).start();
+        // TODO: set read status of noticiation on sender
     }
 
     _onPressMultipleProfiles() {
@@ -31,7 +32,7 @@ export class NotificationComponent extends React.Component {
     }
 
     _onPressProfile(index) {
-        _navigateToScreen('Profile', this.props.navigation, this.notification.senderid[index], null);
+        _navigateToScreen('Profile', this.props.navigation, this.notification.userid/*this.notification.senderid[index]*/, null);
     }
 
     _onPressObservation() {
@@ -56,19 +57,21 @@ export class NotificationComponent extends React.Component {
                 break;
         }
 
-        let completeActionString = '';
-        if (this.notification.senderid.length === 1) {
-            completeActionString = strings.formatString(action, this.notification.senderid[0]);
-        } else if (this.notification.senderid.length === 2) {
-            completeActionString = strings.formatString(action, strings.formatString(strings.userAndUser, this.notification.senderid[0], this.notification.senderid[1]));
-        } else {
-            completeActionString = strings.formatString(action, strings.formatString(strings.userAndUser, this.notification.senderid[0], strings.formatString(strings.others, this.notification.senderid.length - 1)));
-        }
+        let completeActionString = strings.formatString(action, this.notification.userid);
+        // TODO: Group multiple notifications of same type together if no other type in between
+        // let completeActionString = '';
+        // if (this.notification.userid.length === 1) {
+        //     completeActionString = strings.formatString(action, this.notification.senderid[0]);
+        // } else if (this.notification.senderid.length === 2) {
+        //     completeActionString = strings.formatString(action, strings.formatString(strings.userAndUser, this.notification.senderid[0], this.notification.senderid[1]));
+        // } else {
+        //     completeActionString = strings.formatString(action, strings.formatString(strings.userAndUser, this.notification.senderid[0], strings.formatString(strings.others, this.notification.senderid.length - 1)));
+        // }
 
         return (
             <TouchableOpacity onPress={this.notification.type === 'FOLLOW' ? this._onPressProfile : this._onPressObservation} style={[{flexDirection:'row'}]}>
                 {!this.notification.read && <Animated.View name={'fadingbackground'} style={{position: 'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:brandMain, opacity: this.state.fadeAnim}}/>}
-                <TouchableOpacity name={'userpic'} onPress={this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles} style={[styles.containerPadding, {flexDirection:'column', justifyContent:'center'}]}>
+                <TouchableOpacity name={'userpic'} onPress={this._onPressProfile/*this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles*/} style={[styles.containerPadding, {flexDirection:'column', justifyContent:'center'}]}>
                     <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../user2.jpg')} style={styles.roundProfile}/>
                 </TouchableOpacity>
                 <View name={'textcontentwrapper'} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>

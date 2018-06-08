@@ -3,9 +3,8 @@ import {FlatList, Text, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import {NotificationComponent} from "../Components/NotificationComponent";
 import styles from "../styles";
-import {notifications} from "../MockupData";
 import {LogInMessage} from "../Components/LogInMessage";
-import {_navigateToScreen} from "../constants/Constants";
+import {_navigateToScreen, pathNotifications} from "../constants/Constants";
 import firebase from 'react-native-firebase';
 
 export class NotificationsScreen extends React.Component {
@@ -23,7 +22,8 @@ export class NotificationsScreen extends React.Component {
         super();
         this.unsubscriber = null;
         this.state = {
-            user: null
+            user: null,
+            notifications: []
         };
     }
 
@@ -34,6 +34,20 @@ export class NotificationsScreen extends React.Component {
                 _navigateToScreen('SignUpLogIn', this.props.navigation);
             } else {
                 this.setState({user: user});
+
+                console.log('Loading notifications...');
+                const refNotifications = firebase.database().ref(pathNotifications + '/' + user.uid).orderByChild('timestamp').limitToLast(10);
+                refNotifications.once(
+                    'value',
+                    (dataSnapshot) => {
+                        console.log('Notifications successfully retrieved');
+                        this.setState({notifications: dataSnapshot.toJSON() ? Object.values(dataSnapshot.toJSON()) : []});
+                    },
+                    (error) => {
+                        console.error('Error while retrieving notifications');
+                        console.error(error);
+                    }
+                );
             }
         });
     }
@@ -55,7 +69,7 @@ export class NotificationsScreen extends React.Component {
             <View style={{flex:1}}>
                 {
                     this.state.user && !this.state.user.isAnonymous &&<FlatList
-                        data={notifications}
+                        data={this.state.notifications}
                         renderItem={({item}) => <NotificationComponent notification={item} {...this.props}/>}
                         refreshing={false}
                         onRefresh={() => this._onRefreshPulled}
