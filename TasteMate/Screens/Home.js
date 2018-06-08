@@ -5,10 +5,10 @@ import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
-import {_navigateToScreen} from "../constants/Constants";
+import {_navigateToScreen, pathFollow} from "../constants/Constants";
 import {LogInMessage} from "../Components/LogInMessage";
 
-const OBS_LOAD_DEPTH = 2;
+const OBS_LOAD_DEPTH = 4;
 
 export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
@@ -68,7 +68,7 @@ export class HomeScreen extends React.Component {
             this._loadObservations(this.state.followees, onStartup, isRefreshing);
         } else {
             console.log('Loading people the current user follows...')
-            const refFollowees = firebase.database().ref('follow').orderByChild('follower').equalTo(userid);
+            const refFollowees = firebase.database().ref(pathFollow).orderByChild('follower').equalTo(userid);
             refFollowees.once(
                 'value',
                 (dataSnapshot) => {
@@ -104,7 +104,7 @@ export class HomeScreen extends React.Component {
             }).then(({data}) => {
                 console.log('Observations successfully retrieved');
                 this.isLoadingObservations = false;
-                this._addToObservationState(data.observations, onStartup);
+                this._addToObservationState(data.observations, onStartup, isRefreshing);
             }).catch(httpsError => {
                 console.log(httpsError.code);
                 console.log(httpsError.message);
@@ -113,7 +113,7 @@ export class HomeScreen extends React.Component {
         }
     }
 
-    _addToObservationState(observations, onStartup) {
+    _addToObservationState(observations, onStartup, isRefreshing) {
         observations.sort(function(a,b) {
             if (a.timestamp < b.timestamp)
                 return 1;
@@ -131,8 +131,8 @@ export class HomeScreen extends React.Component {
                 return 0;
             });
 
-            if (onStartup) {
-                this.setState({observations: observations});
+            if (onStartup || isRefreshing) {
+                this.setState({observations: observations, isRefreshing: false});
             } else {
                 this.setState(prevState => ({observations: prevState.observations.concat(observations), isRefreshing: false}));
             }
@@ -172,10 +172,10 @@ export class HomeScreen extends React.Component {
                         data={this.state.observations}
                         keyExtractor={this._keyExtractor}
                         renderItem={({item}) => <ObservationComponent observation={item} {...this.props} onDelete={this._onDelete}/>}
-                        refreshing={this.state.isRefreshing}
-                        onRefresh={this._onRefresh}
                         ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.emptyFeed}</Text>}
                         ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
+                        refreshing={this.state.isRefreshing}
+                        onRefresh={this._onRefresh}
                         onEndReached={this._onEndReached}
                     />
                 }
