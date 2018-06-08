@@ -5,12 +5,10 @@ import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
-import {_navigateToScreen, pathObservations} from "../constants/Constants";
+import {_navigateToScreen} from "../constants/Constants";
 import {LogInMessage} from "../Components/LogInMessage";
 
-const FEED_LOAD_DEPTH = 3.6e6;
-const FEED_LOAD_DEPTH_SIMPLE = 2;
-const APP_BEGINNING_UNIX = 1528153200000;
+const OBS_LOAD_DEPTH = 2;
 
 export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
@@ -27,21 +25,19 @@ export class HomeScreen extends React.Component {
         super();
 
         this._addToObservationState = this._addToObservationState.bind(this);
-        this._loadMoreObservations = this._loadMoreObservations.bind(this);
         this._onEndReached = this._onEndReached.bind(this);
         this._onRefresh = this._onRefresh.bind(this);
         this._onDelete = this._onDelete.bind(this);
+        this._loadObservations = this._loadObservations.bind(this);
 
         this.unsubscriber = null;
         this.state = {
-            observations: null,
+            observations: [],
             followees: null,
             user: null,
             noMoreObservations: false,
             isRefreshing: false
         };
-        this.loadDepthSimple = FEED_LOAD_DEPTH_SIMPLE;
-
         // TODO: Load profile pics
         // TODO: Load Food pics
         // TODO: Load comments
@@ -54,7 +50,7 @@ export class HomeScreen extends React.Component {
                 _navigateToScreen('SignUpLogIn', this.props.navigation);
             } else {
                 this.setState({user: user});
-                this._loadObservationFeed(this._addToObservationState, false);
+                this._loadObservationFeed(user.uid, true, false);
             }
         });
     }
@@ -65,37 +61,59 @@ export class HomeScreen extends React.Component {
         }
     }
 
-    _loadObservationFeed(action, isRefreshing) {
+    _loadObservationFeed(userid, onStartup, isRefreshing) {
         const _loadObservations = this._loadObservations;
-        _loadObservations(null, action, this.state.observations, this.loadDepthSimple, isRefreshing);
-    }
 
-    _loadObservations(followees, action, oldObservations, loadDepth, isRefreshing) {
-        console.log('Loading observations...');
-        const refObservations = firebase.database().ref(pathObservations).orderByChild('timestamp').limitToLast(loadDepth);
-        refObservations.once(
-            'value',
-            (dataSnapshot) => {
-                const observations = dataSnapshot.toJSON();
-                console.log(observations);
-                console.log(oldObservations);
-                if (!isRefreshing && (!observations || (oldObservations && oldObservations.length === Object.values(observations).length))) {
-                    console.log('No more observations available');
-                    this.noMoreObservations = true;
-                } else {
-                    action(observations);
+        if (this.state.followees) {
+            this._loadObservations(this.state.followees, onStartup, isRefreshing);
+        } else {
+            console.log('Loading people the current user follows...')
+            const refFollowees = firebase.database().ref('follow').orderByChild('follower').equalTo(userid);
+            refFollowees.once(
+                'value',
+                (dataSnapshot) => {
+                    console.log('Followees successfully retrieved');
+                    let followees = [userid];
+                    dataSnapshot.forEach(function (childSnapshot) {
+                        followees.push(childSnapshot.toJSON().followee);
+                    });
+                    this.setState({followees: followees});
+                    _loadObservations(followees, onStartup, isRefreshing);
+                },
+                (error) => {
+                    console.error('Error while retrieving followees');
+                    console.error(error);
                 }
-            },
-            (error) => {
-                console.error('Error while retrieving observations in feed');
-                console.error(error);
-            }
-        );
+            );
+        }
     }
 
-    _addToObservationState(newObservations) {
-        let observations = newObservations ? Object.values(newObservations) : null;
+    _loadObservations(followees, onStartup, isRefreshing) {
+        const obsSize = this.state.observations.length;
+        if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0 || isRefreshing)) {
+            const index = isRefreshing ? 0 : this.state.observations.length;
 
+            console.log('Loading observations... Starting at ' + index + ' to ' + (index + OBS_LOAD_DEPTH));
+            this.isLoadingObservations = true;
+
+            const httpsCallable = firebase.functions().httpsCallable('getXMostRecentFeedObsForUsers');
+            httpsCallable({
+                users: followees,
+                from: index,
+                to: index + OBS_LOAD_DEPTH
+            }).then(({data}) => {
+                console.log('Observations successfully retrieved');
+                this.isLoadingObservations = false;
+                this._addToObservationState(data.observations, onStartup);
+            }).catch(httpsError => {
+                console.log(httpsError.code);
+                console.log(httpsError.message);
+                this.isLoadingObservations = false;
+            })
+        }
+    }
+
+    _addToObservationState(observations, onStartup) {
         observations.sort(function(a,b) {
             if (a.timestamp < b.timestamp)
                 return 1;
@@ -104,25 +122,32 @@ export class HomeScreen extends React.Component {
             return 0;
         });
 
-        this.setState({observations: observations, isRefreshing: false});
-    }
+        if (observations && observations.length > 0) {
+            observations.sort(function (a, b) {
+                if (a.timestamp < b.timestamp)
+                    return 1;
+                if (a.timestamp > b.timestamp)
+                    return -1;
+                return 0;
+            });
 
-    _loadMoreObservations() {
-        this.loadDepthSimple += FEED_LOAD_DEPTH_SIMPLE;
-        if (!this.noMoreObservations) {
-            this._loadObservationFeed(this._addToObservationState, false);
+            if (onStartup) {
+                this.setState({observations: observations});
+            } else {
+                this.setState(prevState => ({observations: prevState.observations.concat(observations), isRefreshing: false}));
+            }
         }
     }
 
     _onRefresh() {
         console.log('Refreshing...');
         this.setState({isRefreshing: true});
-        this._loadObservationFeed(this._addToObservationState, true);
+        this._loadObservationFeed(this.state.user.uid, false, true);
     }
 
     _onEndReached() {
         console.log('Loading more observations...');
-        this._loadMoreObservations();
+        this._loadObservationFeed(this.state.user.uid, false, false);
     }
 
     _keyExtractor = (item, index) => this.state.observations[index].observationid;
@@ -134,6 +159,9 @@ export class HomeScreen extends React.Component {
         this.setState({observations: array});
     }
 
+    _onCreate() {
+
+    }
 
     render() {
         return (
