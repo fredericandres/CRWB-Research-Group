@@ -3,6 +3,7 @@ package com.tastemate;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
 import cl.json.RNSharePackage;
 import cl.json.ShareApplication;
 import com.RNFetchBlob.RNFetchBlobPackage;
@@ -30,6 +31,7 @@ public class MainApplication extends Application implements ReactApplication, Sh
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFirebasePackage(),
             new RNSharePackage(),
             new RNFetchBlobPackage(),
             new RNCameraPackage(),

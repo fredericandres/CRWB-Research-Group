@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "498074266688",
+    "firebase_url": "https://tastemate-bb95e.firebaseio.com",
+    "project_id": "tastemate-bb95e",
+    "storage_bucket": "tastemate-bb95e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498074266688:android:9e6849fb8f69d135",
+        "android_client_info": {
+          "package_name": "com.tastemate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "498074266688-a7hh05osc34g8kjlfmbjdcli9mf5b45u.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "498074266688-a7hh05osc34g8kjlfmbjdcli9mf5b45u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4ejGSgB5JawGFaefzyEr2BR0GQvpeDdE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
