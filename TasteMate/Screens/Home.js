@@ -64,7 +64,7 @@ export class HomeScreen extends React.Component {
     _loadObservationFeed(userid, onStartup, isRefreshing) {
         const _loadObservations = this._loadObservations;
 
-        if (this.state.followees) {
+        if (this.state.followees && !isRefreshing) {
             this._loadObservations(this.state.followees, onStartup, isRefreshing);
         } else {
             console.log('Loading people the current user follows...')
@@ -114,14 +114,6 @@ export class HomeScreen extends React.Component {
     }
 
     _addToObservationState(observations, onStartup, isRefreshing) {
-        observations.sort(function(a,b) {
-            if (a.timestamp < b.timestamp)
-                return 1;
-            if (a.timestamp > b.timestamp)
-                return -1;
-            return 0;
-        });
-
         if (observations && observations.length > 0) {
             observations.sort(function (a, b) {
                 if (a.timestamp < b.timestamp)

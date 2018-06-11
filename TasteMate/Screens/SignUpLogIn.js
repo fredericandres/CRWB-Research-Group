@@ -72,7 +72,8 @@ export class SignUpLogInScreen extends React.Component {
                         // Add user's username & location to database
                         firebase.database().ref(pathUsers).child(credentials.user.uid).set({
                             username: this.state.username,
-                            location: this.state.location
+                            location: this.state.location,
+                            userid: credentials.user.uid
                         }, (error) => {
                             if (error) {
                                 console.error('Error during user information transmission.');
