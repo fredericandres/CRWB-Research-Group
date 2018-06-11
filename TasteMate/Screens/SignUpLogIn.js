@@ -2,8 +2,9 @@ import React from 'react';
 import {ImageBackground, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import strings from "../strings";
 import styles from "../styles";
-import {brandAccent} from "../constants/Constants";
+import {brandAccent, pathUsers} from "../constants/Constants";
 import {TextInputComponent} from "../Components/TextInputComponent";
+import firebase from 'react-native-firebase';
 
 export class SignUpLogInScreen extends React.Component {
     static navigationOptions = {
@@ -17,27 +18,137 @@ export class SignUpLogInScreen extends React.Component {
         this._onPressSubmit = this._onPressSubmit.bind(this);
         this._onPressSkip = this._onPressSkip.bind(this);
 
-        // TODO: get user info from DB
         this.state = {
             username: undefined,
             email: undefined,
             location: undefined,
             password: undefined,
             signUpActive: false,
+            error: null,
+            user: null
         };
+
+        this.unsubscriber = null;
+        this.skipPressed = false;
+    }
+
+    componentDidMount() {
+        this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
+            this.setState({user: user});
+            if (user && (!user.isAnonymous || this.skipPressed)) {
+                this._close();
+            }
+        });
     }
 
     componentWillMount() {
         StatusBar.setHidden(true);
     }
+
     componentWillUnmount() {
         StatusBar.setHidden(false);
+        if (this.unsubscriber) {
+            this.unsubscriber();
+        }
     }
 
     _onPressSubmit() {
-        // TODO: Check with DB
-        // TODO: Display error/success msg
-        this.props.navigation.dismiss();
+        let errorMessage = '';
+        if (!this.state.email) {
+            errorMessage = strings.errorMessageEnterEmail;
+        } else if (!this.state.password) {
+            errorMessage = strings.errorMessageEnterPassword;
+        } else {
+            if (this.state.signUpActive) {
+                if (!this.state.username) {
+                    errorMessage = strings.errorMessageEnterUsername;
+                } else if (!this.state.location) {
+                    errorMessage = strings.errorMessageEnterLocation;
+                } else {
+                    console.log('Checking if username already exists...');
+                    const refUsername = firebase.database().ref(pathUsers).orderByChild('username').equalTo(this.state.username);
+                    refUsername.once(
+                        'value',
+                        (dataSnapshot) => {
+                            console.log('Username successfully checked');
+                            if (dataSnapshot.toJSON()) {
+                                // Display error message
+                                this.setState({error: strings.errorMessageUsernameAlreadyInUse});
+                            } else {
+                                // Create account
+                                console.log('Creating new account...');
+                                firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then((credentials) => {
+                                    console.log('Successfully created new account.');
+
+                                    // Add user's username & location to database
+                                    firebase.database().ref(pathUsers).child(credentials.user.uid).set({
+                                        username: this.state.username,
+                                        location: this.state.location,
+                                        userid: credentials.user.uid
+                                    }, (error) => {
+                                        if (error) {
+                                            console.error('Error during user information transmission.');
+                                            console.error(error);
+                                            this._handleAuthError(error);
+                                        } else {
+                                            console.log('Successfully added user information to DB.');
+                                        }
+                                    });
+                                }).catch((error) => {
+                                    console.error('Error during signup.');
+                                    console.error(error);
+                                    this._handleAuthError(error);
+                                });
+                            }
+                        },
+                        (error) => {
+                            console.error('Error while checking if username exists');
+                            console.error(error);
+                        }
+                    );
+                }
+            } else {
+                firebase.auth().signInAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then(() => {
+                    console.log('Successfully logged in.');
+                }).catch((error) => {
+                    console.log('Error during login.');
+                    console.log(error);
+                    this._handleAuthError(error);
+                });
+            }
+        }
+
+        this.setState({error: errorMessage});
+    }
+
+    _handleAuthError(error) {
+        console.log('asdad');
+        console.log(error.code);
+
+        let errorMessage = '';
+
+        switch (error.code) {
+            case 'auth/invalid-email':
+                errorMessage = strings.errorMessageInvalidEmail;
+                break;
+            case 'auth/user-disabled':
+                errorMessage = strings.errorMessageUserDisabled;
+                break;
+            case 'auth/user-not-found':
+                errorMessage = strings.errorMessageUserNotFound;
+                break;
+            case 'auth/wrong-password':
+                errorMessage = strings.errorMessageWrongPassword;
+                break;
+            case 'auth/weak-password':
+                errorMessage = strings.errorMessageWeakPassword;
+                break;
+            case 'auth/email-already-in-use':
+                errorMessage = strings.errorMessageEmailAlreadyInUse;
+                break;
+        }
+
+        this.setState({error: errorMessage});
     }
 
     _onPressSwitch() {
@@ -45,11 +156,25 @@ export class SignUpLogInScreen extends React.Component {
     }
 
     _onPressSkip() {
-        this.props.navigation.dismiss();
+        this.skipPressed = true;
+        if (this.state.user) {
+            this._close();
+        } else {
+            firebase.auth().signInAnonymouslyAndRetrieveData().then(() => {
+                console.log('Successfully signed up.');
+            }).catch((error) => {
+                console.error('Error during signup.');
+                console.error(error);
+                this._handleAuthError(error);
+            });
+        }
+    }
+
+    _close() {
+        this.props.navigation.goBack(null);
     }
 
     render() {
-        // TODO: skip button
         return (
             <ImageBackground source={require('../background.png')} resizeMode={'cover'}  style={{flex: 1}}>
                 <View style={[styles.containerOpacityMain, {position:'absolute', left: 0, right: 0, top: 0, bottom: 0}]}/>
@@ -72,13 +197,17 @@ export class SignUpLogInScreen extends React.Component {
                     <View style={{flex: 1}}/>
                 </View>
                 <View name={'inputWrapper'} style={[styles.containerPadding, {flex: 1}]}>
-                    {this.state.signUpActive && <TextInputComponent placeholder={strings.username} value={this.state.username} onChangeText={(text) => this.setState({username: text})} icon={'user'} keyboardType={'default'} />}
+                    {this.state.signUpActive && <TextInputComponent placeholder={strings.username} value={this.state.username} onChangeText={(text) => this.setState({username: text.toLowerCase()})} icon={'user'} keyboardType={'default'} />}
                     <TextInputComponent placeholder={strings.emailAddress} value={this.state.email} onChangeText={(text) => this.setState({email: text})} icon={'envelope'} keyboardType={'email-address'} />
                     <TextInputComponent placeholder={strings.password} icon={'lock'} onChangeText={(text) => this.setState({password: text})} keyboardType={'default'} secureTextEntry={true} />
                     {this.state.signUpActive && <TextInputComponent placeholder={strings.location} value={this.state.location} onChangeText={(text) => this.setState({location: text})} icon={'location-arrow'} keyboardType={'default'} />}
+                    <View style={[this.state.error ? styles.containerOpacityMain : {}, {flex: 1, flexDirection:'row', alignItems: 'center', justifyContent:'center'}]}>
+                        {!!this.state.error &&
+                        <Text style={[styles.textStandard, styles.containerPadding, {textAlign: 'center', color:brandAccent}]}>{this.state.error}</Text>}
+                    </View>
                     {!this.state.signUpActive && <View style={{flex:2}}/>}
                 </View>
-                <View style={{flex: 1, flexDirection: 'column'}}>
+                <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
                     <View style={{flex: 1}}/>
                     <View style={{flex: 6, alignItems: 'center'}}>
                         <View name={'submitButtonWrapper'} style={[styles.containerPadding]}>
@@ -88,12 +217,12 @@ export class SignUpLogInScreen extends React.Component {
                         </View>
                         <View name={'changeButtonWrapper'} style={[styles.containerPadding]}>
                             <TouchableOpacity name={'changeButton'} onPress={this._onPressSwitch}>
-                                <Text name={'other'} style={styles.textStandardDark}>{this.state.signUpActive ? strings.alreadyAccount: strings.noAccount}</Text>
+                                <Text name={'other'} style={[styles.textStandardDark, {textAlign: 'center'}]}>{this.state.signUpActive ? strings.alreadyAccount: strings.noAccount}</Text>
                             </TouchableOpacity>
                         </View>
                         <View name={'skipButtonWrapper'} style={[styles.containerPadding]}>
                             <TouchableOpacity name={'skipButton'} onPress={this._onPressSkip}>
-                                <Text name={'skip'} style={styles.textStandardDark}>{strings.skip}</Text>
+                                <Text name={'skip'} style={[styles.textStandardDark, {textAlign: 'center'}]}>{strings.skip}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

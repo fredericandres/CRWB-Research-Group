@@ -24,7 +24,8 @@ import {
     brandMain,
     EmojiEnum,
     iconSizeLarge,
-    iconSizeStandard
+    iconSizeStandard,
+    pathObservations
 } from "../constants/Constants";
 import {googleApiKey} from "../constants/GoogleApiKey";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
@@ -40,12 +41,14 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RNFetchBlob from 'react-native-fetch-blob';
 import XMLParser from 'react-xml-parser';
+import firebase from 'react-native-firebase';
+import {currentUser} from "../App";
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
-        title: strings.createObservation,
+        title: navigation.getParam('edit') ? strings.editObservation : strings.createObservation,
         headerLeft: (
             <NavBarCloseButton nav={navigation}/>
         ),
@@ -53,13 +56,14 @@ export class CreateObservationScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        // TODO: get observation info from DB
+        // TODO: load image?
 
         this._onPressNext = this._onPressNext.bind(this);
         this._onPressPrevious = this._onPressPrevious.bind(this);
 
         this._requestPermission = this._requestPermission.bind(this);
         this._alertForPermission = this._alertForPermission.bind(this);
+        this._onAuthorizedPhoto = this._onAuthorizedPhoto.bind(this);
 
         this._onUpdateDescription = this._onUpdateDescription.bind(this);
         this._onPressSmiley = this._onPressSmiley.bind(this);
@@ -72,11 +76,11 @@ export class CreateObservationScreen extends React.Component {
         this._onCheckBoxChanged = this._onCheckBoxChanged.bind(this);
         this._onSubmitSearch = this._onSubmitSearch.bind(this);
 
-        const edit = this.props.navigation.state.params && this.props.navigation.state.params.observation;
+        this.isEditing = this.props.navigation.getParam('edit');
         this.state = {
-            observation: edit ? this.props.navigation.state.params.observation : new Observation(),
-            activePageIndex: PagesEnum.SELECTIMAGE,
-            locationText: edit ? (this.props.navigation.state.params.observation.location ? this.props.navigation.state.params.observation.location : '') + (this.props.navigation.state.params.observation.address ? ', ' + this.props.navigation.state.params.observation.address : '') : '',
+            observation: this.isEditing ? this.props.navigation.state.params.observation : new Observation(),
+            activePageIndex: this.isEditing ? PagesEnum.DETAILS : PagesEnum.SELECTIMAGE,
+            locationText: this.isEditing ? (this.props.navigation.state.params.observation.location ? this.props.navigation.state.params.observation.location : '') + (this.props.navigation.state.params.observation.address ? ', ' + this.props.navigation.state.params.observation.address : '') : '',
             cameraActive: true,
             cameraFront: true,
             cameraFlash: true,
@@ -87,16 +91,45 @@ export class CreateObservationScreen extends React.Component {
 
     _onPressNext() {
         if (this.state.activePageIndex === PagesEnum.TASTE) {
-            // TODO sumbit & close
-            this.props.navigation.dismiss();
+            if (this.isEditing) {
+                firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + this.state.observation.observationid).update(this.state.observation, (error) => {
+                    if (error) {
+                        console.error('Error during observation update transmission.');
+                        console.error(error);
+                        this._handleAuthError(error);
+
+                        // TODO: display error message
+                    } else {
+                        console.log('Successfully updated observation at DB.');
+                        this.props.navigation.dismiss();
+                    }
+                });
+
+            } else {
+                let observation = this.state.observation;
+                observation.userid = currentUser.uid;
+                observation.timestamp = firebase.database().getServerTime();
+
+                firebase.database().ref(pathObservations + '/' + currentUser.uid).push(observation, (error) => {
+                    if (error) {
+                        console.error('Error during observation transmission.');
+                        console.error(error);
+                        this._handleAuthError(error);
+
+                        // TODO: display error message
+                    } else {
+                        console.log('Successfully added observation to DB.');
+                        this.props.navigation.dismiss();
+                    }
+                });
+            }
         } else {
             this.setState({activePageIndex: this.state.activePageIndex + 1});
         }
     }
 
     _onPressPrevious() {
-        if (this.state.activePageIndex === PagesEnum.SELECTIMAGE) {
-            // TODO cancel & close
+        if ((this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE) {
             this.props.navigation.dismiss();
         } else {
             this.setState({activePageIndex: this.state.activePageIndex - 1});
@@ -178,7 +211,7 @@ export class CreateObservationScreen extends React.Component {
         if (this.camera) {
             const options = { quality: 0.75, base64: true, forceUpOrientation: true, fixOrientation: true, mirrorImage: this.state.cameraFront};
             const data = await this.camera.takePictureAsync(options);
-            // TODO sound/image effects
+            // TODO [FEATURE]: sound/image effects
 
             CameraRoll.saveToCameraRoll(data.uri).then((uri) => {
                 this._onImageSelected(uri, data.base64);
@@ -198,25 +231,45 @@ export class CreateObservationScreen extends React.Component {
 
     _onPressPhotoButton(){
         if (this.state.photoPermission !== 'authorized') {
-            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.enablePhoto, () => this._requestPermission('photo', this._onAuthorizedPhoto));
+            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.enablePhoto, () => this._requestPermission('photo', () => this._onAuthorizedPhoto(true)));
         } else {
-            this._onAuthorizedPhoto();
+            this._onAuthorizedPhoto(true);
         }
         this.setState({ cameraActive: false });
     }
 
-    _onAuthorizedPhoto() {
-        CameraRoll.getPhotos({
-            first: 20,
-            assetType: 'Photos',
-        })
-            .then(r => {
-                this.setState({ photos: r.edges });
+    _onAuthorizedPhoto(reload) {
+        if (reload) {
+            this.setState({photos: null});
+            this.photosPageInfo = null;
+        }
+
+        const newlyLoaded = !this.photosPageInfo;
+        if (newlyLoaded || this.photosPageInfo.has_next_page) {
+            let variables = {
+                first: 5,
+                assetType: 'Photos',
+            };
+
+            if (this.photosPageInfo) {
+                variables.after = this.photosPageInfo.end_cursor;
+            }
+
+            CameraRoll.getPhotos(variables).then(r => {
+                this.photosPageInfo = r.page_info;
+                if (newlyLoaded) {
+                    this.setState({ photos: r.edges });
+                } else {
+                    this.setState((prevState) => {
+                        return {photos: prevState.photos.concat(r.edges)};
+                    });
+                }
             })
-            .catch((err) => {
-                console.log("Error while loading images from camera roll");
-            });
-        // TODO: load next photos when at bottom of flat list
+                .catch((err) => {
+                    console.log("Error while loading images from camera roll");
+                    console.log(err);
+                });
+        }
     }
 
     _cameraRollKeyExtractor = (item, index) => item.node.image.uri;
@@ -230,7 +283,9 @@ export class CreateObservationScreen extends React.Component {
         obs.image = uri;
         this._updateObservationState(obs);
 
-        base64 ? this._sendToMyPoC(base64, this._onUpdateMypoc) : this._getBase64ForURi(this._sendToMyPoC);
+        // TODO: save image base64 to Firebase storage or similar
+
+        base64 ? this._sendToMyPoC(base64, this._onUpdateMypoc) : this._getBase64ForURi(uri, this._sendToMyPoC);
 
         this._onPressNext();
     }
@@ -266,7 +321,8 @@ export class CreateObservationScreen extends React.Component {
                                 console.error(error);
                             });
                     } else {
-                        console.error('An error occurred while sending image to MyPoC server: ' + xhr);
+                        console.error('An error occurred while sending image to MyPoC server');
+                        console.error(xhr);
                     }
                 }
             };
@@ -300,7 +356,7 @@ export class CreateObservationScreen extends React.Component {
             obs.mypoc = mypoc;
         } else {
             obs.mypoccorrector = mypoc;
-            // TODO: Send corrected info to mypoc server
+            // TODO [FEATURE]: Send corrected info to mypoc server
         }
         this._updateObservationState(obs);
     }
@@ -426,6 +482,7 @@ export class CreateObservationScreen extends React.Component {
                                             <Image style={{flex: 1, aspectRatio: 1}} resizeMode={'cover'} source={{uri: item.node.image.uri}}/>
                                         </TouchableOpacity>
                                     }
+                                    onEndReached={() => this._onAuthorizedPhoto(false)}
                                 />
                             }
                             {
@@ -452,7 +509,7 @@ export class CreateObservationScreen extends React.Component {
                                     <ObservationExploreComponent source={{uri: this.state.observation.image}} style={{flexShrink:1, flex: 1}}/>
                                 </View>
                                 <View style={{flex: 2}}>
-                                    <TextInputComponent style={{flex: 1}} placeholder={this.state.observation.description} value={this.state.observation.dishname} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />
+                                    <TextInputComponent style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />
                                 </View>
                             </View>
                             <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
@@ -468,7 +525,6 @@ export class CreateObservationScreen extends React.Component {
                                 </View>
                             </View>
                             <TextInputComponent placeholder={strings.dishname} value={this.state.observation.dishname} onChangeText={(text) => this._onUpdateDishname(text)} icon={'cutlery'} keyboardType={'default'} />
-                            {/*TODO: Display ? + popup explanation of what mypoc is*/}
                             <TextInputComponent info={true} infoTitle={strings.mypocExplanationTitle} infoText={strings.mypocExplanationText} infoButtons={myPocAlertButtons} placeholder={this.state.observation.mypoc || 'prediction loading...'} value={this.state.observation.mypoccorrector || this.state.observation.mypoc} onChangeText={(text) => this._onUpdateMypoc(text)} icon={'question'} keyboardType={'default'} />
                             <TextInputComponent placeholder={strings.location} value={this.state.locationText} onEndEditing={this._onSubmitSearch} onChangeText={(text) => this._onUpdateLocation(text)} icon={'location-arrow'} keyboardType={'default'} returnKeyType={'search'} />
                             {
@@ -530,12 +586,12 @@ export class CreateObservationScreen extends React.Component {
                 <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
                     <View name={'previousButtonWrapper'} style={ {flex: 1}}>
                         <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:brandBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
-                            <Text style={[styles.textTitleDark, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>
+                            <Text style={[styles.textTitleDark, styles.containerPadding]}>{(this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>
                         </TouchableOpacity>
                     </View>
                     <View name={'nextButtonWrapper'} style={{flex: 1}}>
                         <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor:brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
-                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? strings.publish: strings.next}</Text>
+                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? (this.isEditing ? strings.save : strings.publish): strings.next}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

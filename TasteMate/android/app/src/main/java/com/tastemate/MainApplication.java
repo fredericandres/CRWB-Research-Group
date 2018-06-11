@@ -4,6 +4,9 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.database.RNFirebaseDatabasePackage;
+import io.invertase.firebase.auth.RNFirebaseAuthPackage;
+import io.invertase.firebase.functions.RNFirebaseFunctionsPackage;
 import cl.json.RNSharePackage;
 import cl.json.ShareApplication;
 import com.RNFetchBlob.RNFetchBlobPackage;
@@ -31,13 +34,16 @@ public class MainApplication extends Application implements ReactApplication, Sh
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new RNFirebasePackage(),
             new RNSharePackage(),
             new RNFetchBlobPackage(),
             new RNCameraPackage(),
             new ReactNativeLocalizationPackage(),
             new VectorIconsPackage(),
-            new MapsPackage()
+            new MapsPackage(),
+            new RNFirebasePackage(),
+            new RNFirebaseAuthPackage(),
+            new RNFirebaseDatabasePackage(),
+            new RNFirebaseFunctionsPackage()
       );
     }
 

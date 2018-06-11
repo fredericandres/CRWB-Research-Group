@@ -8,12 +8,13 @@ import {NotificationsScreen} from "./Screens/Notifications";
 import {ProfileScreen} from "./Screens/Profile";
 import {EatingOutListScreen} from "./Screens/EatingOutList";
 import {CreateObservationScreen} from "./Screens/CreateObservation";
-import {brandContrast, brandLight, brandMain, iconSizeStandard} from './constants/Constants';
+import {brandContrast, brandLight, brandMain, iconSizeStandard, pathUsers} from './constants/Constants';
 import {StatusBar, StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
 import strings from "./strings";
 import {MapScreen} from "./Screens/Map";
+import firebase from 'react-native-firebase';
 
 StatusBar.setHidden(false);
 
@@ -24,6 +25,26 @@ const styles = StyleSheet.create({
     navHeaderTitleStyle: {
         fontWeight: 'bold',
     },
+});
+
+export let currentUser = null;
+export let currentUserInformation = null;
+firebase.auth().onAuthStateChanged((user) => {
+    currentUser = user;
+
+    if (user) {
+        // Load user data
+        firebase.database().ref(pathUsers).child(currentUser.uid).on(
+            'value',
+            (dataSnapshot) => {
+                currentUserInformation = dataSnapshot.toJSON();
+            },
+            (error) => {
+                console.error('Could not load user data');
+                console.error(error);
+            }
+        );
+    }
 });
 
 const HomeStack = createStackNavigator({
