@@ -9,6 +9,10 @@ export class TextInputComponent extends React.Component {
         super(props);
     }
 
+    focus() {
+        this.textInput.focus()
+    }
+
     render() {
         return (
             <View style={{flexDirection: 'row', flex: 1}}>
@@ -16,19 +20,23 @@ export class TextInputComponent extends React.Component {
                     <FontAwesome name={this.props.icon} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
                 </View>
                 <View style={[styles.containerPadding, !this.props.info && styles.rightRoundedEdges, {flex: this.props.info? 5: 6, backgroundColor: brandBackground}]}>
-                    <TextInput style={[styles.textStandardDark, styles.containerPadding, {backgroundColor: 'transparent', flex: 1}]}
-                               placeholder={this.props.placeholder}
-                               value={this.props.value}
-                               placeholderTextColor={brandLight}
-                               returnKeyType={this.props.returnKeyType ? this.props.returnKeyType: 'done'}
-                               keyboardType={this.props.keyboardType}
-                               clearButtonMode={'while-editing'}
-                               underlineColorAndroid={brandBackground}
-                               selectionColor={brandMain}
-                               secureTextEntry={this.props.secureTextEntry}
-                               onChangeText={this.props.onChangeText}
-                               multiline={this.props.multiline}
-                               onEndEditing={this.props.onEndEditing}
+                    <TextInput
+                        ref={input => this.textInput = input}
+                        style={[styles.textStandardDark, styles.containerPadding, {backgroundColor: 'transparent', flex: 1}]}
+                        placeholder={this.props.placeholder}
+                        value={this.props.value}
+                        placeholderTextColor={brandLight}
+                        returnKeyType={this.props.returnKeyType ? this.props.returnKeyType: 'done'}
+                        keyboardType={this.props.keyboardType}
+                        returnKeyLabel={this.props.returnKeyLabel}
+                        clearButtonMode={'while-editing'}
+                        underlineColorAndroid={brandBackground}
+                        selectionColor={brandMain}
+                        secureTextEntry={this.props.secureTextEntry}
+                        onChangeText={this.props.onChangeText}
+                        multiline={this.props.multiline}
+                        onEndEditing={this.props.onEndEditing}
+                        onSubmitEditing={this.props.onSubmitEditing}
                     />
                 </View>
                 {this.props.info && <TouchableOpacity onPress={() => Alert.alert(this.props.infoTitle, this.props.infoText, this.props.infoButtons)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>

@@ -17,6 +17,7 @@ export class SignUpLogInScreen extends React.Component {
         this._onPressSwitch = this._onPressSwitch.bind(this);
         this._onPressSubmit = this._onPressSubmit.bind(this);
         this._onPressSkip = this._onPressSkip.bind(this);
+        this._focusNextField = this._focusNextField.bind(this);
 
         this.state = {
             username: undefined,
@@ -30,6 +31,7 @@ export class SignUpLogInScreen extends React.Component {
 
         this.unsubscriber = null;
         this.skipPressed = false;
+        this.inputs = {};
     }
 
     componentDidMount() {
@@ -174,6 +176,11 @@ export class SignUpLogInScreen extends React.Component {
         this.props.navigation.goBack(null);
     }
 
+    _focusNextField(key) {
+        console.log(this.inputs[key]);
+        this.inputs[key].focus();
+    }
+
     render() {
         return (
             <ImageBackground source={require('../background.png')} resizeMode={'cover'}  style={{flex: 1}}>
@@ -197,10 +204,56 @@ export class SignUpLogInScreen extends React.Component {
                     <View style={{flex: 1}}/>
                 </View>
                 <View name={'inputWrapper'} style={[styles.containerPadding, {flex: 1}]}>
-                    {this.state.signUpActive && <TextInputComponent placeholder={strings.username} value={this.state.username} onChangeText={(text) => this.setState({username: text.toLowerCase()})} icon={'user'} keyboardType={'default'} />}
-                    <TextInputComponent placeholder={strings.emailAddress} value={this.state.email} onChangeText={(text) => this.setState({email: text})} icon={'envelope'} keyboardType={'email-address'} />
-                    <TextInputComponent placeholder={strings.password} icon={'lock'} onChangeText={(text) => this.setState({password: text})} keyboardType={'default'} secureTextEntry={true} />
-                    {this.state.signUpActive && <TextInputComponent placeholder={strings.location} value={this.state.location} onChangeText={(text) => this.setState({location: text})} icon={'location-arrow'} keyboardType={'default'} />}
+                    <TextInputComponent
+                        ref={ input => {this.inputs['email'] = input;}}
+                        placeholder={strings.emailAddress}
+                        value={this.state.email}
+                        onChangeText={(text) => this.setState({email: text})}
+                        icon={'envelope'}
+                        keyboardType={'email-address'}
+                        returnKeyType={'next'}
+                        onSubmitEditing={() => {this._focusNextField('password');}}
+                    />
+                    <TextInputComponent
+                        ref={ input => {this.inputs['password'] = input;}}
+                        placeholder={strings.password}
+                        icon={'lock'}
+                        onChangeText={(text) => this.setState({password: text})}
+                        keyboardType={'default'}
+                        secureTextEntry={true}
+                        returnKeyType={this.state.signUpActive ? 'next' : 'join' }
+                        returnKeyLabel={this.state.signUpActive ? null : strings.logIn}
+                        onSubmitEditing={() => {
+                            this.state.signUpActive ? this._focusNextField('username') : this._onPressSubmit();
+                        }}
+                    />
+                    {
+                        this.state.signUpActive &&
+                        <TextInputComponent
+                            ref={ input => {this.inputs['username'] = input;}}
+                            placeholder={strings.username}
+                            value={this.state.username}
+                            onChangeText={(text) => this.setState({username: text.toLowerCase()})}
+                            icon={'user'}
+                            keyboardType={'default'}
+                            returnKeyType={'next'}
+                            onSubmitEditing={() => {this._focusNextField('location');}}
+                        />
+                    }
+                    {
+                        this.state.signUpActive &&
+                        <TextInputComponent
+                            ref={ input => {this.inputs['location'] = input;}}
+                            placeholder={strings.location}
+                            value={this.state.location}
+                            onChangeText={(text) => this.setState({location: text})}
+                            icon={'location-arrow'}
+                            keyboardType={'default'}
+                            returnKeyType={'join'}
+                            returnKeyLabel={strings.signUp}
+                            onSubmitEditing={() => {this._onPressSubmit()}}
+                        />
+                    }
                     <View style={[this.state.error ? styles.containerOpacityMain : {}, {flex: 1, flexDirection:'row', alignItems: 'center', justifyContent:'center'}]}>
                         {!!this.state.error &&
                         <Text style={[styles.textStandard, styles.containerPadding, {textAlign: 'center', color:brandAccent}]}>{this.state.error}</Text>}
