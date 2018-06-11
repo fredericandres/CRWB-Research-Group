@@ -21,7 +21,12 @@ import {
     brandMain,
     EmojiEnum,
     iconSizeSmall,
-    iconSizeStandard, pathActions, pathCutleries, pathFollow, pathLikes, pathObservations, pathShares
+    iconSizeStandard,
+    pathActions,
+    pathCutleries,
+    pathLikes,
+    pathObservations,
+    pathShares
 } from "../constants/Constants";
 import styles from "../styles";
 import {adjectives, comments} from "../MockupData";
@@ -45,7 +50,6 @@ export class ObservationComponent extends React.Component {
         this.state = {
             overlayIsHidden: true,
             liked: false,
-            // TODO: Does shared make sense as 1-0 var? No.
             shared: false,
             cutleried: false,
         };

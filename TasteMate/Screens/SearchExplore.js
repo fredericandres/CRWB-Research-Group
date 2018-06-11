@@ -45,15 +45,19 @@ export class SearchExploreScreen extends React.Component {
 
     componentDidMount() {
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                // Open SingUpLogIn screen if no account associated (not even anonymous)
-                _navigateToScreen('SignUpLogIn', this.props.navigation);
-            } else {
-                this.setState({user: user});
-            }
+            // Reset page info
+            this.setState({
+                user: user,
+                observations: [],
+            }, () => {
+                if (!user) {
+                    // Open SingUpLogIn screen if no account associated (not even anonymous)
+                    _navigateToScreen('SignUpLogIn', this.props.navigation);
+                } else {
+                    this._loadObservations(true, false);
+                }
+            });
         });
-
-        this._loadObservations(true, false);
     }
 
     componentWillUnmount() {

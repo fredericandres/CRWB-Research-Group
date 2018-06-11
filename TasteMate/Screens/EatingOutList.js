@@ -38,25 +38,29 @@ export class EatingOutListScreen extends React.Component {
 
     componentDidMount() {
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                // Open SingUpLogIn screen if no account associated (not even anonymous)
-                _navigateToScreen('SignUpLogIn', this.props.navigation);
-            } else {
-                this.setState({user: user});
-            }
-        });
-
-        Permissions.check('location').then(response => {
+            // Reset page info
             this.setState({
-                // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
-                locationPermission: response,
+                user: user,
+                selectedIndex: 0,
+                observations: observations
+            }, () => {
+                if (!user) {
+                    // Open SingUpLogIn screen if no account associated (not even anonymous)
+                    _navigateToScreen('SignUpLogIn', this.props.navigation);
+                } else {
+                    Permissions.check('location').then(response => {
+                        this.setState({
+                            // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+                            locationPermission: response,
+                        });
+                        if (response === 'authorized') {
+                            navigator.geolocation.getCurrentPosition((position) => {
+                                this.setState({ userlocation: position.coords });
+                            });
+                        }
+                    })                }
             });
-            if (response === 'authorized') {
-                navigator.geolocation.getCurrentPosition((position) => {
-                    this.setState({ userlocation: position.coords });
-                });
-            }
-        })
+        });
     }
 
     componentWillUnmount() {

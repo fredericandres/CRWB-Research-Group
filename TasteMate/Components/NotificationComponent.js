@@ -35,8 +35,6 @@ export class NotificationComponent extends React.Component {
     }
 
     _onPressObservation() {
-        // TODO: get obs from DB and navigate there
-        console.log(this.props);
         this.props.navigation.navigate('ObservationDetail',  { observation: this.props.observation });
     }
 

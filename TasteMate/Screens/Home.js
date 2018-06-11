@@ -45,13 +45,19 @@ export class HomeScreen extends React.Component {
 
     componentDidMount() {
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                // Open SingUpLogIn screen if no account associated (not even anonymous)
-                _navigateToScreen('SignUpLogIn', this.props.navigation);
-            } else {
-                this.setState({user: user});
-                this._loadObservationFeed(user.uid, true, false);
-            }
+            // Reset page info
+            this.setState({
+                user: user,
+                observation: [],
+                followees: null
+            }, () => {
+                if (!user) {
+                    // Open SingUpLogIn screen if no account associated (not even anonymous)
+                    _navigateToScreen('SignUpLogIn', this.props.navigation);
+                } else {
+                    this._loadObservationFeed(user.uid, true, false);
+                }
+            });
         });
     }
 
@@ -124,11 +130,12 @@ export class HomeScreen extends React.Component {
             });
 
             if (onStartup || isRefreshing) {
-                this.setState({observations: observations, isRefreshing: false});
+                this.setState({observations: observations});
             } else {
-                this.setState(prevState => ({observations: prevState.observations.concat(observations), isRefreshing: false}));
+                this.setState(prevState => ({observations: prevState.observations.concat(observations)}));
             }
         }
+        this.setState({isRefreshing: false});
     }
 
     _onRefresh() {
@@ -152,7 +159,7 @@ export class HomeScreen extends React.Component {
     }
 
     _onCreate() {
-
+        // TODO: Add new observation to top of page
     }
 
     render() {

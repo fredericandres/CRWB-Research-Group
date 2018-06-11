@@ -41,14 +41,20 @@ export class NotificationsScreen extends React.Component {
 
     componentDidMount() {
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                // Open SingUpLogIn screen if no account associated (not even anonymous)
-                _navigateToScreen('SignUpLogIn', this.props.navigation);
-            } else {
-                this.setState({user: user});
-
-                this._loadNotifications(user.uid, true, false);
-            }
+            // Reset page info
+            this.setState({
+                user: user,
+                notifications: [],
+                users: [],
+                observations: [],
+            }, () => {
+                if (!user) {
+                    // Open SingUpLogIn screen if no account associated (not even anonymous)
+                    _navigateToScreen('SignUpLogIn', this.props.navigation);
+                } else {
+                    this._loadNotifications(user.uid, true, false);
+                }
+            });
         });
     }
 
@@ -150,8 +156,9 @@ export class NotificationsScreen extends React.Component {
                 return 0;
             });
 
-            this.setState({notifications: notifications, isRefreshing: false});
+            this.setState({notifications: notifications});
         }
+        this.setState({isRefreshing: false});
     }
 
     _addUserToState(user, userid) {

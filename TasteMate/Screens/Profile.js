@@ -1,9 +1,8 @@
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
-import {_formatNumber, brandMain, pathFollow, pathObservations, pathUsers} from "../constants/Constants";
+import {_formatNumber, brandMain, pathFollow, pathUsers} from "../constants/Constants";
 import styles from "../styles";
-import * as MockupData from "../MockupData";
 import {userr} from "../MockupData";
 import {UserComponent} from "../Components/UserComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
@@ -90,7 +89,6 @@ export class ProfileScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            //selectedIndex: 0,
             user: props.navigation.getParam('myProfile') ? currentUserInformation : props.navigation.getParam('user') || {},
             followers: [],
             following: [],
@@ -176,6 +174,7 @@ export class ProfileScreen extends React.Component {
                 from: index,
                 to: index + OBS_LOAD_DEPTH
             }).then(({data}) => {
+                console.log('Successfully loaded observations');
                 this.isLoadingObservations = false;
                 this._addToObservationState(data.observations, onStartup);
             }).catch(httpsError => {
@@ -204,6 +203,8 @@ export class ProfileScreen extends React.Component {
             } else {
                 this.setState(prevState => ({observations: prevState.observations.concat(observations)}));
             }
+        } else if (onStartup) {
+            this._onPressPhotos();
         }
     }
 
@@ -213,6 +214,7 @@ export class ProfileScreen extends React.Component {
         ref.once(
             'value',
             (dataSnapshot) => {
+                console.log('Successfully loaded ' + type + 's');
                 if (dataSnapshot.numChildren() !== idarray.size) {
                     // Loop through results to get all users
                     dataSnapshot.forEach(function (childSnapshot) {
@@ -245,7 +247,6 @@ export class ProfileScreen extends React.Component {
     }
 
     _onPressPhotos() {
-        // TODO: set observation count
         this.setState({selectedIndex: 0});
     }
 
