@@ -61,33 +61,51 @@ export class SignUpLogInScreen extends React.Component {
         } else {
             if (this.state.signUpActive) {
                 if (!this.state.username) {
-                    // TODO: check if username already taken
                     errorMessage = strings.errorMessageEnterUsername;
-                } else if  (!this.state.location) {
+                } else if (!this.state.location) {
                     errorMessage = strings.errorMessageEnterLocation;
                 } else {
-                    firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then((credentials) => {
-                        console.log('Successfully signed up.');
-
-                        // Add user's username & location to database
-                        firebase.database().ref(pathUsers).child(credentials.user.uid).set({
-                            username: this.state.username,
-                            location: this.state.location,
-                            userid: credentials.user.uid
-                        }, (error) => {
-                            if (error) {
-                                console.error('Error during user information transmission.');
-                                console.error(error);
-                                this._handleAuthError(error);
+                    console.log('Checking if username already exists...');
+                    const refUsername = firebase.database().ref(pathUsers).orderByChild('username').equalTo(this.state.username);
+                    refUsername.once(
+                        'value',
+                        (dataSnapshot) => {
+                            console.log('Username successfully checked');
+                            if (dataSnapshot.toJSON()) {
+                                // Display error message
+                                this.setState({error: strings.errorMessageUsernameAlreadyInUse});
                             } else {
-                                console.log('Successfully added user information to DB.');
+                                // Create account
+                                console.log('Creating new account...');
+                                firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then((credentials) => {
+                                    console.log('Successfully created new account.');
+
+                                    // Add user's username & location to database
+                                    firebase.database().ref(pathUsers).child(credentials.user.uid).set({
+                                        username: this.state.username,
+                                        location: this.state.location,
+                                        userid: credentials.user.uid
+                                    }, (error) => {
+                                        if (error) {
+                                            console.error('Error during user information transmission.');
+                                            console.error(error);
+                                            this._handleAuthError(error);
+                                        } else {
+                                            console.log('Successfully added user information to DB.');
+                                        }
+                                    });
+                                }).catch((error) => {
+                                    console.error('Error during signup.');
+                                    console.error(error);
+                                    this._handleAuthError(error);
+                                });
                             }
-                        });
-                    }).catch((error) => {
-                        console.error('Error during signup.');
-                        console.error(error);
-                        this._handleAuthError(error);
-                    });
+                        },
+                        (error) => {
+                            console.error('Error while checking if username exists');
+                            console.error(error);
+                        }
+                    );
                 }
             } else {
                 firebase.auth().signInAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then(() => {
@@ -183,13 +201,14 @@ export class SignUpLogInScreen extends React.Component {
                     <TextInputComponent placeholder={strings.emailAddress} value={this.state.email} onChangeText={(text) => this.setState({email: text})} icon={'envelope'} keyboardType={'email-address'} />
                     <TextInputComponent placeholder={strings.password} icon={'lock'} onChangeText={(text) => this.setState({password: text})} keyboardType={'default'} secureTextEntry={true} />
                     {this.state.signUpActive && <TextInputComponent placeholder={strings.location} value={this.state.location} onChangeText={(text) => this.setState({location: text})} icon={'location-arrow'} keyboardType={'default'} />}
-                    {!this.state.signUpActive && <View style={{flex:2}}/>}
-                </View>
-                <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
-                    <View style={[styles.containerOpacityMain, {flex: 1, flexDirection:'row', alignItems: 'center'}]}>
+                    <View style={[this.state.error ? styles.containerOpacityMain : {}, {flex: 1, flexDirection:'row', alignItems: 'center', justifyContent:'center'}]}>
                         {this.state.error &&
                         <Text style={[styles.textStandard, styles.containerPadding, {textAlign: 'center', color:brandAccent}]}>{this.state.error}</Text>}
                     </View>
+                    {!this.state.signUpActive && <View style={{flex:2}}/>}
+                </View>
+                <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
+                    <View style={{flex: 1}}/>
                     <View style={{flex: 6, alignItems: 'center'}}>
                         <View name={'submitButtonWrapper'} style={[styles.containerPadding]}>
                             <TouchableOpacity name={'saveChangesButton'} onPress={this._onPressSubmit} style={[{backgroundColor:brandAccent}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
@@ -198,12 +217,12 @@ export class SignUpLogInScreen extends React.Component {
                         </View>
                         <View name={'changeButtonWrapper'} style={[styles.containerPadding]}>
                             <TouchableOpacity name={'changeButton'} onPress={this._onPressSwitch}>
-                                <Text name={'other'} style={styles.textStandardDark}>{this.state.signUpActive ? strings.alreadyAccount: strings.noAccount}</Text>
+                                <Text name={'other'} style={[styles.textStandardDark, {textAlign: 'center'}]}>{this.state.signUpActive ? strings.alreadyAccount: strings.noAccount}</Text>
                             </TouchableOpacity>
                         </View>
                         <View name={'skipButtonWrapper'} style={[styles.containerPadding]}>
                             <TouchableOpacity name={'skipButton'} onPress={this._onPressSkip}>
-                                <Text name={'skip'} style={styles.textStandardDark}>{strings.skip}</Text>
+                                <Text name={'skip'} style={[styles.textStandardDark, {textAlign: 'center'}]}>{strings.skip}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
