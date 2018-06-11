@@ -6,6 +6,7 @@ import com.facebook.react.ReactApplication;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.database.RNFirebaseDatabasePackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
+import io.invertase.firebase.functions.RNFirebaseFunctionsPackage;
 import cl.json.RNSharePackage;
 import cl.json.ShareApplication;
 import com.RNFetchBlob.RNFetchBlobPackage;
