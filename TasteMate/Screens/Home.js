@@ -5,7 +5,7 @@ import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
-import {_navigateToScreen, pathFollow} from "../constants/Constants";
+import {_navigateToScreen, _sortArrayByTimestamp, pathFollow} from "../constants/Constants";
 import {LogInMessage} from "../Components/LogInMessage";
 
 const OBS_LOAD_DEPTH = 4;
@@ -121,13 +121,7 @@ export class HomeScreen extends React.Component {
 
     _addToObservationState(observations, onStartup, isRefreshing) {
         if (observations && observations.length > 0) {
-            observations.sort(function (a, b) {
-                if (a.timestamp < b.timestamp)
-                    return 1;
-                if (a.timestamp > b.timestamp)
-                    return -1;
-                return 0;
-            });
+            _sortArrayByTimestamp(observations);
 
             if (onStartup || isRefreshing) {
                 this.setState({observations: observations});

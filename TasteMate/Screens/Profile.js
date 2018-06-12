@@ -1,7 +1,7 @@
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
-import {_formatNumber, brandMain, pathFollow, pathUsers} from "../constants/Constants";
+import {_formatNumber, _sortArrayByTimestamp, brandMain, pathFollow, pathUsers} from "../constants/Constants";
 import styles from "../styles";
 import {userr} from "../MockupData";
 import {UserComponent} from "../Components/UserComponent";
@@ -189,13 +189,7 @@ export class ProfileScreen extends React.Component {
         let observations = newObservations ? Object.values(newObservations) : null;
 
         if (observations && observations.length > 0) {
-            observations.sort(function (a, b) {
-                if (a.timestamp < b.timestamp)
-                    return 1;
-                if (a.timestamp > b.timestamp)
-                    return -1;
-                return 0;
-            });
+            _sortArrayByTimestamp(observations);
 
             if (onStartup) {
                 this.setState({observations: observations});

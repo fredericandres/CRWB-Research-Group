@@ -2,7 +2,7 @@ import React from "react";
 import styles from "../styles";
 import {Animated, Image, Text, TouchableOpacity, View} from "react-native";
 import TimeAgo from 'react-native-timeago'
-import {_navigateToScreen, brandMain, NotificationEnum} from "../constants/Constants";
+import {_navigateToScreen, ActivityEnum, brandMain} from "../constants/Constants";
 import strings from "../strings";
 
 export class NotificationComponent extends React.Component {
@@ -31,7 +31,9 @@ export class NotificationComponent extends React.Component {
     }
 
     _onPressProfile(index) {
-        _navigateToScreen('Profile', this.props.navigation, this.props.user/*this.notification.senderid[index]*/, null);
+        let params = {};
+        params.user = this.props.user;
+        _navigateToScreen('Profile', this.props.navigation, params/*this.notification.senderid[index]*/);
     }
 
     _onPressObservation() {
@@ -41,17 +43,20 @@ export class NotificationComponent extends React.Component {
     render() {
         let action = '';
         switch(this.notification.type) {
-            case NotificationEnum.LIKE:
+            case ActivityEnum.LIKE:
                 action = strings.likedPicture;
                 break;
-            case NotificationEnum.CUTLERY:
+            case ActivityEnum.CUTLERY:
                 action = strings.addedToEatingOutPicture;
                 break;
-            case NotificationEnum.SHARE:
+            case ActivityEnum.SHARE:
                 action = strings.sharedPicture;
                 break;
-            case NotificationEnum.FOLLOW:
+            case ActivityEnum.FOLLOW:
                 action = strings.startedFollowing;
+                break;
+            case ActivityEnum.COMMENT:
+                action = strings.commentedPicture;
                 break;
         }
 
@@ -67,7 +72,7 @@ export class NotificationComponent extends React.Component {
         // }
 
         return (
-            <TouchableOpacity onPress={this.notification.type === NotificationEnum.FOLLOW ? this._onPressProfile : this._onPressObservation} style={[{flexDirection:'row'}]}>
+            <TouchableOpacity onPress={this.notification.type === ActivityEnum.FOLLOW ? this._onPressProfile : this._onPressObservation} style={[{flexDirection:'row'}]}>
                 {!this.notification.read && <Animated.View name={'fadingbackground'} style={{position: 'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:brandMain, opacity: this.state.fadeAnim}}/>}
                 <TouchableOpacity name={'userpic'} onPress={this._onPressProfile/*this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles*/} style={[styles.containerPadding, {flexDirection:'column', justifyContent:'center'}]}>
                     <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../user2.jpg')} style={styles.roundProfile}/>
@@ -90,7 +95,7 @@ export class NotificationComponent extends React.Component {
                     </Text>
                     <TimeAgo name={'time'} style={styles.textSmall} time={this.notification.timestamp}/>
                 </View>
-                {this.notification.type !== NotificationEnum.FOLLOW &&
+                {this.notification.type !== ActivityEnum.FOLLOW &&
                 <TouchableOpacity name={'image'} onPress={this._onPressObservation} style={[styles.containerPadding, {flex: 0, flexDirection:'column', justifyContent:'center'}]}>
                     <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../carbonara.png')} style={styles.squareThumbnail}/>
                 </TouchableOpacity>}

@@ -15,6 +15,7 @@ import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
 import strings from "./strings";
 import {MapScreen} from "./Screens/Map";
 import firebase from 'react-native-firebase';
+import {CommentsScreen} from "./Screens/Comments";
 
 StatusBar.setHidden(false);
 
@@ -52,6 +53,7 @@ const HomeStack = createStackNavigator({
         Profile: { screen: ProfileScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
         Map: { screen: MapScreen },
+        Comments: { screen: CommentsScreen },
     },
     {
         initialRouteName: 'Home',
@@ -68,6 +70,7 @@ const ExploreSearchStack = createStackNavigator({
         ObservationDetail: { screen: ObservationDetailScreen },
         Profile: { screen: ProfileScreen },
         Map: { screen: MapScreen },
+        Comments: { screen: CommentsScreen },
     },
     {
         initialRouteName: 'Explore',
@@ -84,6 +87,7 @@ const NotificationsStack = createStackNavigator({
         ObservationDetail: { screen: ObservationDetailScreen },
         Profile: { screen: ProfileScreen },
         Map: { screen: MapScreen },
+        Comments: { screen: CommentsScreen },
     },
     {
         initialRouteName: 'Notifications',
@@ -100,6 +104,7 @@ const EatingOutListStack = createStackNavigator({
         ObservationDetail: { screen: ObservationDetailScreen },
         Profile: { screen: ProfileScreen },
         Map: { screen: MapScreen },
+        Comments: { screen: CommentsScreen },
     },
     {
         initialRouteName: 'EatingOutList',
@@ -117,6 +122,7 @@ const ProfileStack = createStackNavigator({
         SignUpLogIn: { screen: SignUpLogInScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
         Map: { screen: MapScreen },
+        Comments: { screen: CommentsScreen },
     },
     {
         initialRouteName: 'Profile',

@@ -1,28 +1,17 @@
 import React from "react";
-import {
-    ActionSheetIOS,
-    Alert,
-    FlatList,
-    Image,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from "react-native";
+import {ActionSheetIOS, Alert, FlatList, Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {
     _formatNumberWithString,
     _navigateToScreen,
+    _sortArrayByTimestamp,
     ActivityEnum,
     brandContrast,
-    brandLight,
     brandMain,
     EmojiEnum,
-    iconSizeSmall,
     iconSizeStandard,
     pathActions,
+    pathComments,
     pathCutleries,
     pathLikes,
     pathObservations,
@@ -36,6 +25,7 @@ import strings from "../strings";
 import Share from 'react-native-share';
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
+import {WriteCommentComponent} from "./WriteCommentComponent";
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -47,17 +37,22 @@ export class ObservationComponent extends React.Component {
         this._onPressProfile = this._onPressProfile.bind(this);
         this._onPressLikeButton = this._onPressLikeButton.bind(this);
         this._onPressCutleryButton = this._onPressCutleryButton.bind(this);
+        this._addCommentToState = this._addCommentToState.bind(this);
+        this._onPressMoreComments = this._onPressMoreComments.bind(this);
         this.state = {
             overlayIsHidden: true,
             liked: false,
             shared: false,
             cutleried: false,
+            comments: [],
+            newComment: ''
         };
         this.observation = this.props.observation;
+        console.log(this.observation);
 
         console.log('Loading actions...');
-        const refObservations = firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
-        refObservations.once(
+        const refActions = firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
+        refActions.once(
             'value',
             (dataSnapshot) => {
                 console.log('Received actions.');
@@ -75,7 +70,28 @@ export class ObservationComponent extends React.Component {
                 }
             },
             (error) => {
-                console.error('Error while retrieving observations in feed');
+                console.error('Error while retrieving actions');
+                console.error(error);
+            }
+        );
+
+        console.log('Loading comments...');
+        const refComments = firebase.database().ref(pathComments + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild('timestamp').limitToLast(3);
+        refComments.once(
+            'value',
+            (dataSnapshot) => {
+                console.log('Received comments.');
+                const commentsJson = dataSnapshot.toJSON();
+                const comments = commentsJson ? Object.values(commentsJson) : [];
+                _sortArrayByTimestamp(comments, true);
+                if (comments.length > 2) {
+                    this.setState({moreComments: true});
+                    comments.splice(0,1);
+                }
+                this.setState({comments: comments});
+            },
+            (error) => {
+                console.error('Error while retrieving comments');
                 console.error(error);
             }
         );
@@ -99,27 +115,23 @@ export class ObservationComponent extends React.Component {
         }
     }
 
-    _onPressSendButton() {
-        // TODO: Send comment action
-    }
-
     _sendAction(path) {
         let content = {};
         content[currentUser.uid] = true;
 
-        firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid + '/' + path).update(content
-            , (error) => {
+        firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid + '/' + path).update(
+            content,
+            (error) => {
                 if (error) {
                     console.error('Error during ' + path + ' transmission.');
                     console.error(error);
-                    this._handleAuthError(error);
-
                     // TODO: display error message
                 } else {
                     console.log('Successfully ' + path + ' observation.');
                     this._updateActionState(path, true);
                 }
-            });
+            }
+        );
     }
 
     _removeAction(path) {
@@ -143,6 +155,11 @@ export class ObservationComponent extends React.Component {
         } else if (path === pathCutleries) {
             this.setState({cutleried: value});
         }
+    }
+
+    _addCommentToState(comment) {
+        const commentArray = [comment];
+        this.setState(prevState => ({comments: prevState.comments.concat(commentArray)}));
     }
 
     _onPressLocationText() {
@@ -178,7 +195,8 @@ export class ObservationComponent extends React.Component {
                 },
                 (buttonIndex) => {
                     this._onPressMenuDetailButton(buttonIndex);
-                });
+                }
+            );
         }
     }
 
@@ -197,8 +215,6 @@ export class ObservationComponent extends React.Component {
                     }
                 }
             );
-
-
         }
     }
 
@@ -226,10 +242,19 @@ export class ObservationComponent extends React.Component {
     }
 
     _onPressProfile() {
-        _navigateToScreen('Profile', this.props.navigation, this.observation.userid, null);
+        let params = {};
+        params.user = this.observation.userid;
+        _navigateToScreen('Profile', this.props.navigation, params);
     }
 
-    _keyExtractor = (item, index) => item.key;
+    _onPressMoreComments() {
+        let params = {};
+        params.comments = this.state.comments;
+        params.observation = this.observation;
+        _navigateToScreen('Comments', this.props.navigation, params);
+    }
+
+    _keyExtractor = (item, index) => item.timestamp + item.senderid;
 
     render() {
         let adjs = '';
@@ -288,21 +313,20 @@ export class ObservationComponent extends React.Component {
                     {/*TODO [FEATURE]: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                     <View name={'information'} style={{flexDirection: 'row'}}>
                         <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
-                        <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.observation.sharesCount, ActivityEnum.SHARE)}</Text>
+                        <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.observation.sharesCount, ActivityEnum.SHARE)} • {_formatNumberWithString(this.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
                     </View>
                 </View>
                 <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
-                          data={comments}
+                          data={this.state.comments}
                           keyExtractor={this._keyExtractor}
-                          renderItem={({item}) => <CommentComponent comment={item.value} {...this.props}/>}
-                          ListFooterComponent={() =>
-                              <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
-                                  <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user2.jpg')} />
-                                  <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} placeholder={strings.writeComment} placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
-                                  <TouchableOpacity onPress={this._onPressSendButton}>
-                                      <FontAwesome name={'send'} size={iconSizeSmall} color={brandContrast}/>
-                                  </TouchableOpacity>
+                          renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
+                          ListHeaderComponent={() =>
+                              <View style={styles.containerPadding}>
+                                  {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>View more comments</Text></TouchableOpacity>}
                               </View>
+                          }
+                          ListFooterComponent={() =>
+                              <WriteCommentComponent observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
                           }
                 />
             </View>

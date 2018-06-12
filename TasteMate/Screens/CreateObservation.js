@@ -85,6 +85,8 @@ export class CreateObservationScreen extends React.Component {
             cameraFront: true,
             cameraFlash: true,
         };
+
+        // TODO: Check if all mandatory fields contain information before adding obs to db
     }
 
     /************* NAVIGATION *************/

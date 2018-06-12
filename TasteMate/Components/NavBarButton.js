@@ -10,7 +10,9 @@ import firebase from 'react-native-firebase';
 
 export class NavBarButton extends React.Component {
     _openScreen(screen) {
-        _navigateToScreen(screen, this.props.nav, null, true);
+        let params = {};
+        params.myProfile = true;
+        _navigateToScreen(screen, this.props.nav, params);
     }
 
     render() {

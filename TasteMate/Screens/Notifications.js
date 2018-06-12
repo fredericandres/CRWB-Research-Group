@@ -4,7 +4,13 @@ import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarBu
 import {NotificationComponent} from "../Components/NotificationComponent";
 import styles from "../styles";
 import {LogInMessage} from "../Components/LogInMessage";
-import {_navigateToScreen, pathNotifications, pathObservations, pathUsers} from "../constants/Constants";
+import {
+    _navigateToScreen,
+    _sortArrayByTimestamp,
+    pathNotifications,
+    pathObservations,
+    pathUsers
+} from "../constants/Constants";
 import firebase from 'react-native-firebase';
 
 const NTF_LOAD_DEPTH = 10;
@@ -56,6 +62,12 @@ export class NotificationsScreen extends React.Component {
                 }
             });
         });
+    }
+
+    componentWillUnmount() {
+        if (this.unsubscriber) {
+            this.unsubscriber();
+        }
     }
 
     _loadNotifications(userid, onStartup, isRefreshing) {
@@ -140,21 +152,9 @@ export class NotificationsScreen extends React.Component {
         }
     }
 
-    componentWillUnmount() {
-        if (this.unsubscriber) {
-            this.unsubscriber();
-        }
-    }
-
     _addToNotificationState(notifications) {
         if (notifications && notifications.length > 0) {
-            notifications.sort(function (a, b) {
-                if (a.timestamp < b.timestamp)
-                    return 1;
-                if (a.timestamp > b.timestamp)
-                    return -1;
-                return 0;
-            });
+            _sortArrayByTimestamp(notifications);
 
             this.setState({notifications: notifications});
         }

@@ -144,6 +144,10 @@ export default strings = new LocalizedStrings({
         editObservation: 'Edit Observation',
         save: 'Save',
         errorMessageUsernameAlreadyInUse: 'This username is already connected to a Tastemate account.',
+        commentsSg: '{0} comment',
+        comments: '{0} comments',
+        commentedPicture: '{0} commented on your picture.',
+        allComments: 'All Comments',
     },
     fr: {
     },
