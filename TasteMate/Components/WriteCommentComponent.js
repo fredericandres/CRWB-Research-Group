@@ -44,9 +44,9 @@ export class WriteCommentComponent extends React.Component {
 
     render() {
         return (
-            <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
+            <View style={[styles.containerPadding, {flex: 1, flexDirection:'row', alignItems: 'center', opacity:this.props.hidden ? 0 : 100}]}>
                 <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user2.jpg')} />
-                <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} value={this.state.newComment} onChangeText={(text) => this.setState({newComment: text})} placeholder={strings.writeComment} placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
+                <TextInput multiline={true} style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} value={this.state.newComment} onChangeText={(text) => this.setState({newComment: text})} placeholder={strings.writeComment} placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
                 <TouchableOpacity onPress={this._onPressSendButton}>
                     <FontAwesome name={'send'} size={iconSizeSmall} color={brandContrast}/>
                 </TouchableOpacity>

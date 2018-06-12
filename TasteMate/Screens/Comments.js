@@ -1,10 +1,10 @@
 import React from 'react';
-import {FlatList, KeyboardAvoidingView, ScrollView, View} from "react-native";
+import {Animated, FlatList, Keyboard, Text, View} from "react-native";
 import strings from "../strings";
 import styles from "../styles";
 import {CommentComponent} from "../Components/CommentComponent";
 import {WriteCommentComponent} from "../Components/WriteCommentComponent";
-import {_sortArrayByTimestamp, pathComments} from "../constants/Constants";
+import {_sortArrayByTimestamp, brandBackground, pathComments} from "../constants/Constants";
 import firebase from 'react-native-firebase';
 
 const CMT_LOAD_DEPTH = 10;
@@ -22,14 +22,51 @@ export class CommentsScreen extends React.Component {
         this._addCommentToState = this._addCommentToState.bind(this);
         this._onRefresh = this._onRefresh.bind(this);
         this._onEndReached = this._onEndReached.bind(this);
+        this._keyboardDidShow = this._keyboardDidShow.bind(this);
+        this._keyboardDidHide = this._keyboardDidHide.bind(this);
 
         this.state = {
-            comments: this.props.navigation.getParam('comments'),
+            comments:[],
             users: [],
-            isRefreshing: false
+            isRefreshing: false,
         };
+        this.keyboardHeight = new Animated.Value(0);
         this.observation = this.props.navigation.getParam('observation');
         this._loadComments(true, false);
+    }
+
+    componentWillMount() {
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+    }
+
+    componentWillUnmount() {
+        if (this.keyboardDidShowListener) {
+            this.keyboardDidShowListener.remove();
+        }
+        if (this.keyboardDidHideListener) {
+            this.keyboardDidHideListener.remove();
+        }
+
+    }
+
+    _keyboardDidShow(e) {
+        // TODO: Bug of height including bottom navigation things and makes it too large
+        Animated.parallel([
+            Animated.timing(this.keyboardHeight, {
+                duration: e.duration,
+                toValue: e.endCoordinates.height,
+            }),
+        ]).start();
+    }
+
+    _keyboardDidHide(e) {
+        Animated.parallel([
+            Animated.timing(this.keyboardHeight, {
+                duration: e.duration,
+                toValue: 0,
+            }),
+        ]).start();
     }
 
     _addCommentToState(comment) {
@@ -44,8 +81,6 @@ export class CommentsScreen extends React.Component {
             const currentState = this.state;
             const index = (isRefreshing ? 0 : ntfSize) + CMT_LOAD_DEPTH;
 
-            console.log(pathComments + '/' + this.observation.userid + '/' + this.observation.observationid);
-
             console.log('Loading comments...');
             const refComments = firebase.database().ref(pathComments + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild('timestamp').limitToLast(index);
             refComments.once(
@@ -53,6 +88,7 @@ export class CommentsScreen extends React.Component {
                 (dataSnapshot) => {
                     console.log('Comments successfully retrieved');
                     let comments = dataSnapshot.toJSON() ? Object.values(dataSnapshot.toJSON()) : [];
+                    console.log(comments);
                     this._addToCommentState(comments);
 
                     let iteratedUsers = [];
@@ -97,20 +133,26 @@ export class CommentsScreen extends React.Component {
 
     render() {
         return (
-            <KeyboardAvoidingView style={{flex: 1}} behavior={'padding'}>
-                <View style={{flex: 9}}>
-                    <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, backgroundColor: 'red', flexDirection:'column'}]}
+            <View style={{flex:1}}>
+                <View style={{flex:7, flexShrink:1}}>
+                    <FlatList name={'comments'}
+                              style={{flex: 1, flexDirection:'column'}}
                               data={this.state.comments}
                               keyExtractor={this._keyExtractor}
                               renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
                               onEndReached={this._onEndReached}
                               onRefresh={this._onRefresh}
                               refreshing={this.state.isRefreshing}
+                              ListFooterComponent={() => <WriteCommentComponent hidden={true}/>}
                     />
                 </View>
-                <WriteCommentComponent style={{alignSelf:'flex-end', backgroundColor: 'blue', flex: 1}} observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
-            </KeyboardAvoidingView>
+                <View style={{position:'absolute', bottom:0, left:0, right:0, backgroundColor: brandBackground}}>
+                <View style={{flex:1}}>
+                    <WriteCommentComponent observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
+                    <Animated.View style={{height: this.keyboardHeight}}/>
+                </View>
+                </View>
+            </View>
         );
     }
 }
-

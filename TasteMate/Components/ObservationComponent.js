@@ -48,7 +48,6 @@ export class ObservationComponent extends React.Component {
             newComment: ''
         };
         this.observation = this.props.observation;
-        console.log(this.observation);
 
         console.log('Loading actions...');
         const refActions = firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
@@ -76,7 +75,7 @@ export class ObservationComponent extends React.Component {
         );
 
         console.log('Loading comments...');
-        const refComments = firebase.database().ref(pathComments + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild('timestamp').limitToLast(3);
+        const refComments = firebase.database().ref(pathComments + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild('timestamp').limitToLast(2);
         refComments.once(
             'value',
             (dataSnapshot) => {
@@ -84,7 +83,7 @@ export class ObservationComponent extends React.Component {
                 const commentsJson = dataSnapshot.toJSON();
                 const comments = commentsJson ? Object.values(commentsJson) : [];
                 _sortArrayByTimestamp(comments, true);
-                if (comments.length > 2) {
+                if (comments.length > 1) {
                     this.setState({moreComments: true});
                     comments.splice(0,1);
                 }
@@ -316,13 +315,15 @@ export class ObservationComponent extends React.Component {
                         <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.observation.sharesCount, ActivityEnum.SHARE)} • {_formatNumberWithString(this.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
                     </View>
                 </View>
-                <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
+                <FlatList name={'comments'} style={{flex: 1, flexDirection:'column'}}
                           data={this.state.comments}
                           keyExtractor={this._keyExtractor}
                           renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
                           ListHeaderComponent={() =>
-                              <View style={styles.containerPadding}>
-                                  {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>View more comments</Text></TouchableOpacity>}
+                              <View>
+                                  {this.state.moreComments && <View style={styles.containerPadding}>
+                                      <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>View more comments</Text></TouchableOpacity>
+                                  </View>}
                               </View>
                           }
                           ListFooterComponent={() =>
