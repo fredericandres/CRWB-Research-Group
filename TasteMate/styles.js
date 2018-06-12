@@ -7,6 +7,7 @@ const center = 'center';
 
 const opacity = '99';
 
+export const smileySuperLargeFontSize = 50;
 const extraLargeFontSize = 36;
 const largeFontSize = 18;
 const standardFontSize = 14;

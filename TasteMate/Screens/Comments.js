@@ -1,5 +1,5 @@
 import React from 'react';
-import {Animated, FlatList, Keyboard, Text, View} from "react-native";
+import {Animated, FlatList, Keyboard, View} from "react-native";
 import strings from "../strings";
 import styles from "../styles";
 import {CommentComponent} from "../Components/CommentComponent";
@@ -75,7 +75,6 @@ export class CommentsScreen extends React.Component {
     }
 
     _loadComments(onStartup, isRefreshing) {
-        console.log('AAA');
         const ntfSize = this.state.comments.length;
         if (ntfSize === 0 || ntfSize % CMT_LOAD_DEPTH === 0 || isRefreshing || onStartup) {
             const currentState = this.state;
@@ -88,7 +87,6 @@ export class CommentsScreen extends React.Component {
                 (dataSnapshot) => {
                     console.log('Comments successfully retrieved');
                     let comments = dataSnapshot.toJSON() ? Object.values(dataSnapshot.toJSON()) : [];
-                    console.log(comments);
                     this._addToCommentState(comments);
 
                     let iteratedUsers = [];
@@ -143,14 +141,14 @@ export class CommentsScreen extends React.Component {
                               onEndReached={this._onEndReached}
                               onRefresh={this._onRefresh}
                               refreshing={this.state.isRefreshing}
-                              ListFooterComponent={() => <WriteCommentComponent hidden={true}/>}
+                              ListFooterComponent={() => <View style={styles.containerPadding}><WriteCommentComponent hidden={true}/></View>}
                     />
                 </View>
                 <View style={{position:'absolute', bottom:0, left:0, right:0, backgroundColor: brandBackground}}>
-                <View style={{flex:1}}>
-                    <WriteCommentComponent observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
-                    <Animated.View style={{height: this.keyboardHeight}}/>
-                </View>
+                    <View style={[styles.containerPadding, {flex:1}]}>
+                        <WriteCommentComponent observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
+                        <Animated.View style={{height: this.keyboardHeight}}/>
+                    </View>
                 </View>
             </View>
         );

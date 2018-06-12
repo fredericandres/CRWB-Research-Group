@@ -6,6 +6,7 @@ import {
     _navigateToScreen,
     _sortArrayByTimestamp,
     ActivityEnum,
+    brandBackground,
     brandContrast,
     brandMain,
     EmojiEnum,
@@ -17,7 +18,7 @@ import {
     pathObservations,
     pathShares
 } from "../constants/Constants";
-import styles from "../styles";
+import styles, {extraLargeFontSize, smileySuperLargeFontSize} from "../styles";
 import {adjectives, comments} from "../MockupData";
 import TimeAgo from "react-native-timeago";
 import {CommentComponent} from "./CommentComponent";
@@ -74,7 +75,7 @@ export class ObservationComponent extends React.Component {
             }
         );
 
-        console.log('Loading comments...');
+        console.log('Checking if comments exist...');
         const refComments = firebase.database().ref(pathComments + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild('timestamp').limitToLast(2);
         refComments.once(
             'value',
@@ -274,7 +275,7 @@ export class ObservationComponent extends React.Component {
                                 <Text name={'mypoc'} style={styles.textTitle}> ({this.observation.mypoc})</Text>
                             </Text>
                         </View>
-                        <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location}</Text>
+                        {this.observation.location && <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location}</Text>}
                     </View>
                     {currentUser && this.observation.userid === currentUser.uid && <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>}
                 </View>
@@ -282,21 +283,15 @@ export class ObservationComponent extends React.Component {
                     <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
                         <Image name={'image'} resizeMode={'contain'} source={require('../carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
                     </TouchableOpacity>
-                    <View style={[styles.containerOpacity, {position: 'absolute'}]}>
-                        <Text name={'smiley'} style={[styles.textTitleBoldDark, styles.containerPadding]}>{EmojiEnum[this.observation.rating]}</Text>
-                    </View>
-                    <View style={[styles.containerOpacity, {position: 'absolute', right:0, flexWrap:'wrap'}]}>
-                        <Text name={'price'} style={[styles.textTitleBoldDark, styles.containerPadding]}>{this.observation.currency} {this.observation.price}</Text>
-                    </View>
-                    <View style={[styles.containerOpacity, {padding: 6, position: 'absolute', bottom: 0, flexDirection:'row'}]}>
+                    <View style={[styles.containerOpacityDark, {padding: 6, position: 'absolute', bottom: 0, right: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
-                            <FontAwesome name={'thumbs-o-up'} size={iconSizeStandard} color={this.state.liked ? brandMain : brandContrast}/>
+                            <FontAwesome name={'thumbs-o-up'} size={iconSizeStandard} color={this.state.liked ? brandMain : brandBackground}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressCutleryButton}>
-                            <FontAwesome name={'cutlery'} size={iconSizeStandard} color={this.state.cutleried ? brandMain : brandContrast}/>
+                            <FontAwesome name={'cutlery'} size={iconSizeStandard} color={this.state.cutleried ? brandMain : brandBackground}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressShareButton}>
-                            <FontAwesome name={'share'} size={iconSizeStandard} color={this.state.shared ? brandMain : brandContrast}/>
+                            <FontAwesome name={'share'} size={iconSizeStandard} color={this.state.shared ? brandMain : brandBackground}/>
                         </TouchableOpacity>
                     </View>
                     {!this.state.overlayIsHidden &&
@@ -306,24 +301,30 @@ export class ObservationComponent extends React.Component {
                         </TouchableOpacity>
                     </ScrollView>
                     }
-                </View>
-                <View name={'description'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'column'}]}>
-                    <Text name={'description'} style={styles.textStandardDark}>{this.observation.description}</Text>
-                    {/*TODO [FEATURE]: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
-                    <View name={'information'} style={{flexDirection: 'row'}}>
-                        <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
-                        <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.observation.sharesCount, ActivityEnum.SHARE)} • {_formatNumberWithString(this.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
+                    <View name={'details'} style={{flexDirection:'row', position:'absolute', top:-smileySuperLargeFontSize/2, right:10}}>
+                        <View>
+                            <Text name={'smiley'} style={{fontSize:smileySuperLargeFontSize}}>{EmojiEnum[this.observation.rating]}</Text>
+                        </View>
                     </View>
                 </View>
-                <FlatList name={'comments'} style={{flex: 1, flexDirection:'column'}}
+                <View name={'details'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'row'}]}>
+
+                    <View name={'description'} style={{flexDirection:'column', flex: 5}}>
+                        <Text name={'description'} style={styles.textStandardDark}>{this.observation.description} || {this.observation.currency} {this.observation.price}</Text>
+                        {/*TODO [FEATURE]: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
+                        <View name={'information'} style={{flexDirection: 'row'}}>
+                            <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
+                            <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.observation.sharesCount, ActivityEnum.SHARE)} • {_formatNumberWithString(this.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
+                        </View>
+                    </View>
+                </View>
+                <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
                           data={this.state.comments}
                           keyExtractor={this._keyExtractor}
                           renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
                           ListHeaderComponent={() =>
                               <View>
-                                  {this.state.moreComments && <View style={styles.containerPadding}>
-                                      <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>View more comments</Text></TouchableOpacity>
-                                  </View>}
+                                  {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>View more comments</Text></TouchableOpacity>}
                               </View>
                           }
                           ListFooterComponent={() =>
@@ -334,4 +335,3 @@ export class ObservationComponent extends React.Component {
         );
     }
 }
-// TODO: Hide comments if more than 2

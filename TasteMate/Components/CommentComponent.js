@@ -19,7 +19,7 @@ export class CommentComponent extends React.Component {
 
     render() {
         return (
-            <View style={[styles.containerPadding, {flex: 1, flexDirection:'row', alignItems: 'center'}]}>
+            <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
                 <TouchableOpacity onPress={this._onPressProfile}>
                     <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user.jpg')} />
                 </TouchableOpacity>
