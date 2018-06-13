@@ -99,7 +99,6 @@ export class ObservationComponent extends React.Component {
         if (!this.state.observation.imageUrl) {
             console.log('Loading image url...');
             const path = pathObservations + '/' + this.state.observation.observationid + '.jpg';
-            console.log(path);
             const refImage = firebase.storage().ref(path);
             refImage.getDownloadURL()
                 .then((url) => {
@@ -107,8 +106,6 @@ export class ObservationComponent extends React.Component {
                     let obs = this.state.observation;
                     obs.imageUrl = url;
                     this.setState({observation: obs});
-                    console.log(obs.observationid);
-                    console.log(url);
                 })
                 .catch((error) => {
                     console.log('Error while retrieving image url');

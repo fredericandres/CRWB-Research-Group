@@ -101,7 +101,7 @@ export class CreateObservationScreen extends React.Component {
             message = strings.formatString(strings.missingValuesTextPl, missing[0], missing[1]);
         } else {
             const lastElement = missing[missing.length - 1];
-            message = strings.formatString(strings.missingValuesTextPl, this._getAsd(missing), lastElement);
+            message = strings.formatString(strings.missingValuesTextPl, this._getItemizedMessage(missing), lastElement);
         }
 
         Alert.alert(strings.missingValuesTitle, message,
@@ -111,14 +111,14 @@ export class CreateObservationScreen extends React.Component {
         );
     }
 
-    _getAsd(missing) {
+    _getItemizedMessage(missing) {
         if (missing.length === 1) {
             return '';
         } else if (missing.length === 2) {
             return missing[0];
         } else {
             const newMissing = missing.splice(1,missing.length-1);
-            return strings.formatString(strings.itemization, missing[0], this._getAsd(newMissing));
+            return strings.formatString(strings.itemization, missing[0], this._getItemizedMessage(newMissing));
         }
     }
 

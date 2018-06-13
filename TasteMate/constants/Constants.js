@@ -13,6 +13,8 @@ export const iconSizeLarge = 50;
 export const iconSizeStandard = 25;
 export const iconSizeSmall = 15;
 
+export const maxUsernameLength = 15;
+
 // TODO [FEATURE]: Custom icons based on logo
 export const EmojiEnum = Object.freeze({1: '🤢', 2:'😖', 3:'😟', 4:'😕', 5:'😶', 6:'🙂', 7:'😊', 8:'🤤', 9:'😍'});
 export const VocabEnum = Object.freeze({TASTE:1, TEXTURE:2, ODOR:3});
@@ -118,4 +120,35 @@ export function _sortArrayByTimestamp(array, reverse) {
             return 0;
         });
     }
+}
+
+export function _handleAuthError(error, action) {
+    let errorMessage = '';
+
+    switch (error.code) {
+        case 'auth/invalid-email':
+            errorMessage = strings.errorMessageInvalidEmail;
+            break;
+        case 'auth/user-disabled':
+            errorMessage = strings.errorMessageUserDisabled;
+            break;
+        case 'auth/user-not-found':
+            errorMessage = strings.errorMessageUserNotFound;
+            break;
+        case 'auth/wrong-password':
+            errorMessage = strings.errorMessageWrongPassword;
+            break;
+        case 'auth/weak-password':
+            errorMessage = strings.errorMessageWeakPassword;
+            break;
+        case 'auth/email-already-in-use':
+            errorMessage = strings.errorMessageEmailAlreadyInUse;
+            break;
+    }
+
+    action(errorMessage)
+}
+
+export function _formatUsername(username) {
+    return username.toLowerCase().replace(/[^0-9a-z]/g, '');
 }

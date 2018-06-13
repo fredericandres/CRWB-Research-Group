@@ -37,6 +37,8 @@ export class TextInputComponent extends React.Component {
                         multiline={this.props.multiline}
                         onEndEditing={this.props.onEndEditing}
                         onSubmitEditing={this.props.onSubmitEditing}
+                        editable={this.props.editable}
+                        maxLength={this.props.maxLength}
                     />
                 </View>
                 {this.props.info && <TouchableOpacity onPress={() => Alert.alert(this.props.infoTitle, this.props.infoText, this.props.infoButtons)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>

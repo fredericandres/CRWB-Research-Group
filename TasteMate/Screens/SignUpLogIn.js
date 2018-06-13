@@ -2,7 +2,7 @@ import React from 'react';
 import {ImageBackground, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import strings from "../strings";
 import styles from "../styles";
-import {brandAccent, pathUsers} from "../constants/Constants";
+import {_formatUsername, _handleAuthError, brandAccent, maxUsernameLength, pathUsers} from "../constants/Constants";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import firebase from 'react-native-firebase';
 
@@ -55,6 +55,7 @@ export class SignUpLogInScreen extends React.Component {
     }
 
     _onPressSubmit() {
+        let _onAuthError = this._onAuthError;
         let errorMessage = '';
         if (!this.state.email) {
             errorMessage = strings.errorMessageEnterEmail;
@@ -91,7 +92,7 @@ export class SignUpLogInScreen extends React.Component {
                                         if (error) {
                                             console.error('Error during user information transmission.');
                                             console.error(error);
-                                            this._handleAuthError(error);
+                                            _handleAuthError(error, _onAuthError);
                                         } else {
                                             console.log('Successfully added user information to DB.');
                                         }
@@ -99,7 +100,7 @@ export class SignUpLogInScreen extends React.Component {
                                 }).catch((error) => {
                                     console.error('Error during signup.');
                                     console.error(error);
-                                    this._handleAuthError(error);
+                                    _handleAuthError(error, _onAuthError);
                                 });
                             }
                         },
@@ -115,41 +116,15 @@ export class SignUpLogInScreen extends React.Component {
                 }).catch((error) => {
                     console.log('Error during login.');
                     console.log(error);
-                    this._handleAuthError(error);
+                    _handleAuthError(error, _onAuthError);
                 });
             }
         }
 
-        this.setState({error: errorMessage});
+        _onAuthError(errorMessage);
     }
 
-    _handleAuthError(error) {
-        console.log('asdad');
-        console.log(error.code);
-
-        let errorMessage = '';
-
-        switch (error.code) {
-            case 'auth/invalid-email':
-                errorMessage = strings.errorMessageInvalidEmail;
-                break;
-            case 'auth/user-disabled':
-                errorMessage = strings.errorMessageUserDisabled;
-                break;
-            case 'auth/user-not-found':
-                errorMessage = strings.errorMessageUserNotFound;
-                break;
-            case 'auth/wrong-password':
-                errorMessage = strings.errorMessageWrongPassword;
-                break;
-            case 'auth/weak-password':
-                errorMessage = strings.errorMessageWeakPassword;
-                break;
-            case 'auth/email-already-in-use':
-                errorMessage = strings.errorMessageEmailAlreadyInUse;
-                break;
-        }
-
+    _onAuthError(errorMessage) {
         this.setState({error: errorMessage});
     }
 
@@ -167,7 +142,7 @@ export class SignUpLogInScreen extends React.Component {
             }).catch((error) => {
                 console.error('Error during signup.');
                 console.error(error);
-                this._handleAuthError(error);
+                this._handleAuthError(error, this._onAuthError);
             });
         }
     }
@@ -232,11 +207,12 @@ export class SignUpLogInScreen extends React.Component {
                             ref={ input => {this.inputs['username'] = input;}}
                             placeholder={strings.username}
                             value={this.state.username}
-                            onChangeText={(text) => this.setState({username: text.toLowerCase()})}
+                            onChangeText={(text) => this.setState({username: _formatUsername(text.toLowerCase())})}
                             icon={'user'}
                             keyboardType={'default'}
                             returnKeyType={'next'}
                             onSubmitEditing={() => {this._focusNextField('location');}}
+                            maxLength={maxUsernameLength}
                         />
                     }
                     {

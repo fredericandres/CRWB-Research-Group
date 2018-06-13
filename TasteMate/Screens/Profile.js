@@ -3,7 +3,6 @@ import {FlatList, Image, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
 import {_formatNumber, _sortArrayByTimestamp, brandMain, pathFollow, pathUsers} from "../constants/Constants";
 import styles from "../styles";
-import {userr} from "../MockupData";
 import {UserComponent} from "../Components/UserComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {ProfileSegmentedControlItem} from "../Components/ProfileSegmentedControlItem";
@@ -40,7 +39,6 @@ function _toggleFollowUnfollow(navigation) {
             if (error) {
                 console.error('Error during user following relationship transmission.');
                 console.error(error);
-                this._handleAuthError(error);
             } else {
                 console.log('Successfully added ' + follower + ' to follow ' + followee);
                 navigation.setParams({ isFollowing: true });
@@ -59,7 +57,7 @@ let userid = null;
 
 export class ProfileScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
-        title: navigation.getParam('user') ? navigation.getParam('user').username : userr.username,
+        title: navigation.getParam('myProfile') ? currentUserInformation.username : navigation.getParam('user') ? navigation.getParam('user').username : '',
         // Set left header button to 'Close' if top of stack aka own profile
         headerLeft: !navigation.getParam('myProfile') ? undefined : (
             <NavBarCloseButton nav={navigation}/>
