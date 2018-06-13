@@ -13,6 +13,7 @@ export const iconSizeLarge = 50;
 export const iconSizeStandard = 25;
 export const iconSizeSmall = 15;
 
+// TODO [FEATURE]: Custom icons based on logo
 export const EmojiEnum = Object.freeze({1: '🤢', 2:'😖', 3:'😟', 4:'😕', 5:'😶', 6:'🙂', 7:'😊', 8:'🤤', 9:'😍'});
 export const VocabEnum = Object.freeze({TASTE:1, TEXTURE:2, ODOR:3});
 export const ActivityEnum = Object.freeze({LIKE:'LIKE', SHARE:'SHARE', CUTLERY:'CUTLERY', FOLLOW:'FOLLOW', COMMENT:'COMMENT'});

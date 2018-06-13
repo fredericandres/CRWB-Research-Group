@@ -9,7 +9,7 @@ import {ProfileScreen} from "./Screens/Profile";
 import {EatingOutListScreen} from "./Screens/EatingOutList";
 import {CreateObservationScreen} from "./Screens/CreateObservation";
 import {brandContrast, brandLight, brandMain, iconSizeStandard, pathUsers} from './constants/Constants';
-import {StatusBar, StyleSheet} from "react-native";
+import {Platform, StatusBar, StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
 import strings from "./strings";
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
         //fontWeight: 'bold',
         fontFamily: 'TastemateRegular',
         fontWeight:'200',
-        fontSize:30,
+        fontSize: Platform.OS === 'ios' ? 20 : 30,
     },
 });
 

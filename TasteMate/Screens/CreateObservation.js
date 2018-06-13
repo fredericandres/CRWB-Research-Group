@@ -89,103 +89,155 @@ export class CreateObservationScreen extends React.Component {
             cameraFlash: true,
             myPocEdited: false,
         };
-
-        // TODO: Check if all mandatory fields contain information before adding obs to db
     }
 
     /************* NAVIGATION *************/
 
+    _handleMissing(missing){
+        let message = '';
+        if (missing.length === 1) {
+            message = strings.formatString(strings.missingValuesTextSg, missing[0]);
+        } else if (missing.length === 2) {
+            message = strings.formatString(strings.missingValuesTextPl, missing[0], missing[1]);
+        } else {
+            const lastElement = missing[missing.length - 1];
+            message = strings.formatString(strings.missingValuesTextPl, this._getAsd(missing), lastElement);
+        }
+
+        Alert.alert(strings.missingValuesTitle, message,
+            [
+                {text: strings.ok},
+            ]
+        );
+    }
+
+    _getAsd(missing) {
+        if (missing.length === 1) {
+            return '';
+        } else if (missing.length === 2) {
+            return missing[0];
+        } else {
+            const newMissing = missing.splice(1,missing.length-1);
+            return strings.formatString(strings.itemization, missing[0], this._getAsd(newMissing));
+        }
+    }
+
     _onPressNext() {
         if (this.state.activePageIndex === PagesEnum.TASTE) {
-            if (this.isEditing) {
-                firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + this.state.observation.observationid).update(this.state.observation, (error) => {
-                    if (error) {
-                        console.error('Error during observation update transmission.');
-                        console.error(error);
-                        this._handleAuthError(error);
+            // Check if all mandatory fields have content
+            let missing = [];
+            if (!this.state.observation.image) {
+                missing.push(strings.picture);
+            }
+            if (!this.state.observation.description) {
+                missing.push(strings.description);
+            }
+            if (!this.state.observation.dishname) {
+                missing.push(strings.dishname);
+            }
+            if (!this.state.observation.price) {
+                missing.push(strings.price);
+            }
+            if (!this.state.observation.currency) {
+                missing.push(strings.currency);
+            }
+            // TODO: At least 3 (?) tastes should be selected
 
-                        // TODO: display error message
-                    } else {
-                        console.log('Successfully updated observation at DB.');
-                        this.props.navigation.dismiss();
-                    }
-                });
+            if (missing) {
+                this._handleMissing(missing);
             } else {
-                let observation = this.state.observation;
-                observation.userid = currentUser.uid;
-                observation.timestamp = firebase.database().getServerTime();
-                let ref = firebase.database().ref(pathObservations + '/' + currentUser.uid);
-                observation.observationid = ref.push().key;
-                const imageUrl = observation.image;
-                delete observation.image;
-
-                const observationRef = firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + observation.observationid);
-                observationRef.set(observation,
-                    (error) => {
+                if (this.isEditing) {
+                    firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + this.state.observation.observationid).update(this.state.observation, (error) => {
                         if (error) {
-                            console.error('Error during observation transmission.');
+                            console.error('Error during observation update transmission.');
                             console.error(error);
                             this._handleAuthError(error);
 
                             // TODO: display error message
                         } else {
-                            console.log('Successfully added observation to DB.');
-                            console.log(imageUrl);
-
-                            // TODO: Fix app crash on iOS picture upload
-                            if (Platform.OS === 'android') {
-                                console.log('Adding picture to storage...');
-                                const imageRef = firebase.storage().ref('/' + pathObservations + '/' + observation.observationid + '.jpg');
-                                imageRef.putFile(imageUrl)
-                                    .then(() => {
-                                            console.log('Successfully added picture to storage');
-                                            console.log('Updating metadata for image...');
-                                            const settableMetadata = {
-                                                contentType: 'image/jpeg',
-                                            };
-
-                                            imageRef.updateMetadata(settableMetadata)
-                                                .then((metadata) => {
-                                                    console.log('Loading image url...');
-                                                    const refImage = firebase.storage().ref(metadata.fullPath);
-                                                    refImage.getDownloadURL()
-                                                        .then((url) => {
-                                                            console.log('Saving image url to obsevation...');
-                                                            const update = {imageUrl: url};
-                                                            observationRef.update(
-                                                                update,
-                                                                (error) => {
-                                                                    if (error) {
-                                                                        console.error('Error during image url transmission.');
-                                                                        console.error(error);
-                                                                        // TODO: display error message
-                                                                    } else {
-                                                                        console.log('Successfully update observation to include image url.');
-                                                                    }
-                                                                }
-                                                            );
-                                                        })
-                                                        .catch((error) => {
-                                                            console.log('Error while retrieving image url');
-                                                            console.log(error);
-                                                        });
-                                                    console.log('Successfully added metadata to image');
-                                                }) .catch((error) => {
-                                                    console.log('Error while updating metadata');
-                                                    console.log(error)
-                                                }
-                                            );
-                                        }
-                                    )
-                                    .catch((error) => {
-                                            console.log('Error while adding picture to storage');
-                                            console.log(error)
-                                        }
-                                    );
-                            }
+                            console.log('Successfully updated observation at DB.');
                             this.props.navigation.dismiss();
                         }
                     });
+                } else {
+                    let ref = firebase.database().ref(pathObservations + '/' + currentUser.uid);
+                    let observation = this.state.observation;
+                    observation.userid = currentUser.uid;
+                    observation.timestamp = firebase.database().getServerTime();
+                    observation.observationid = ref.push().key;
+
+                    // Remove image property but save for image upload
+                    const imageUrl = observation.image;
+                    delete observation.image;
+
+                    const observationRef = firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + observation.observationid);
+                    observationRef.set(observation,
+                        (error) => {
+                            if (error) {
+                                console.error('Error during observation transmission.');
+                                console.error(error);
+                                this._handleAuthError(error);
+
+                                // TODO: display error message
+                            } else {
+                                console.log('Successfully added observation to DB.');
+                                console.log(imageUrl);
+
+                                // TODO: Fix app crash on iOS picture upload
+                                if (Platform.OS === 'android') {
+                                    console.log('Adding picture to storage...');
+                                    const imageRef = firebase.storage().ref('/' + pathObservations + '/' + observation.observationid + '.jpg');
+                                    imageRef.putFile(imageUrl)
+                                        .then(() => {
+                                                console.log('Successfully added picture to storage');
+                                                console.log('Updating metadata for image...');
+                                                const settableMetadata = {
+                                                    contentType: 'image/jpeg',
+                                                };
+
+                                                imageRef.updateMetadata(settableMetadata)
+                                                    .then((metadata) => {
+                                                        console.log('Loading image url...');
+                                                        const refImage = firebase.storage().ref(metadata.fullPath);
+                                                        refImage.getDownloadURL()
+                                                            .then((url) => {
+                                                                console.log('Saving image url to obsevation...');
+                                                                const update = {imageUrl: url};
+                                                                observationRef.update(
+                                                                    update,
+                                                                    (error) => {
+                                                                        if (error) {
+                                                                            console.error('Error during image url transmission.');
+                                                                            console.error(error);
+                                                                            // TODO: display error message
+                                                                        } else {
+                                                                            console.log('Successfully update observation to include image url.');
+                                                                        }
+                                                                    }
+                                                                );
+                                                            })
+                                                            .catch((error) => {
+                                                                console.log('Error while retrieving image url');
+                                                                console.log(error);
+                                                            });
+                                                        console.log('Successfully added metadata to image');
+                                                    }) .catch((error) => {
+                                                        console.log('Error while updating metadata');
+                                                        console.log(error)
+                                                    }
+                                                );
+                                            }
+                                        )
+                                        .catch((error) => {
+                                                console.log('Error while adding picture to storage');
+                                                console.log(error)
+                                            }
+                                        );
+                                }
+                                this.props.navigation.dismiss();
+                            }
+                        });
+                }
             }
         } else {
             this.setState({activePageIndex: this.state.activePageIndex + 1});
@@ -690,18 +742,18 @@ export class CreateObservationScreen extends React.Component {
                         </View>
                     }
                 </View>
-                <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
+                {this.state.observation.image && <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
                     <View name={'previousButtonWrapper'} style={ {flex: 1}}>
                         <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:brandBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
                             <Text style={[styles.textTitleDark, styles.containerPadding]}>{(this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>
                         </TouchableOpacity>
                     </View>
                     <View name={'nextButtonWrapper'} style={{flex: 1}}>
-                        <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor:brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
+                        <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor: brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
                             <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? (this.isEditing ? strings.save : strings.publish): strings.next}</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </View>}
             </SafeAreaView>
         );
     }

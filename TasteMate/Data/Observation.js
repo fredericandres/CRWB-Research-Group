@@ -25,7 +25,8 @@ export default class Observation {
         this.location = location;
         this.image = image;
         this.price = price;
-        this.currency = currency;
+        // TODO [FEATURE]: Set currency according to location
+        this.currency = currency ? currency : 'USD';
         this.rating = rating ? rating : 5;
         this.vocabulary = vocabulary ? vocabulary : {};
         this.timestamp = timestamp;
