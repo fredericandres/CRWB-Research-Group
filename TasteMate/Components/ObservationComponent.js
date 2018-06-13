@@ -302,19 +302,20 @@ export class ObservationComponent extends React.Component {
                     </ScrollView>
                     }
                     <View name={'details'} style={{flexDirection:'row', position:'absolute', top:-smileySuperLargeFontSize/2, right:10}}>
-                        <View>
-                            <Text name={'smiley'} style={{fontSize:smileySuperLargeFontSize}}>{EmojiEnum[this.observation.rating]}</Text>
-                        </View>
+                        <Text name={'smiley'} style={{fontSize:smileySuperLargeFontSize, color:'black'}}>{EmojiEnum[this.observation.rating]}</Text>
                     </View>
                 </View>
                 <View name={'details'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'row'}]}>
 
                     <View name={'description'} style={{flexDirection:'column', flex: 5}}>
-                        <Text name={'description'} style={styles.textStandardDark}>{this.observation.description} || {this.observation.currency} {this.observation.price}</Text>
+                        <Text name={'description'} style={styles.textStandardDark}>{this.observation.description}</Text>
                         {/*TODO [FEATURE]: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                         <View name={'information'} style={{flexDirection: 'row'}}>
                             <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
                             <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.observation.sharesCount, ActivityEnum.SHARE)} • {_formatNumberWithString(this.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
+                            <View style={{flex:1}}>
+                                <Text name={'price'} style={[styles.textSmall, {alignSelf:'flex-end'}]}>{this.observation.currency} {this.observation.price}</Text>
+                            </View>
                         </View>
                     </View>
                 </View>

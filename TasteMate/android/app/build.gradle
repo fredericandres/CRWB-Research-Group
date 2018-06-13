@@ -138,6 +138,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-maps')
     compile(project(':react-native-firebase')) {
         transitive = false
     }
@@ -149,7 +150,6 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:27.1.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
-    implementation project(':react-native-maps')
     implementation project(':react-native-firebase')
     implementation 'com.google.firebase:firebase-core:16.0.0'
     implementation "com.google.firebase:firebase-auth:16.0.1"

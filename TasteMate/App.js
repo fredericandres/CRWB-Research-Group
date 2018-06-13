@@ -24,7 +24,10 @@ const styles = StyleSheet.create({
         backgroundColor: brandMain
     },
     navHeaderTitleStyle: {
-        fontWeight: 'bold',
+        //fontWeight: 'bold',
+        fontFamily: 'TastemateRegular',
+        fontWeight:'200',
+        fontSize:30,
     },
 });
 
