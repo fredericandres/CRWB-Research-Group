@@ -97,7 +97,7 @@ export class NotificationComponent extends React.Component {
                 </View>
                 {this.notification.type !== ActivityEnum.FOLLOW &&
                 <TouchableOpacity name={'image'} onPress={this._onPressObservation} style={[styles.containerPadding, {flex: 0, flexDirection:'column', justifyContent:'center'}]}>
-                    <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../carbonara.png')} style={styles.squareThumbnail}/>
+                    <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../noimage.png')} style={styles.squareThumbnail}/>
                 </TouchableOpacity>}
             </TouchableOpacity>
         );

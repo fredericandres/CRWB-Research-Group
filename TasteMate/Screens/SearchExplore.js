@@ -138,7 +138,7 @@ export class SearchExploreScreen extends React.Component {
             <View name={'wrapper'} >
                 <SearchBar placeholder={strings.foodCraving} onSubmitEditing={this._onPressSearchButton} onChangeText={this._onPressSearchButton} onPress={this._onPressSearchButton}/>
                 <FlatList
-                    style={styles.containerPadding}
+                    style={styles.explorePadding}
                     keyExtractor={this._keyExtractor}
                     data={this.state.observations}
                     renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}

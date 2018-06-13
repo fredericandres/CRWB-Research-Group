@@ -177,7 +177,6 @@ export class SignUpLogInScreen extends React.Component {
     }
 
     _focusNextField(key) {
-        console.log(this.inputs[key]);
         this.inputs[key].focus();
     }
 

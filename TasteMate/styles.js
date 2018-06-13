@@ -34,6 +34,10 @@ export default StyleSheet.create({
         }),
     },
 
+    explorePadding: {
+        padding: 1
+    },
+
     baseContainer: {
         backgroundColor: brandBackground
     },

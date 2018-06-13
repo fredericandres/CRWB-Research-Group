@@ -297,7 +297,7 @@ export class ProfileScreen extends React.Component {
                     {
                         this.state.selectedIndex === 0 &&
                         <FlatList
-                            style={styles.containerPadding}
+                            style={styles.explorePadding}
                             ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noPictures}</Text>}
                             data={this.state.observations}
                             renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}

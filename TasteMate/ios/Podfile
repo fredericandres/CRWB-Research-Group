@@ -44,6 +44,7 @@ target 'TasteMate' do
   pod 'Firebase/Auth'
   pod 'Firebase/Database'
   pod 'Firebase/Functions'
+  pod 'Firebase/Storage'
 
 end
 

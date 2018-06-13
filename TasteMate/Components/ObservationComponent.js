@@ -18,7 +18,7 @@ import {
     pathObservations,
     pathShares
 } from "../constants/Constants";
-import styles, {extraLargeFontSize, smileySuperLargeFontSize} from "../styles";
+import styles, {smileySuperLargeFontSize} from "../styles";
 import {adjectives, comments} from "../MockupData";
 import TimeAgo from "react-native-timeago";
 import {CommentComponent} from "./CommentComponent";
@@ -46,12 +46,12 @@ export class ObservationComponent extends React.Component {
             shared: false,
             cutleried: false,
             comments: [],
-            newComment: ''
+            newComment: '',
+            observation: this.props.observation
         };
-        this.observation = this.props.observation;
 
         console.log('Loading actions...');
-        const refActions = firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
+        const refActions = firebase.database().ref(pathActions + '/' + this.state.observation.userid + '/' + this.state.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
         refActions.once(
             'value',
             (dataSnapshot) => {
@@ -76,7 +76,7 @@ export class ObservationComponent extends React.Component {
         );
 
         console.log('Checking if comments exist...');
-        const refComments = firebase.database().ref(pathComments + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild('timestamp').limitToLast(2);
+        const refComments = firebase.database().ref(pathComments + '/' + this.state.observation.userid + '/' + this.state.observation.observationid).orderByChild('timestamp').limitToLast(2);
         refComments.once(
             'value',
             (dataSnapshot) => {
@@ -95,6 +95,26 @@ export class ObservationComponent extends React.Component {
                 console.error(error);
             }
         );
+
+        if (!this.state.observation.imageUrl) {
+            console.log('Loading image url...');
+            const path = pathObservations + '/' + this.state.observation.observationid + '.jpg';
+            console.log(path);
+            const refImage = firebase.storage().ref(path);
+            refImage.getDownloadURL()
+                .then((url) => {
+                    console.log('Loaded image url...');
+                    let obs = this.state.observation;
+                    obs.imageUrl = url;
+                    this.setState({observation: obs});
+                    console.log(obs.observationid);
+                    console.log(url);
+                })
+                .catch((error) => {
+                    console.log('Error while retrieving image url');
+                    console.log(error);
+                });
+        }
     }
 
     _onPressLikeButton() {
@@ -119,7 +139,7 @@ export class ObservationComponent extends React.Component {
         let content = {};
         content[currentUser.uid] = true;
 
-        firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid + '/' + path).update(
+        firebase.database().ref(pathActions + '/' + this.state.observation.userid + '/' + this.state.observation.observationid + '/' + path).update(
             content,
             (error) => {
                 if (error) {
@@ -135,7 +155,7 @@ export class ObservationComponent extends React.Component {
     }
 
     _removeAction(path) {
-        firebase.database().ref(pathActions + '/' + this.observation.userid + '/' + this.observation.observationid + '/' + path + '/' + currentUser.uid).remove(
+        firebase.database().ref(pathActions + '/' + this.state.observation.userid + '/' + this.state.observation.observationid + '/' + path + '/' + currentUser.uid).remove(
             (error) => {
                 if (error) {
                     error.log(error);
@@ -163,12 +183,12 @@ export class ObservationComponent extends React.Component {
     }
 
     _onPressLocationText() {
-        this.props.navigation.navigate('Map', {observation: this.observation});
+        this.props.navigation.navigate('Map', {observation: this.state.observation});
     }
 
     _onPressMenuButton() {
         const title = strings.selectAction;
-        const message = strings.formatString(strings.doWithPost, String(this.observation.dishname), this.observation.userid);
+        const message = strings.formatString(strings.doWithPost, String(this.state.observation.dishname), this.state.observation.userid);
         const options = [
             strings.edit,
             strings.delete,
@@ -202,16 +222,17 @@ export class ObservationComponent extends React.Component {
 
     _onPressMenuDetailButton(buttonIndex) {
         if (buttonIndex === 0) {
-            this.props.navigation.navigate('CreateObservation', {observation: this.observation, edit: true});
+            this.props.navigation.navigate('CreateObservation', {observation: this.state.observation, edit: true});
         } else if (buttonIndex === 1) {
-            const ref = firebase.database().ref(pathObservations + '/' + this.observation.observationid);
+            const ref = firebase.database().ref(pathObservations + '/' + this.state.observation.userid + '/' + this.state.observation.observationid);
             ref.remove(
                 (error) => {
                     if (error) {
                         error.log(error);
                     } else {
                         console.log('Successfully removed observation');
-                        this.props.onDelete(this.observation);
+                        // TODO: Also remove likes, comments, etc from DB
+                        this.props.onDelete(this.state.observation);
                     }
                 }
             );
@@ -227,7 +248,7 @@ export class ObservationComponent extends React.Component {
             subject: strings.shareSubject,
             message: strings.shareMessage,
             dialogTitle: strings.shareDialogTitle,
-            url: this.observation.image,
+            url: this.state.observation.image,
         }).catch(
             (err) => {
                 err && console.log(err);
@@ -243,14 +264,14 @@ export class ObservationComponent extends React.Component {
 
     _onPressProfile() {
         let params = {};
-        params.user = this.observation.userid;
+        params.user = this.state.observation.userid;
         _navigateToScreen('Profile', this.props.navigation, params);
     }
 
     _onPressMoreComments() {
         let params = {};
         params.comments = this.state.comments;
-        params.observation = this.observation;
+        params.observation = this.state.observation;
         _navigateToScreen('Comments', this.props.navigation, params);
     }
 
@@ -271,17 +292,17 @@ export class ObservationComponent extends React.Component {
                     <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
                         <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
                             <Text name={'dishnames'} >
-                                <Text name={'dishname'} style={styles.textTitleBoldDark}>{this.observation.dishname}</Text>
-                                <Text name={'mypoc'} style={styles.textTitle}> ({this.observation.mypoc})</Text>
+                                <Text name={'dishname'} style={styles.textTitleBoldDark}>{this.state.observation.dishname}</Text>
+                                <Text name={'mypoc'} style={styles.textTitle}> ({this.state.observation.mypoccorrector || this.state.observation.mypoc})</Text>
                             </Text>
                         </View>
-                        {this.observation.location && <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.observation.location}</Text>}
+                        {this.state.observation.location && <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.state.observation.location}</Text>}
                     </View>
-                    {currentUser && this.observation.userid === currentUser.uid && <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>}
+                    {currentUser && this.state.observation.userid === currentUser.uid && <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>}
                 </View>
                 <View name={'picture'} style={{flexDirection:'row'}}>
                     <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
-                        <Image name={'image'} resizeMode={'contain'} source={require('../carbonara.png')} style={{flex: 1, aspectRatio: 1}}/>
+                        <Image name={'image'} resizeMode={'cover'} source={this.state.observation.imageUrl ? {uri: this.state.observation.imageUrl} : require('../noimage.png')} style={{flex: 1, aspectRatio: 1}}/>
                     </TouchableOpacity>
                     <View style={[styles.containerOpacityDark, {padding: 6, position: 'absolute', bottom: 0, right: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
@@ -302,19 +323,19 @@ export class ObservationComponent extends React.Component {
                     </ScrollView>
                     }
                     <View name={'details'} style={{flexDirection:'row', position:'absolute', top:-smileySuperLargeFontSize/2, right:10}}>
-                        <Text name={'smiley'} style={{fontSize:smileySuperLargeFontSize, color:'black'}}>{EmojiEnum[this.observation.rating]}</Text>
+                        <Text name={'smiley'} style={{fontSize:smileySuperLargeFontSize, color:'black'}}>{EmojiEnum[this.state.observation.rating]}</Text>
                     </View>
                 </View>
                 <View name={'details'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'row'}]}>
 
                     <View name={'description'} style={{flexDirection:'column', flex: 5}}>
-                        <Text name={'description'} style={styles.textStandardDark}>{this.observation.description}</Text>
+                        <Text name={'description'} style={styles.textStandardDark}>{this.state.observation.description}</Text>
                         {/*TODO [FEATURE]: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                         <View name={'information'} style={{flexDirection: 'row'}}>
-                            <TimeAgo name={'time'} style={styles.textSmall} time={this.observation.timestamp}/>
-                            <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.observation.sharesCount, ActivityEnum.SHARE)} • {_formatNumberWithString(this.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
+                            <TimeAgo name={'time'} style={styles.textSmall} time={this.state.observation.timestamp}/>
+                            <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.state.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.state.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.state.observation.sharesCount, ActivityEnum.SHARE)} • {_formatNumberWithString(this.state.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
                             <View style={{flex:1}}>
-                                <Text name={'price'} style={[styles.textSmall, {alignSelf:'flex-end'}]}>{this.observation.currency} {this.observation.price}</Text>
+                                <Text name={'price'} style={[styles.textSmall, {alignSelf:'flex-end'}]}>{this.state.observation.currency} {this.state.observation.price}</Text>
                             </View>
                         </View>
                     </View>
@@ -329,7 +350,7 @@ export class ObservationComponent extends React.Component {
                               </View>
                           }
                           ListFooterComponent={() =>
-                              <WriteCommentComponent observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
+                              <WriteCommentComponent observation={this.state.observation} onCommentAddedAction={this._addCommentToState}/>
                           }
                 />
             </View>

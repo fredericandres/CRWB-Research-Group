@@ -76,7 +76,10 @@ export class CreateObservationScreen extends React.Component {
         this._onCheckBoxChanged = this._onCheckBoxChanged.bind(this);
         this._onSubmitSearch = this._onSubmitSearch.bind(this);
 
+        this._sendToMyPoC = this._sendToMyPoC.bind(this);
+
         this.isEditing = this.props.navigation.getParam('edit');
+        this.inputs = {};
         this.state = {
             observation: this.isEditing ? this.props.navigation.state.params.observation : new Observation(),
             activePageIndex: this.isEditing ? PagesEnum.DETAILS : PagesEnum.SELECTIMAGE,
@@ -84,6 +87,7 @@ export class CreateObservationScreen extends React.Component {
             cameraActive: true,
             cameraFront: true,
             cameraFlash: true,
+            myPocEdited: false,
         };
 
         // TODO: Check if all mandatory fields contain information before adding obs to db
@@ -106,24 +110,82 @@ export class CreateObservationScreen extends React.Component {
                         this.props.navigation.dismiss();
                     }
                 });
-
             } else {
                 let observation = this.state.observation;
                 observation.userid = currentUser.uid;
                 observation.timestamp = firebase.database().getServerTime();
+                let ref = firebase.database().ref(pathObservations + '/' + currentUser.uid);
+                observation.observationid = ref.push().key;
+                const imageUrl = observation.image;
+                delete observation.image;
 
-                firebase.database().ref(pathObservations + '/' + currentUser.uid).push(observation, (error) => {
-                    if (error) {
-                        console.error('Error during observation transmission.');
-                        console.error(error);
-                        this._handleAuthError(error);
+                const observationRef = firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + observation.observationid);
+                observationRef.set(observation,
+                    (error) => {
+                        if (error) {
+                            console.error('Error during observation transmission.');
+                            console.error(error);
+                            this._handleAuthError(error);
 
-                        // TODO: display error message
-                    } else {
-                        console.log('Successfully added observation to DB.');
-                        this.props.navigation.dismiss();
-                    }
-                });
+                            // TODO: display error message
+                        } else {
+                            console.log('Successfully added observation to DB.');
+                            console.log(imageUrl);
+
+                            // TODO: Fix app crash on iOS picture upload
+                            if (Platform.OS === 'android') {
+                                console.log('Adding picture to storage...');
+                                const imageRef = firebase.storage().ref('/' + pathObservations + '/' + observation.observationid + '.jpg');
+                                imageRef.putFile(imageUrl)
+                                    .then(() => {
+                                            console.log('Successfully added picture to storage');
+                                            console.log('Updating metadata for image...');
+                                            const settableMetadata = {
+                                                contentType: 'image/jpeg',
+                                            };
+
+                                            imageRef.updateMetadata(settableMetadata)
+                                                .then((metadata) => {
+                                                    console.log('Loading image url...');
+                                                    const refImage = firebase.storage().ref(metadata.fullPath);
+                                                    refImage.getDownloadURL()
+                                                        .then((url) => {
+                                                            console.log('Saving image url to obsevation...');
+                                                            const update = {imageUrl: url};
+                                                            observationRef.update(
+                                                                update,
+                                                                (error) => {
+                                                                    if (error) {
+                                                                        console.error('Error during image url transmission.');
+                                                                        console.error(error);
+                                                                        // TODO: display error message
+                                                                    } else {
+                                                                        console.log('Successfully update observation to include image url.');
+                                                                    }
+                                                                }
+                                                            );
+                                                        })
+                                                        .catch((error) => {
+                                                            console.log('Error while retrieving image url');
+                                                            console.log(error);
+                                                        });
+                                                    console.log('Successfully added metadata to image');
+                                                }) .catch((error) => {
+                                                    console.log('Error while updating metadata');
+                                                    console.log(error)
+                                                }
+                                            );
+                                        }
+                                    )
+                                    .catch((error) => {
+                                            console.log('Error while adding picture to storage');
+                                            console.log(error)
+                                        }
+                                    );
+                            }
+                            this.props.navigation.dismiss();
+                        }
+                    });
             }
         } else {
             this.setState({activePageIndex: this.state.activePageIndex + 1});
@@ -214,7 +276,6 @@ export class CreateObservationScreen extends React.Component {
             const options = { quality: 0.75, base64: true, forceUpOrientation: true, fixOrientation: true, mirrorImage: this.state.cameraFront};
             const data = await this.camera.takePictureAsync(options);
             // TODO [FEATURE]: sound/image effects
-
             CameraRoll.saveToCameraRoll(data.uri).then((uri) => {
                 this._onImageSelected(uri, data.base64);
             });
@@ -285,10 +346,7 @@ export class CreateObservationScreen extends React.Component {
         obs.image = uri;
         this._updateObservationState(obs);
 
-        // TODO: save image base64 to Firebase storage or similar
-
         base64 ? this._sendToMyPoC(base64, this._onUpdateMypoc) : this._getBase64ForURi(uri, this._sendToMyPoC);
-
         this._onPressNext();
     }
 
@@ -300,6 +358,10 @@ export class CreateObservationScreen extends React.Component {
     }
 
     _sendToMyPoC(base64, action) {
+        // let obs = this.state.observation;
+        // obs.imageBase64 = base64;
+        // this._updateObservationState(obs);
+
         // Create blob from base64
         const Blob = RNFetchBlob.polyfill.Blob;
         Blob.build(base64, { type : 'image/jpg;BASE64' }).then((blob) => {
@@ -354,10 +416,11 @@ export class CreateObservationScreen extends React.Component {
 
     _onUpdateMypoc(mypoc) {
         let obs = this.state.observation;
-        if (!this.state.observation.mypoc) {
+        if (!this.state.observation.mypoc ) {
             obs.mypoc = mypoc;
         } else {
-            obs.mypoccorrector = mypoc;
+            this.setState({myPocEdited:true});
+            obs.mypoccorrector = mypoc.toLowerCase();
             // TODO [FEATURE]: Send corrected info to mypoc server
         }
         this._updateObservationState(obs);
@@ -416,6 +479,10 @@ export class CreateObservationScreen extends React.Component {
         let obs = this.state.observation;
         obs.currency = currency;
         this._updateObservationState(obs);
+    }
+
+    _focusNextField(key) {
+        this.inputs[key].focus();
     }
 
     /************* EATING EXPERIENCE *************/
@@ -507,7 +574,7 @@ export class CreateObservationScreen extends React.Component {
                         this.state.activePageIndex === PagesEnum.DETAILS &&
                         <ScrollView name={'detailsscreen'} style={[styles.containerPadding, {flex: 1}]}>
                             <View name={'picanddescription'} style={{flexDirection:'row', flex: 1}}>
-                                <View style={{flex:1}}>
+                                <View style={[styles.containerPadding, {flex:1}]}>
                                     <ObservationExploreComponent source={{uri: this.state.observation.image}} style={{flexShrink:1, flex: 1}}/>
                                 </View>
                                 <View style={{flex: 2}}>
@@ -526,9 +593,39 @@ export class CreateObservationScreen extends React.Component {
                                     }
                                 </View>
                             </View>
-                            <TextInputComponent placeholder={strings.dishname} value={this.state.observation.dishname} onChangeText={(text) => this._onUpdateDishname(text)} icon={'cutlery'} keyboardType={'default'} />
-                            <TextInputComponent info={true} infoTitle={strings.mypocExplanationTitle} infoText={strings.mypocExplanationText} infoButtons={myPocAlertButtons} placeholder={this.state.observation.mypoc || 'prediction loading...'} value={this.state.observation.mypoccorrector || this.state.observation.mypoc} onChangeText={(text) => this._onUpdateMypoc(text)} icon={'question'} keyboardType={'default'} />
-                            <TextInputComponent placeholder={strings.location} value={this.state.locationText} onEndEditing={this._onSubmitSearch} onChangeText={(text) => this._onUpdateLocation(text)} icon={'location-arrow'} keyboardType={'default'} returnKeyType={'search'} />
+                            <TextInputComponent
+                                placeholder={strings.dishname}
+                                value={this.state.observation.dishname}
+                                onChangeText={(text) => this._onUpdateDishname(text)}
+                                icon={'cutlery'}
+                                keyboardType={'default'}
+                                returnKeyType={'next'}
+                                onSubmitEditing={() => {this._focusNextField('mypoc');}}
+                            />
+                            <TextInputComponent
+                                ref={ input => {this.inputs['mypoc'] = input;}}
+                                info={true}
+                                infoTitle={strings.mypocExplanationTitle}
+                                infoText={strings.mypocExplanationText}
+                                infoButtons={myPocAlertButtons}
+                                placeholder={this.state.observation.mypoc || 'prediction loading...'}
+                                value={this.state.myPocEdited ? this.state.observation.mypoccorrector : this.state.observation.mypoc}
+                                onChangeText={(text) => this._onUpdateMypoc(text)}
+                                icon={'question'}
+                                keyboardType={'default'}
+                                returnKeyType={'next'}
+                                onSubmitEditing={() => {this._focusNextField('location');}}
+                            />
+                            <TextInputComponent
+                                ref={ input => {this.inputs['location'] = input;}}
+                                placeholder={strings.location}
+                                value={this.state.locationText}
+                                onEndEditing={this._onSubmitSearch}
+                                onChangeText={(text) => this._onUpdateLocation(text)}
+                                icon={'location-arrow'}
+                                keyboardType={'default'}
+                                returnKeyType={'search'}
+                            />
                             {
                                 this.state.locationResults &&
                                 <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
@@ -546,7 +643,15 @@ export class CreateObservationScreen extends React.Component {
                                     />
                                 </View>
                             }
-                            <TextInputComponent placeholder={strings.price} value={this.state.observation.price} onChangeText={(text) => this._onUpdatePrice(text)} icon={'money'} keyboardType={'numeric'} style={{flex:1}}/>
+                            <TextInputComponent
+                                placeholder={strings.price}
+                                value={this.state.observation.price}
+                                onChangeText={(text) => this._onUpdatePrice(text)}
+                                icon={'money'}
+                                keyboardType={'numeric'}
+                                style={{flex:1}}
+                                returnKeyType={'next'}
+                            />
                             <View style={{flexDirection: 'row', flex: 1}}>
                                 <View style={[styles.containerPadding, styles.leftRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>
                                     <FontAwesome name={'dollar'} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
