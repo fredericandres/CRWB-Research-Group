@@ -4,7 +4,7 @@ import {Image, TextInput, TouchableOpacity, View} from "react-native";
 import {brandContrast, brandLight, brandMain, iconSizeSmall, pathComments} from "../constants/Constants";
 import strings from "../strings";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {currentUser} from "../App";
+import {currentUser, currentUserInformation} from "../App";
 import firebase from 'react-native-firebase';
 
 export class WriteCommentComponent extends React.Component {
@@ -45,7 +45,7 @@ export class WriteCommentComponent extends React.Component {
     render() {
         return (
             <View style={{flex: 1, flexDirection:'row', alignItems: 'center', opacity:this.props.hidden ? 0 : 100}}>
-                <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={require('../user2.jpg')} />
+                <Image name={'userpic'} style={[styles.roundProfileSmall, styles.containerPadding]} resizeMode={'cover'} source={currentUserInformation.imageUrl ? {uri: currentUserInformation.imageUrl} : require('../nouser.jpg')} />
                 <TextInput multiline={true} style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} value={this.state.newComment} onChangeText={(text) => this.setState({newComment: text})} placeholder={strings.writeComment} placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
                 <TouchableOpacity onPress={this._onPressSendButton}>
                     <FontAwesome name={'send'} size={iconSizeSmall} color={brandContrast}/>

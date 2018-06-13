@@ -18,6 +18,7 @@ export class SignUpLogInScreen extends React.Component {
         this._onPressSubmit = this._onPressSubmit.bind(this);
         this._onPressSkip = this._onPressSkip.bind(this);
         this._focusNextField = this._focusNextField.bind(this);
+        this._onAuthError = this._onAuthError.bind(this);
 
         this.state = {
             username: undefined,

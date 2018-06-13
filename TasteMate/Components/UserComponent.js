@@ -19,7 +19,7 @@ export class UserComponent extends React.Component {
     render() {
         return (
             <TouchableOpacity onPress={this._onPressUser} style={{flexDirection:'row'}}>
-                    <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../user2.jpg')} style={[styles.roundProfile, styles.containerPadding, {flexDirection:'column', justifyContent:'center'}]}/>
+                    <Image name={'userprofilepic'} resizeMode={'cover'} source={this.user.imageUrl ? {uri: this.user.imageUrl} : require('../nouser.jpg')} style={[styles.roundProfile, styles.containerPadding, {flexDirection:'column', justifyContent:'center'}]}/>
                 <View name={'textcontentwrapper'} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>
                     <Text name={'username'} style={styles.textStandardBold}>{this.user.username}</Text>
                     <Text name={'location'} style={styles.textSmall}>{this.user.location}</Text>

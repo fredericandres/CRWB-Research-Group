@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, Image, Text, View} from 'react-native';
+import {FlatList, Image, SafeAreaView, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
 import {_formatNumber, _sortArrayByTimestamp, brandMain, pathFollow, pathUsers} from "../constants/Constants";
 import styles from "../styles";
@@ -255,15 +255,10 @@ export class ProfileScreen extends React.Component {
 
     render() {
         return (
-            <View style={{flex: 1,}}>
+            <SafeAreaView style={{flex: 1,}}>
                 <View name={'header'} style={{flex: 2, backgroundColor: brandMain}}>
-                    <View name={'userpic'} style={[styles.containerPadding, {
-                        flex: 3,
-                        flexDirection: 'column',
-                        justifyContent: 'center'
-                    }]}>
-                        <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../user2.jpg')}
-                               style={[{flex: 0}, styles.roundProfileLarge]}/>
+                    <View name={'userpic'} style={[styles.containerPadding, {flex: 3, flexDirection: 'column', justifyContent: 'center'}]}>
+                        <Image name={'userprofilepic'} resizeMode={'cover'} source={this.state.user.imageUrl ? {uri: this.state.user.imageUrl} : require('../nouser.jpg')} style={[{flex: 0}, styles.roundProfileLarge]}/>
                     </View>
                     <View name={'username'} style={{flex: 1, alignItems: 'flex-end', flexDirection: 'row'}}>
                         <Text name={'username'}
@@ -329,7 +324,7 @@ export class ProfileScreen extends React.Component {
                         />
                     }
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 }

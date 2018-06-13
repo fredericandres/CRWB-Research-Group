@@ -16,7 +16,7 @@ import {
     pathCutleries,
     pathLikes,
     pathObservations,
-    pathShares
+    pathShares, pathUsers
 } from "../constants/Constants";
 import styles, {smileySuperLargeFontSize} from "../styles";
 import {adjectives, comments} from "../MockupData";
@@ -47,7 +47,8 @@ export class ObservationComponent extends React.Component {
             cutleried: false,
             comments: [],
             newComment: '',
-            observation: this.props.observation
+            observation: this.props.observation,
+            user: this.props.user,
         };
 
         console.log('Loading actions...');
@@ -96,21 +97,21 @@ export class ObservationComponent extends React.Component {
             }
         );
 
-        if (!this.state.observation.imageUrl) {
-            console.log('Loading image url...');
-            const path = pathObservations + '/' + this.state.observation.observationid + '.jpg';
-            const refImage = firebase.storage().ref(path);
-            refImage.getDownloadURL()
-                .then((url) => {
-                    console.log('Loaded image url...');
-                    let obs = this.state.observation;
-                    obs.imageUrl = url;
-                    this.setState({observation: obs});
-                })
-                .catch((error) => {
-                    console.log('Error while retrieving image url');
-                    console.log(error);
-                });
+        if (!this.state.user) {
+            console.log('Loading creator info...');
+            const refCreator = firebase.database().ref(pathUsers + '/' + this.state.observation.userid);
+            refCreator.once(
+                'value',
+                (dataSnapshot) => {
+                    console.log('Received creator.');
+                    const creator = dataSnapshot.toJSON();
+                    this.setState({user: creator});
+                },
+                (error) => {
+                    console.error('Error while retrieving creator info');
+                    console.error(error);
+                }
+            );
         }
     }
 
@@ -284,7 +285,7 @@ export class ObservationComponent extends React.Component {
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
                     <TouchableOpacity name={'header'} onPress={this._onPressProfile} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
-                        <Image name={'userprofilepic'} resizeMode={'cover'} source={require('../user2.jpg')} style={styles.roundProfile}/>
+                        <Image name={'userprofilepic'} resizeMode={'cover'} source={(this.state.user && this.state.user.imageUrl) ? {uri: this.state.user.imageUrl} : require('../nouser.jpg')} style={styles.roundProfile}/>
                     </TouchableOpacity>
                     <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
                         <View name={'header'} style={{flex: 1, flexDirection:'row'}}>

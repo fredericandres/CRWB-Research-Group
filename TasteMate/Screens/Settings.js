@@ -1,9 +1,10 @@
 import React from 'react';
-import {Alert, Button, ScrollView, Text, View} from 'react-native';
+import {Alert, Button, Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {NavBarLogoutButton} from "../Components/NavBarButton";
 import strings from "../strings";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import {
+    _addPictureToStorage,
     _formatUsername,
     _handleAuthError,
     brandAccent,
@@ -15,6 +16,7 @@ import styles from "../styles";
 import {SettingsSwitchComponent} from "../Components/SettingsSwitchComponent";
 import {currentUser, currentUserInformation} from "../App";
 import firebase from 'react-native-firebase';
+import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
 
 export class SettingsScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -32,10 +34,11 @@ export class SettingsScreen extends React.Component {
         this._onFollowNotificationChange = this._onFollowNotificationChange.bind(this);
         this._onPressSave = this._onPressSave.bind(this);
         this._updateUserInfoInDatabase = this._updateUserInfoInDatabase.bind(this);
+        this._onImageSelected = this._onImageSelected.bind(this);
 
         // TODO [FEATURE]: Let user change his password
         this.state = {
-            email: currentUser.email,
+            email: currentUser ? currentUser.email : '',
             username: currentUserInformation.username,
             location: currentUserInformation.location,
             oldPassword: '',
@@ -45,6 +48,9 @@ export class SettingsScreen extends React.Component {
             likeNotification: true,
             wantToEatNotification: true,
             shareNotification: true,
+            getPictureActive: false,
+            imageUrl: currentUserInformation.imageUrl,
+            newImageUrl: '',
         };
     }
 
@@ -105,10 +111,25 @@ export class SettingsScreen extends React.Component {
                 } else {
                     this._updateUserInfoInDatabase(userInfoChange);
                 }
+            } else if (this.state.newImageUrl) {
+                this._uploadNewPicture();
             }
 
         }
         this._showErrorPopup(errorMessage);
+    }
+
+    _uploadNewPicture() {
+        if (this.state.newImageUrl) {
+            const userRef = firebase.database().ref(pathUsers + '/' + currentUser.uid);
+            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._closeSettings);
+        } else {
+            this._closeSettings();
+        }
+    }
+
+    _closeSettings() {
+        this.props.navigation.goBack();
     }
 
     _showErrorPopup(message) {
@@ -137,77 +158,101 @@ export class SettingsScreen extends React.Component {
                         currentUserInformation.location = userInfo.location;
                     }
 
-                    this.props.navigation.goBack();
+                    this._uploadNewPicture();
                     // TODO: Reload content on Profile page
                 }
             }
         );
     }
 
+    _selectNewProfilePicture() {
+        // TODO
+        this.setState({getPictureActive: true});
+    }
+
+    _onImageSelected(uri) {
+        this.setState({
+            newImageUrl: uri,
+            getPictureActive: false
+        });
+    }
+
     render() {
         return (
-            <ScrollView style={[{flex: 1}]}>
-                <View name={'inputWrapper'} style={styles.containerPadding}>
-                    <TextInputComponent
-                        editable={false}
-                        placeholder={strings.emailAddress}
-                        value={this.state.email}
-                        onChangeText={(text) => this.setState({email: text})}
-                        icon={'envelope'}
-                        keyboardType={'email-address'}
-                    />
-                    <TextInputComponent
-                        placeholder={strings.username}
-                        value={this.state.username}
-                        onChangeText={(text) => this.setState({username: _formatUsername(text)})}
-                        icon={'user'}
-                        keyboardType={'default'}
-                        maxLength={maxUsernameLength}
-                    />
-                    <TextInputComponent
-                        placeholder={strings.location}
-                        value={this.state.location}
-                        onChangeText={(text) => this.setState({location: text})}
-                        icon={'location-arrow'}
-                        keyboardType={'default'}
-                    />
-                    {/*<TextInputComponent*/}
-                    {/*placeholder={strings.oldPassword}*/}
-                    {/*icon={'lock'}*/}
-                    {/*onChangeText={(text) => this.setState({oldPassword: text})}*/}
-                    {/*keyboardType={'default'}*/}
-                    {/*secureTextEntry={true}*/}
-                    {/*/>*/}
-                    {/*<TextInputComponent*/}
-                    {/*placeholder={strings.newPassword}*/}
-                    {/*icon={'lock'}*/}
-                    {/*onChangeText={(text) => this.setState({newPassword: text})}*/}
-                    {/*keyboardType={'default'}*/}
-                    {/*secureTextEntry={true}*/}
-                    {/*/>*/}
-                    {/*<TextInputComponent*/}
-                    {/*placeholder={strings.newPasswordRepeat}*/}
-                    {/*icon={'lock'}*/}
-                    {/*onChangeText={(text) => this.setState({newPasswordRepeat: text})}*/}
-                    {/*keyboardType={'default'}*/}
-                    {/*secureTextEntry={true}*/}
-                    {/*/>*/}
-                </View>
-                <View name={'switchWrapper'} style={styles.containerPadding}>
-                    <View style={[{flex: 1, backgroundColor:brandBackground}, styles.rightRoundedEdges, styles.leftRoundedEdges]}>
-                        <View style={styles.containerPadding}>
-                            <Text name={'notificationsTitle'} style={[styles.textTitle]}>{strings.notifyMe}</Text>
+            <View style={{flex:1}}>
+                {
+                    !this.state.getPictureActive &&
+                    <ScrollView style={[{flex: 1}]}>
+                        <TouchableOpacity name={'userpic'} onPress={this._selectNewProfilePicture.bind(this)} style={[styles.containerPadding, {flexDirection: 'column', justifyContent: 'center'}]}>
+                            <Image name={'userprofilepic'} resizeMode={'cover'} source={this.state.newImageUrl ? {uri: this.state.newImageUrl} : this.state.imageUrl ? {uri: this.state.imageUrl} : require('../nouser.jpg')} style={[{flex: 0}, styles.roundProfileLarge]}/>
+                        </TouchableOpacity>
+                        <View name={'inputWrapper'} style={styles.containerPadding}>
+                            <TextInputComponent
+                                editable={false}
+                                placeholder={strings.emailAddress}
+                                value={this.state.email}
+                                onChangeText={(text) => this.setState({email: text})}
+                                icon={'envelope'}
+                                keyboardType={'email-address'}
+                            />
+                            <TextInputComponent
+                                placeholder={strings.username}
+                                value={this.state.username}
+                                onChangeText={(text) => this.setState({username: _formatUsername(text)})}
+                                icon={'user'}
+                                keyboardType={'default'}
+                                maxLength={maxUsernameLength}
+                            />
+                            <TextInputComponent
+                                placeholder={strings.location}
+                                value={this.state.location}
+                                onChangeText={(text) => this.setState({location: text})}
+                                icon={'location-arrow'}
+                                keyboardType={'default'}
+                            />
+                            {/*<TextInputComponent*/}
+                            {/*placeholder={strings.oldPassword}*/}
+                            {/*icon={'lock'}*/}
+                            {/*onChangeText={(text) => this.setState({oldPassword: text})}*/}
+                            {/*keyboardType={'default'}*/}
+                            {/*secureTextEntry={true}*/}
+                            {/*/>*/}
+                            {/*<TextInputComponent*/}
+                            {/*placeholder={strings.newPassword}*/}
+                            {/*icon={'lock'}*/}
+                            {/*onChangeText={(text) => this.setState({newPassword: text})}*/}
+                            {/*keyboardType={'default'}*/}
+                            {/*secureTextEntry={true}*/}
+                            {/*/>*/}
+                            {/*<TextInputComponent*/}
+                            {/*placeholder={strings.newPasswordRepeat}*/}
+                            {/*icon={'lock'}*/}
+                            {/*onChangeText={(text) => this.setState({newPasswordRepeat: text})}*/}
+                            {/*keyboardType={'default'}*/}
+                            {/*secureTextEntry={true}*/}
+                            {/*/>*/}
                         </View>
-                        <SettingsSwitchComponent value={this.state.likeNotification} onValueChange={this._onLikeNotificationChange} text={strings.likesPicture}/>
-                        <SettingsSwitchComponent value={this.state.wantToEatNotification} onValueChange={this._onWantToEatNotificationChange} text={strings.addsToEatingOutPicture}/>
-                        <SettingsSwitchComponent value={this.state.shareNotification} onValueChange={this._onShareNotificationChange} text={strings.sharesPicture}/>
-                        <SettingsSwitchComponent value={this.state.followNotification} onValueChange={this._onFollowNotificationChange} text={strings.startsFollowing}/>
-                    </View>
-                </View>
-                <View name={'saveButtonWrapper'} style={[styles.containerPadding, {flex: 1}]}>
-                    <Button name={'saveChangesButton'} onPress={this._onPressSave} title={strings.saveChanges} color={brandAccent}/>
-                </View>
-            </ScrollView>
+                        <View name={'switchWrapper'} style={styles.containerPadding}>
+                            <View style={[{flex: 1, backgroundColor:brandBackground}, styles.rightRoundedEdges, styles.leftRoundedEdges]}>
+                                <View style={styles.containerPadding}>
+                                    <Text name={'notificationsTitle'} style={[styles.textTitle]}>{strings.notifyMe}</Text>
+                                </View>
+                                <SettingsSwitchComponent value={this.state.likeNotification} onValueChange={this._onLikeNotificationChange} text={strings.likesPicture}/>
+                                <SettingsSwitchComponent value={this.state.wantToEatNotification} onValueChange={this._onWantToEatNotificationChange} text={strings.addsToEatingOutPicture}/>
+                                <SettingsSwitchComponent value={this.state.shareNotification} onValueChange={this._onShareNotificationChange} text={strings.sharesPicture}/>
+                                <SettingsSwitchComponent value={this.state.followNotification} onValueChange={this._onFollowNotificationChange} text={strings.startsFollowing}/>
+                            </View>
+                        </View>
+                        <View name={'saveButtonWrapper'} style={[styles.containerPadding, {flex: 1}]}>
+                            <Button name={'saveChangesButton'} onPress={this._onPressSave} title={strings.saveChanges} color={brandAccent}/>
+                        </View>
+                    </ScrollView>
+                }
+                {
+                    this.state.getPictureActive &&
+                    <CameraCameraRollComponent onImageSelectedAction={this._onImageSelected}/>
+                }
+            </View>
         );
     }
 }

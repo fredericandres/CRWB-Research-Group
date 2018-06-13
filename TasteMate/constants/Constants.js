@@ -1,6 +1,7 @@
 import {StackActions} from "react-navigation";
 import {NativeModules, Platform} from "react-native";
 import strings from "../strings";
+import firebase from 'react-native-firebase';
 
 export const brandMain = '#ffc658';
 export const brandContrast = '#333333';
@@ -151,4 +152,61 @@ export function _handleAuthError(error, action) {
 
 export function _formatUsername(username) {
     return username.toLowerCase().replace(/[^0-9a-z]/g, '');
+}
+
+export function _addPictureToStorage(path, imageUrl, refToUpdate, callback) {
+    // TODO: Fix app crash on iOS picture upload
+    if (Platform.OS === 'android') {
+        console.log('Adding picture to storage...');
+        const imageRef = firebase.storage().ref(path);
+        imageRef.putFile(imageUrl)
+            .then(() => {
+                    console.log('Successfully added picture to storage');
+                    console.log('Updating metadata for image...');
+                    const settableMetadata = {
+                        contentType: 'image/jpeg',
+                    };
+
+                    imageRef.updateMetadata(settableMetadata)
+                        .then((metadata) => {
+                            console.log('Loading image url...');
+                            const refImage = firebase.storage().ref(metadata.fullPath);
+                            refImage.getDownloadURL()
+                                .then((url) => {
+                                    console.log('Saving image url to item...');
+                                    const update = {imageUrl: url};
+                                    refToUpdate.update(
+                                        update,
+                                        (error) => {
+                                            if (error) {
+                                                console.error('Error during image url transmission.');
+                                                console.error(error);
+                                                // TODO: display error message
+                                            } else {
+                                                console.log('Successfully update item to include image url.');
+                                                if (callback) {
+                                                    callback();
+                                                }
+                                            }
+                                        }
+                                    );
+                                })
+                                .catch((error) => {
+                                    console.log('Error while retrieving image url');
+                                    console.log(error);
+                                });
+                            console.log('Successfully added metadata to image');
+                        }) .catch((error) => {
+                            console.log('Error while updating metadata');
+                            console.log(error)
+                        }
+                    );
+                }
+            )
+            .catch((error) => {
+                    console.log('Error while adding picture to storage');
+                    console.log(error)
+                }
+            );
+    }
 }
