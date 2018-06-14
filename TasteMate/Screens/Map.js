@@ -1,11 +1,20 @@
 import React from 'react';
 import MapView from "react-native-maps";
 import strings from "../strings";
+import Permissions from "react-native-permissions";
+import {MapMarkerComponent} from "../Components/MapMarkerComponent";
 
 export class MapScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
         title: strings.mapDetail + ' ',
     });
+
+    componentDidMount() {
+        Permissions.request('location').then(response => {
+            console.log(response);
+            this.setState({locationPermission: response});
+        });
+    }
 
     render() {
         this.observation = this.props.navigation.getParam('observation');
@@ -27,14 +36,7 @@ export class MapScreen extends React.Component {
                      userLocationAnnotationTitle={''}
                      loadingEnabled={true}
             >
-                <MapView.Marker
-                    coordinate={{
-                        latitude: this.observation.location.latitude,
-                        longitude: this.observation.location.longitude
-                    }}
-                    title={this.observation.dishname}
-                    description={this.observation.description}
-                />
+                <MapMarkerComponent observation={this.observation}/>
             </MapView>
 
         );

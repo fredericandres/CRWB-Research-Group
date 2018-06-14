@@ -11,6 +11,7 @@ import Permissions from "react-native-permissions";
 import firebase from 'react-native-firebase';
 import {_navigateToScreen} from "../constants/Constants";
 import {LogInMessage} from "../Components/LogInMessage";
+import {MapMarkerComponent} from "../Components/MapMarkerComponent";
 
 export class EatingOutListScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
@@ -49,17 +50,16 @@ export class EatingOutListScreen extends React.Component {
                     // Open SingUpLogIn screen if no account associated (not even anonymous)
                     _navigateToScreen('SignUpLogIn', this.props.navigation);
                 } else {
-                    Permissions.check('location').then(response => {
-                        this.setState({
-                            // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
-                            locationPermission: response,
-                        });
+                    Permissions.request('location').then(response => {
+                        console.log(response);
+                        this.setState({locationPermission: response});
                         if (response === 'authorized') {
                             navigator.geolocation.getCurrentPosition((position) => {
                                 this.setState({ userlocation: position.coords });
                             });
                         }
-                    })                }
+                    });
+                }
             });
         });
     }
@@ -124,15 +124,7 @@ export class EatingOutListScreen extends React.Component {
                                      userLocationAnnotationTitle={''}
                             >
                                 {this.state.observations.map(obs => (
-                                    <MapView.Marker
-                                        coordinate={{
-                                            latitude: obs.location.latitude,
-                                            longitude: obs.location.longitude
-                                        }}
-                                        title={obs.dishname}
-                                        description={obs.description}
-                                        key={obs.observationid}
-                                    />
+                                    <MapMarkerComponent observation={obs}/>
                                 ))}
                             </MapView>
                         }
