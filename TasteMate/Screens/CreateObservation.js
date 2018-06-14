@@ -72,7 +72,7 @@ export class CreateObservationScreen extends React.Component {
         this.state = {
             observation: this.isEditing ? this.props.navigation.state.params.observation : new Observation(),
             activePageIndex: this.isEditing ? PagesEnum.DETAILS : PagesEnum.SELECTIMAGE,
-            locationText: this.isEditing ? (this.props.navigation.state.params.observation.location ? this.props.navigation.state.params.observation.location : '') + (this.props.navigation.state.params.observation.address ? ', ' + this.props.navigation.state.params.observation.address : '') : '',
+            locationText: this.isEditing ? (this.props.navigation.state.params.observation.location.name ? this.props.navigation.state.params.observation.location.name : '') + (this.props.navigation.state.params.observation.location.address ? ', ' + this.props.navigation.state.params.observation.location.address : '') : '',
             myPocEdited: false,
         };
     }
@@ -112,7 +112,7 @@ export class CreateObservationScreen extends React.Component {
         if (this.state.activePageIndex === PagesEnum.TASTE) {
             // Check if all mandatory fields have content
             let missing = [];
-            if (!this.state.observation.image) {
+            if (!this.state.observation.image && !this.state.observation.imageUrl) {
                 missing.push(strings.picture);
             }
             if (!this.state.observation.description) {
@@ -267,9 +267,7 @@ export class CreateObservationScreen extends React.Component {
     _onUpdateLocation(location) {
         if (!location) {
             let obs = this.state.observation;
-            obs.location = '';
-            obs.address = '';
-            obs.googleMapsId = '';
+            obs.location = {};
             this._updateObservationState(obs);
         }
         this._setLocationText(location);
@@ -289,9 +287,14 @@ export class CreateObservationScreen extends React.Component {
 
     _onPressLocationResult(location) {
         let obs = this.state.observation;
-        obs.location = location.name;
-        obs.address = location.formatted_address;
-        obs.googleMapsId = location.place_id;
+        obs.location = {};
+
+        obs.location.name = location.name;
+        obs.location.address = location.formatted_address;
+        obs.location.googleMapsId = location.place_id;
+        obs.location.latitude = location.geometry.location.lat;
+        obs.location.longitude = location.geometry.location.lng;
+        console.log(obs);
         this._updateObservationState(obs);
         this._setLocationText();
     }
@@ -300,7 +303,7 @@ export class CreateObservationScreen extends React.Component {
 
 
     _setLocationText(text) {
-        this.setState({locationText: text ? text : (this.state.observation.location ? this.state.observation.location : '') + (this.state.observation.address ? ', ' + this.state.observation.address : '')});
+        this.setState({locationText: text ? text : (this.state.observation.location.name || '') + (this.state.observation.location.address ? ', ' + this.state.observation.location.address : '')});
     }
 
     _updateObservationState(obs) {
@@ -309,7 +312,7 @@ export class CreateObservationScreen extends React.Component {
 
     _onUpdatePrice(price) {
         let obs = this.state.observation;
-        obs.price = price;
+        obs.price = price + '';
         this._updateObservationState(obs);
     }
 
@@ -352,7 +355,7 @@ export class CreateObservationScreen extends React.Component {
                         <ScrollView name={'detailsscreen'} style={[styles.containerPadding, {flex: 1}]}>
                             <View name={'picanddescription'} style={{flexDirection:'row', flex: 1}}>
                                 <View style={[styles.containerPadding, {flex:1}]}>
-                                    <ObservationExploreComponent source={{uri: this.state.observation.image}} style={{flexShrink:1, flex: 1}}/>
+                                    <ObservationExploreComponent source={{uri: this.state.observation.image || this.state.observation.imageUrl}} style={{flexShrink:1, flex: 1}}/>
                                 </View>
                                 <View style={{flex: 2}}>
                                     <TextInputComponent style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />
@@ -467,7 +470,7 @@ export class CreateObservationScreen extends React.Component {
                         </View>
                     }
                 </View>
-                {this.state.observation.image && <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
+                {(this.state.observation.image || this.state.observation.imageUrl) && <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
                     <View name={'previousButtonWrapper'} style={ {flex: 1}}>
                         <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:brandBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
                             <Text style={[styles.textTitleDark, styles.containerPadding]}>{(this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>

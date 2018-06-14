@@ -186,7 +186,7 @@ export class ObservationComponent extends React.Component {
 
     _onPressMenuButton() {
         const title = strings.selectAction;
-        const message = strings.formatString(strings.doWithPost, String(this.state.observation.dishname), this.state.observation.userid);
+        const message = strings.formatString(strings.doWithPost, String(this.state.observation.dishname), this.state.user.username);
         const options = [
             strings.edit,
             strings.delete,
@@ -294,7 +294,7 @@ export class ObservationComponent extends React.Component {
                                 <Text name={'mypoc'} style={styles.textTitle}> ({this.state.observation.mypoccorrector || this.state.observation.mypoc})</Text>
                             </Text>
                         </View>
-                        {this.state.observation.location && <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.state.observation.location}</Text>}
+                        {this.state.observation.location && <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.state.observation.location.name}</Text>}
                     </View>
                     {currentUser && this.state.observation.userid === currentUser.uid && <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>}
                 </View>

@@ -31,7 +31,7 @@ export default strings = new LocalizedStrings({
         // Home screen
         emptyFeed: 'Seems like your feed is empty. Why not follow some tastemates?',
         selectAction: 'Select an action',
-        doWithPost: 'What would you like to do with the post \"{0}\" by {1}',
+        doWithPost: 'What would you like to do with the post \"{0}\" by {1}?',
         share: 'Share',
         edit: 'Edit',
         delete: 'Delete',
