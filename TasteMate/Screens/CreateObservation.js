@@ -42,7 +42,7 @@ const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
-        title: navigation.getParam('edit') ? strings.editObservation : strings.createObservation,
+        title: (navigation.getParam('edit') ? strings.editObservation : strings.createObservation) + ' ',
         headerLeft: (
             <NavBarCloseButton nav={navigation}/>
         ),
@@ -50,8 +50,6 @@ export class CreateObservationScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        // TODO: load image?
-
         this._onPressNext = this._onPressNext.bind(this);
         this._onPressPrevious = this._onPressPrevious.bind(this);
 

@@ -4,7 +4,7 @@ import strings from "../strings";
 
 export class MapScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
-        title: strings.mapDetail,
+        title: strings.mapDetail + ' ',
     });
 
     render() {

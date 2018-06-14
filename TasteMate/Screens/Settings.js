@@ -20,7 +20,7 @@ import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent
 
 export class SettingsScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
-        title: strings.settings,
+        title: strings.settings + ' ',
         headerRight: (
             <NavBarLogoutButton nav={navigation}/>
         ),
@@ -166,7 +166,6 @@ export class SettingsScreen extends React.Component {
     }
 
     _selectNewProfilePicture() {
-        // TODO
         this.setState({getPictureActive: true});
     }
 

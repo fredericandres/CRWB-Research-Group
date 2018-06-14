@@ -29,7 +29,7 @@ export class NotificationComponent extends React.Component {
     }
 
     _onPressMultipleProfiles() {
-        // TODO: When more than 2 people --> clicking on names leads to a list of users
+        // TODO [FEATURE]: When more than 2 people --> clicking on names leads to a list of users
     }
 
     _onPressProfile(index) {
@@ -63,7 +63,7 @@ export class NotificationComponent extends React.Component {
         }
 
         let completeActionString = strings.formatString(action, this.props.user ? this.props.user.username : '...');
-        // TODO: Group multiple notifications of same type together if no other type in between
+        // TODO [FEATURE]:  Group multiple notifications of same type together if no other type in between
         // let completeActionString = '';
         // if (this.notification.userid.length === 1) {
         //     completeActionString = strings.formatString(action, this.notification.senderid[0]);

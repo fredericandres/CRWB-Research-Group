@@ -5,7 +5,7 @@ import strings from "../strings";
 
 export class ObservationDetailScreen extends React.Component {
     static navigationOptions = ()=> ({
-        title: strings.observationDetail,
+        title: strings.observationDetail + ' ',
     });
 
     render() {

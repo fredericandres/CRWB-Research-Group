@@ -11,7 +11,7 @@ const CMT_LOAD_DEPTH = 10;
 
 export class CommentsScreen extends React.Component {
     static navigationOptions = ()=> ({
-        title: strings.allComments,
+        title: strings.allComments + ' ',
     });
 
     constructor(props) {
@@ -88,16 +88,6 @@ export class CommentsScreen extends React.Component {
                     console.log('Comments successfully retrieved');
                     let comments = dataSnapshot.toJSON() ? Object.values(dataSnapshot.toJSON()) : [];
                     this._addToCommentState(comments);
-
-                    let iteratedUsers = [];
-                    dataSnapshot.forEach(function (childSnapshot) {
-                        const comment = childSnapshot.toJSON();
-
-                        // Load username of comment sender
-                        if (!iteratedUsers[comment.senderid] && (!currentState.users[comment.senderid])) {
-                            // TODO: load user pic
-                        }
-                    });
                 },
                 (error) => {
                     console.error('Error while retrieving comments');

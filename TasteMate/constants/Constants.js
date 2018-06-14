@@ -10,6 +10,8 @@ export const brandBackground = '#f2f2f2';
 export const brandMainDark ='#fab150';
 export const brandAccent = '#578fff';
 
+export const tastemateFont = 'TastemateRegular';
+
 export const iconSizeLarge = 50;
 export const iconSizeStandard = 25;
 export const iconSizeSmall = 15;

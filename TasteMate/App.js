@@ -8,7 +8,7 @@ import {NotificationsScreen} from "./Screens/Notifications";
 import {ProfileScreen} from "./Screens/Profile";
 import {EatingOutListScreen} from "./Screens/EatingOutList";
 import {CreateObservationScreen} from "./Screens/CreateObservation";
-import {brandContrast, brandLight, brandMain, iconSizeStandard, pathUsers} from './constants/Constants';
+import {brandContrast, brandLight, brandMain, iconSizeStandard, pathUsers, tastemateFont} from './constants/Constants';
 import {Platform, StatusBar, StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     },
     navHeaderTitleStyle: {
         //fontWeight: 'bold',
-        fontFamily: 'TastemateRegular',
+        fontFamily: tastemateFont,
         fontWeight:'200',
         fontSize: Platform.OS === 'ios' ? 20 : 30,
     },

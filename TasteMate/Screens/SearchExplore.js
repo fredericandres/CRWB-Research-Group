@@ -13,7 +13,7 @@ const OBS_LOAD_DEPTH = 12;
 
 export class SearchExploreScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
-        title: strings.explore,
+        title: strings.explore + ' ',
         headerLeft: (
             <NavBarProfileButton nav={navigation}/>
         ),

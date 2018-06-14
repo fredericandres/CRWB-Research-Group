@@ -2,7 +2,14 @@ import React from 'react';
 import {ImageBackground, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import strings from "../strings";
 import styles from "../styles";
-import {_formatUsername, _handleAuthError, brandAccent, maxUsernameLength, pathUsers} from "../constants/Constants";
+import {
+    _formatUsername,
+    _handleAuthError,
+    brandAccent,
+    maxUsernameLength,
+    pathUsers,
+    tastemateFont
+} from "../constants/Constants";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import firebase from 'react-native-firebase';
 
@@ -167,7 +174,7 @@ export class SignUpLogInScreen extends React.Component {
                             <Text style={[styles.textStandardDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.welcomeTo}</Text>
                         </View>
                         <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-end'}}>
-                            <Text style={[styles.textLargeBoldDark, styles.containerPadding, {textAlign: 'center'}]}>Tastemate</Text>
+                            <Text style={[styles.textLargeBoldDark, styles.containerPadding, {textAlign: 'center', fontFamily:tastemateFont}]}>Tastemate</Text>
                         </View>
                         <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-start'}}>
                             <Text style={[styles.textStandardDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.tastemateDescription}</Text>

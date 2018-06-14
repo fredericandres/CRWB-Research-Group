@@ -12,12 +12,13 @@ import {
     pathUsers
 } from "../constants/Constants";
 import firebase from 'react-native-firebase';
+import strings from "../strings";
 
 const NTF_LOAD_DEPTH = 10;
 
 export class NotificationsScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
-        title: 'Notifications',
+        title: strings.notifications + ' ',
         headerLeft: (
             <NavBarProfileButton nav={navigation}/>
         ),
@@ -108,7 +109,6 @@ export class NotificationsScreen extends React.Component {
                                 }
                             )
                         }
-                        // TODO: load user pic
 
                         // Set read status to true
                         if (!notification.read) {
@@ -141,7 +141,6 @@ export class NotificationsScreen extends React.Component {
                             )
 
                         }
-                        // TODO: Load observation pic
                     });
                 },
                 (error) => {

@@ -14,7 +14,7 @@ import {LogInMessage} from "../Components/LogInMessage";
 
 export class EatingOutListScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
-        title: strings.eatingOutList,
+        title: strings.eatingOutList + ' ',
         headerLeft: (
             <NavBarProfileButton nav={navigation}/>
         ),
@@ -37,6 +37,7 @@ export class EatingOutListScreen extends React.Component {
     }
 
     componentDidMount() {
+        // TODO: Get data from DB!
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
             this.setState({

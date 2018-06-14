@@ -12,7 +12,7 @@ const OBS_LOAD_DEPTH = 4;
 
 export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
-        title: 'Tastemate',
+        title: 'Tastemate ',
         headerLeft: (
             <NavBarProfileButton nav={navigation}/>
         ),
@@ -38,9 +38,6 @@ export class HomeScreen extends React.Component {
             noMoreObservations: false,
             isRefreshing: false
         };
-        // TODO: Load profile pics
-        // TODO: Load Food pics
-        // TODO: Load comments
     }
 
     componentDidMount() {
