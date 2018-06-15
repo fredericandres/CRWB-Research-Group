@@ -63,7 +63,7 @@ export class NotificationComponent extends React.Component {
         }
 
         let completeActionString = strings.formatString(action, this.props.user ? this.props.user.username : '...');
-        // TODO [FEATURE]:  Group multiple notifications of same type together if no other type in between
+        // TODO [FEATURE]: Group multiple notifications of same type together if no other type in between
         // let completeActionString = '';
         // if (this.notification.userid.length === 1) {
         //     completeActionString = strings.formatString(action, this.notification.senderid[0]);
@@ -77,7 +77,7 @@ export class NotificationComponent extends React.Component {
             <TouchableOpacity onPress={this.notification.type === ActivityEnum.FOLLOW ? this._onPressProfile : this._onPressObservation} style={[{flexDirection:'row'}]}>
                 {!this.notification.read && <Animated.View name={'fadingbackground'} style={{position: 'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:brandMain, opacity: this.state.fadeAnim}}/>}
                 <TouchableOpacity name={'userpic'} onPress={this._onPressProfile/*this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles*/} style={[styles.containerPadding, {flexDirection:'column', justifyContent:'center'}]}>
-                    <Image name={'userprofilepic'} resizeMode={'cover'} source={this.props.user.imageUrl ? {uri: this.props.user.imageUrl} : require('../nouser.jpg')} style={styles.roundProfile}/>
+                    <Image name={'userprofilepic'} resizeMode={'cover'} source={this.props.user && this.props.user.imageUrl ? {uri: this.props.user.imageUrl} : require('../nouser.jpg')} style={styles.roundProfile}/>
                 </TouchableOpacity>
                 <View name={'textcontentwrapper'} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>
                     <Text name={'action'}>

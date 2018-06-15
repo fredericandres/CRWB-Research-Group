@@ -13,6 +13,7 @@ import {
 } from "../constants/Constants";
 import firebase from 'react-native-firebase';
 import strings from "../strings";
+import {EmptyComponent} from "../Components/EmptyComponent";
 
 const NTF_LOAD_DEPTH = 10;
 
@@ -194,7 +195,7 @@ export class NotificationsScreen extends React.Component {
                         renderItem={({item}) => <NotificationComponent notification={item} user={this.state.users[item.userid]} observation={this.state.observations[item.observationid]} {...this.props}/>}
                         refreshing={this.state.isRefreshing}
                         onRefresh={this._onRefresh}
-                        ListEmptyComponent={() => <Text style={styles.containerPadding}>Seems like you do not have any notifications yet.</Text>}
+                        ListEmptyComponent={() => <EmptyComponent>{strings.noNotifications}</EmptyComponent>}
                         keyExtractor={this._keyExtractor}
                         onEndReached={this._onEndReached}
                     />

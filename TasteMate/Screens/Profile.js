@@ -9,6 +9,7 @@ import {ProfileSegmentedControlItem} from "../Components/ProfileSegmentedControl
 import strings from "../strings";
 import {currentUser, currentUserInformation} from "../App";
 import firebase from 'react-native-firebase';
+import {EmptyComponent} from "../Components/EmptyComponent";
 
 function _toggleFollowUnfollow(navigation) {
     const isFollowing = navigation.getParam('isFollowing');
@@ -291,7 +292,7 @@ export class ProfileScreen extends React.Component {
                         this.state.selectedIndex === 0 &&
                         <FlatList
                             style={styles.explorePadding}
-                            ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noPictures}</Text>}
+                            ListEmptyComponent={() => <EmptyComponent message={strings.noPictures}/>}
                             data={this.state.observations}
                             renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
                             numColumns={2}
@@ -304,7 +305,7 @@ export class ProfileScreen extends React.Component {
                         <FlatList
                             style={styles.containerPadding}
                             data={this.state.followers}
-                            ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noUsers}</Text>}
+                            ListEmptyComponent={() => <EmptyComponent message={strings.noUsers}/>}
                             ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                             renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
                             keyExtractor={this._followingKeyExtractor}
@@ -316,7 +317,7 @@ export class ProfileScreen extends React.Component {
                         <FlatList
                             style={styles.containerPadding}
                             data={this.state.following}
-                            ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noUsers}</Text>}
+                            ListEmptyComponent={() => <EmptyComponent message={strings.noUsers}/>}
                             ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                             renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
                             keyExtractor={this._followingKeyExtractor}

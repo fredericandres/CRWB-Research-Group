@@ -88,8 +88,9 @@ export class ObservationComponent extends React.Component {
                 if (comments.length > 1) {
                     this.setState({moreComments: true});
                     comments.splice(0,1);
+                } else if (comments.length === 1) {
+                    this.setState({comments: comments});
                 }
-                this.setState({comments: comments});
             },
             (error) => {
                 console.error('Error while retrieving comments');

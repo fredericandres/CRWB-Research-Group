@@ -7,6 +7,7 @@ import strings from "../strings";
 import firebase from 'react-native-firebase';
 import {_navigateToScreen, _sortArrayByTimestamp, pathFollow} from "../constants/Constants";
 import {LogInMessage} from "../Components/LogInMessage";
+import {EmptyComponent} from "../Components/EmptyComponent";
 
 const OBS_LOAD_DEPTH = 4;
 
@@ -70,7 +71,7 @@ export class HomeScreen extends React.Component {
         if (this.state.followees && !isRefreshing) {
             this._loadObservations(this.state.followees, onStartup, isRefreshing);
         } else {
-            console.log('Loading people the current user follows...')
+            console.log('Loading people the current user follows...');
             const refFollowees = firebase.database().ref(pathFollow).orderByChild('follower').equalTo(userid);
             refFollowees.once(
                 'value',
@@ -162,7 +163,7 @@ export class HomeScreen extends React.Component {
                         data={this.state.observations}
                         keyExtractor={this._keyExtractor}
                         renderItem={({item}) => <ObservationComponent observation={item} {...this.props} onDelete={this._onDelete}/>}
-                        ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.emptyFeed}</Text>}
+                        ListEmptyComponent={() => <EmptyComponent message={strings.emptyFeed}/>}
                         ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                         refreshing={this.state.isRefreshing}
                         onRefresh={this._onRefresh}

@@ -14,7 +14,7 @@ export class MapMarkerComponent extends React.Component {
                     latitude: this.observation.location.latitude,
                     longitude: this.observation.location.longitude
                 }}
-                title={this.observation.dishname + '(' + (this.observation.mypoccorrector || this.observation.mypoc) + ')'}
+                title={this.observation.dishname + ' (' + (this.observation.mypoccorrector || this.observation.mypoc) + ')'}
                 description={this.observation.location.name + ', ' + this.observation.location.address}
                 key={this.observation.observationid}
             />

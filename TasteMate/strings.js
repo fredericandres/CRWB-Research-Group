@@ -153,6 +153,10 @@ export default strings = new LocalizedStrings({
         missingValuesTextPl: 'Please add the {0} and {1} of your dish before publishing it.',
         itemization: '{0}, {1}',
         picture:'picture',
+        lessThanKm: 'Less than {0}km away',
+        furtherAway: 'Further away',
+        noEatingOutList: 'Looks like you haven\'t added anything to your Eating Out list. Just click the cutlery icon next to an observation to add it to the list!',
+        noNotifications: 'You do not have any notifications yet.',
     },
     fr: {
     },
