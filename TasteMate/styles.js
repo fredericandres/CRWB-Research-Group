@@ -88,6 +88,10 @@ export default StyleSheet.create({
         fontSize: standardFontSize,
         color: brandContrast
     },
+    textStandardLight: {
+        fontSize: standardFontSize,
+        color: brandBackground
+    },
     textStandard: {
         fontSize: standardFontSize,
     },

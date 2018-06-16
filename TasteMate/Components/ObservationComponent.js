@@ -16,7 +16,8 @@ import {
     pathCutleries,
     pathLikes,
     pathObservations,
-    pathShares, pathUsers
+    pathShares,
+    pathUsers
 } from "../constants/Constants";
 import styles, {smileySuperLargeFontSize} from "../styles";
 import {adjectives, comments} from "../MockupData";
@@ -230,7 +231,7 @@ export class ObservationComponent extends React.Component {
                         error.log(error);
                     } else {
                         console.log('Successfully removed observation');
-                        // TODO: Also remove likes, comments, etc from DB
+                        // TODO: Also remove likes, comments, pictures, etc from DB
                         this.props.onDelete(this.state.observation);
                     }
                 }
@@ -321,8 +322,8 @@ export class ObservationComponent extends React.Component {
                         </TouchableOpacity>
                     </ScrollView>
                     }
-                    <View name={'details'} style={{flexDirection:'row', position:'absolute', top:-smileySuperLargeFontSize/2, right:10}}>
-                        <Text name={'smiley'} style={{fontSize:smileySuperLargeFontSize, color:'black'}}>{EmojiEnum[this.state.observation.rating]}</Text>
+                    <View name={'emojiwrapper'} style={{flexDirection:'row', position:'absolute', top:-smileySuperLargeFontSize/2, right:10, height: smileySuperLargeFontSize, width: smileySuperLargeFontSize}}>
+                        <Image name={'emoji'} resizeMode={'cover'} source={EmojiEnum[this.state.observation.rating]} style={{flex: 1, aspectRatio: 1}}/>
                     </View>
                 </View>
                 <View name={'details'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'row'}]}>

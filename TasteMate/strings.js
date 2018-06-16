@@ -157,6 +157,12 @@ export default strings = new LocalizedStrings({
         furtherAway: 'Further away',
         noEatingOutList: 'Looks like you haven\'t added anything to your Eating Out list. Just click the cutlery icon next to an observation to add it to the list!',
         noNotifications: 'You do not have any notifications yet.',
+        checkingUsername: 'Checking if username is already taken...',
+        creatingAccount: 'Creating your account...',
+        savingUserInformation: 'Saving your information...',
+        loggingIn: 'Logging you in...',
+        creatingAnonymous: 'Creating an anonymous account...',
+        savingObservation: 'Saving observation...',
     },
     fr: {
     },

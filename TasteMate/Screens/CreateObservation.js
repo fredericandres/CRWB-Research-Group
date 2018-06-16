@@ -1,10 +1,11 @@
 import React from 'react';
 import {
     Alert,
+    Dimensions,
     FlatList,
+    Image,
     Linking,
     Picker,
-    Platform,
     SafeAreaView,
     ScrollView,
     Text,
@@ -37,6 +38,7 @@ import XMLParser from 'react-xml-parser';
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
 import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
+import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 
@@ -67,12 +69,17 @@ export class CreateObservationScreen extends React.Component {
         this._sendToMyPoC = this._sendToMyPoC.bind(this);
         this._onImageSelected = this._onImageSelected.bind(this);
 
+        this._startActivityIndicator = this._startActivityIndicator.bind(this);
+        this._stopActivityIndicator = this._stopActivityIndicator.bind(this);
+        this._setActivityIndicatorText = this._setActivityIndicatorText.bind(this);
+
         this.isEditing = this.props.navigation.getParam('edit');
         this.inputs = {};
+        const obs = this.props.navigation.state.params.observation;
         this.state = {
-            observation: this.isEditing ? this.props.navigation.state.params.observation : new Observation(),
+            observation: this.isEditing ? obs : new Observation(),
             activePageIndex: this.isEditing ? PagesEnum.DETAILS : PagesEnum.SELECTIMAGE,
-            locationText: this.isEditing ? (this.props.navigation.state.params.observation.location.name ? this.props.navigation.state.params.observation.location.name : '') + (this.props.navigation.state.params.observation.location.address ? ', ' + this.props.navigation.state.params.observation.location.address : '') : '',
+            locationText: (this.isEditing && obs.location) ? (obs.location.name ? obs.location.name : '') + (obs.location.address ? ', ' + obs.location.address : '') : '',
             myPocEdited: false,
         };
     }
@@ -132,8 +139,18 @@ export class CreateObservationScreen extends React.Component {
             if (missing.length > 0) {
                 this._handleMissing(missing);
             } else {
+                this._startActivityIndicator(strings.savingObservation);
+
+                let observation = this.state.observation;
+
+                if (observation.location && !observation.location.name) {
+                    // Remove location property if no actual location was connected to it
+                    delete observation.location;
+                }
+
                 if (this.isEditing) {
-                    firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + this.state.observation.observationid).update(this.state.observation, (error) => {
+                    firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + this.state.observation.observationid).update(observation, (error) => {
+                        this._stopActivityIndicator();
                         if (error) {
                             console.error('Error during observation update transmission.');
                             console.error(error);
@@ -147,7 +164,6 @@ export class CreateObservationScreen extends React.Component {
                     });
                 } else {
                     let ref = firebase.database().ref(pathObservations + '/' + currentUser.uid);
-                    let observation = this.state.observation;
                     observation.userid = currentUser.uid;
                     observation.timestamp = firebase.database().getServerTime();
                     observation.observationid = ref.push().key;
@@ -159,6 +175,7 @@ export class CreateObservationScreen extends React.Component {
                     const observationRef = firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + observation.observationid);
                     observationRef.set(observation,
                         (error) => {
+                            this._stopActivityIndicator();
                             if (error) {
                                 console.error('Error during observation transmission.');
                                 console.error(error);
@@ -191,11 +208,13 @@ export class CreateObservationScreen extends React.Component {
         obs.image = uri;
         this._updateObservationState(obs);
 
-        this._sendToMyPoC(base64, this._onUpdateMypoc);
+        this._sendToMyPoC(base64, this._onUpdateMypoc).then(() => {
+            console.log('MyPoC blob created');
+        });
         this._onPressNext();
     }
 
-    _sendToMyPoC(base64, action) {
+    async _sendToMyPoC(base64, action) {
         // let obs = this.state.observation;
         // obs.imageBase64 = base64;
         // this._updateObservationState(obs);
@@ -214,17 +233,18 @@ export class CreateObservationScreen extends React.Component {
                         fetch(xhr.response)
                             .then((response) => response.text())
                             .then((xmlText) => {
+                                console.log('MyPoC prediction successfully retrieved');
                                 // Parse xml text into object and look for 'text' element --> MyPoC prediction of image
                                 const xml = new XMLParser().parseFromString(xmlText);
                                 const mypoc = xml.getElementsByTagName("text")[0].value;
                                 action(mypoc);
                             })
                             .catch((error) => {
-                                console.error(error);
+                                console.log(error);
                             });
                     } else {
-                        console.error('An error occurred while sending image to MyPoC server');
-                        console.error(xhr);
+                        console.log('An error occurred while sending image to MyPoC server');
+                        console.log(xhr);
                     }
                 }
             };
@@ -338,11 +358,34 @@ export class CreateObservationScreen extends React.Component {
         this._updateObservationState(obs);
     }
 
+    /************* ACTIVITY INDICATOR *************/
+
+    _startActivityIndicator(text) {
+        if (!this.state.loadingIndicatorVisible) {
+            this.setState({loadingIndicatorVisible: true});
+            this._setActivityIndicatorText(text);
+        }
+    }
+
+    _stopActivityIndicator() {
+        if (this.state.loadingIndicatorVisible) {
+            this.setState({loadingIndicatorVisible: false});
+            this._setActivityIndicatorText('');
+        }
+    }
+
+    _setActivityIndicatorText(text) {
+        this.setState({loadingIndicatorText: text});
+    }
+
     render() {
         const myPocAlertButtons = [
             {text: strings.ok},
             {text: strings.more, onPress: () => Linking.openURL('https://github.com/fredericandres/CRWB-Research-Group/wiki/MyPoC-App')}
         ];
+
+        const smallEmojiSize = (Dimensions.get('window').width - 4 * 6)/(Object.keys(EmojiEnum).length + 1);
+        const selectedEmojiSize = smallEmojiSize * 1.5;
 
         return (
             <SafeAreaView style={{ flex: 1 }}>
@@ -366,8 +409,8 @@ export class CreateObservationScreen extends React.Component {
                                 <View style={[{flexDirection: 'row', flex: 1, flexWrap: 'wrap', justifyContent: 'center'}]}>
                                     {
                                         Object.keys(EmojiEnum).map(index => (
-                                            <TouchableOpacity style={{justifyContent: 'center'}} key={index} onPress={() => this._onPressSmiley(parseInt(index, 10))}>
-                                                <Text style={{fontSize: this.state.observation.rating === parseInt(index, 10) ? 40 : 32, color: brandContrast}}>{EmojiEnum[index]}</Text>
+                                            <TouchableOpacity style={[{justifyContent: 'center', alignSelf:'center', width: this.state.observation.rating === parseInt(index, 10) ? selectedEmojiSize : smallEmojiSize, aspectRatio: 1}]} key={index} onPress={() => this._onPressSmiley(parseInt(index, 10))}>
+                                                <Image name={'emoji'} resizeMode={'cover'} source={EmojiEnum[index]} style={{flex: 1, aspectRatio: 1}}/>
                                             </TouchableOpacity>
                                         ))
                                     }
@@ -482,6 +525,10 @@ export class CreateObservationScreen extends React.Component {
                         </TouchableOpacity>
                     </View>
                 </View>}
+                {
+                    this.state.loadingIndicatorVisible &&
+                    <ActivityIndicatorComponent visible={this.state.loadingIndicatorVisible} text={this.state.loadingIndicatorText}/>
+                }
             </SafeAreaView>
         );
     }
