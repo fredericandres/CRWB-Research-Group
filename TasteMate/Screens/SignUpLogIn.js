@@ -168,8 +168,8 @@ export class SignUpLogInScreen extends React.Component {
         if (this.state.user) {
             this._close();
         } else {
+            this._startActivityIndicator(strings.creatingAnonymous);
             firebase.auth().signInAnonymouslyAndRetrieveData().then(() => {
-                this._startActivityIndicator(strings.creatingAnonymous);
                 console.log('Successfully signed up.');
             }).catch((error) => {
                 console.log('Error during signup.');
@@ -186,6 +186,24 @@ export class SignUpLogInScreen extends React.Component {
 
     _focusNextField(key) {
         this.inputs[key].focus();
+    }
+
+    _startActivityIndicator(text) {
+        if (!this.state.loadingIndicatorVisible) {
+            this.setState({loadingIndicatorVisible: true});
+            this._setActivityIndicatorText(text);
+        }
+    }
+
+    _stopActivityIndicator() {
+        if (this.state.loadingIndicatorVisible) {
+            this.setState({loadingIndicatorVisible: false});
+            this._setActivityIndicatorText('');
+        }
+    }
+
+    _setActivityIndicatorText(text) {
+        this.setState({loadingIndicatorText: text});
     }
 
     render() {

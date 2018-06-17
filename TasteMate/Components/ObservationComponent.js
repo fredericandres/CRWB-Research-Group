@@ -340,18 +340,22 @@ export class ObservationComponent extends React.Component {
                         </View>
                     </View>
                 </View>
-                <FlatList name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
-                          data={this.state.comments}
-                          keyExtractor={this._keyExtractor}
-                          renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
-                          ListHeaderComponent={() =>
-                              <View>
-                                  {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>View more comments</Text></TouchableOpacity>}
-                              </View>
-                          }
-                          ListFooterComponent={() =>
-                              <WriteCommentComponent observation={this.state.observation} onCommentAddedAction={this._addCommentToState}/>
-                          }
+                <FlatList
+                    name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
+                    data={this.state.comments}
+                    keyExtractor={this._keyExtractor}
+                    renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
+                    ListHeaderComponent={() =>
+                        <View>
+                            {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>View more comments</Text></TouchableOpacity>}
+                        </View>
+                    }
+                    ListFooterComponent={() =>
+                        <View>
+                            {(currentUser && !currentUser.isAnonymous) && <WriteCommentComponent observation={this.state.observation} onCommentAddedAction={this._addCommentToState}/>}
+                        </View>
+                    }
+
                 />
             </View>
         );

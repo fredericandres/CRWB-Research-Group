@@ -12,20 +12,23 @@ const numColumns = 3;
 const OBS_LOAD_DEPTH = 12;
 
 export class SearchExploreScreen extends React.Component {
-    static navigationOptions = ({navigation})=> ({
-        title: strings.explore + ' ',
-        headerLeft: (
-            <NavBarProfileButton nav={navigation}/>
-        ),
-        headerRight: (
-            <NavBarCreateObsButton nav={navigation}/>
-        ),
-        headerStyle: {
-            borderBottomWidth: 0,
-            backgroundColor: brandMain,
-            elevation: 0,
-        },
-    });
+    static navigationOptions = ({navigation})=> {
+        const {params = {}} = navigation.state;
+        return {
+            title: strings.explore + ' ',
+            headerLeft: (
+                <NavBarProfileButton nav={navigation} action={() => params.onProfilePressed()}/>
+            ),
+            headerRight: (
+                <NavBarCreateObsButton nav={navigation} action={() => params.onCreateObsPressed()}/>
+            ),
+            headerStyle: {
+                borderBottomWidth: 0,
+                backgroundColor: brandMain,
+                elevation: 0,
+            },
+        }
+    };
 
     constructor() {
         super();
@@ -34,6 +37,7 @@ export class SearchExploreScreen extends React.Component {
         this._onEndReached = this._onEndReached.bind(this);
         this._onRefresh = this._onRefresh.bind(this);
         this._loadObservations = this._loadObservations.bind(this);
+        this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
 
         this.unsubscriber = null;
         this.state = {
@@ -44,6 +48,10 @@ export class SearchExploreScreen extends React.Component {
     }
 
     componentDidMount() {
+        this.props.navigation.setParams({
+            onProfilePressed: (() => this._onNavBarButtonPressed(true)),
+            onCreateObsPressed: this._onNavBarButtonPressed,
+        });
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
             this.setState({
@@ -51,8 +59,7 @@ export class SearchExploreScreen extends React.Component {
                 observations: [],
             }, () => {
                 if (!user) {
-                    // Open SingUpLogIn screen if no account associated (not even anonymous)
-                    _navigateToScreen('SignUpLogIn', this.props.navigation);
+                    // Do nothing
                 } else {
                     this._loadObservations(true, false);
                 }
@@ -63,6 +70,20 @@ export class SearchExploreScreen extends React.Component {
     componentWillUnmount() {
         if (this.unsubscriber) {
             this.unsubscriber();
+        }
+    }
+
+    _onNavBarButtonPressed(isProfile) {
+        if (this.state.user && !this.state.user.isAnonymous) {
+            if (isProfile) {
+                let params = {};
+                params.myProfile = true;
+                _navigateToScreen('MyProfile', this.props.navigation, params);
+            } else {
+                _navigateToScreen('CreateObservation', this.props.navigation);
+            }
+        } else {
+            _navigateToScreen('SignUpLogIn', this.props.navigation);
         }
     }
 
@@ -137,16 +158,17 @@ export class SearchExploreScreen extends React.Component {
         return (
             <View name={'wrapper'} style={{flex:1}}>
                 <SearchBar placeholder={strings.foodCraving} onSubmitEditing={this._onPressSearchButton} onChangeText={this._onPressSearchButton} onPress={this._onPressSearchButton}/>
-                <FlatList
-                    style={styles.explorePadding}
-                    keyExtractor={this._keyExtractor}
-                    data={this.state.observations}
-                    renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
-                    numColumns={numColumns}
-                    refreshing={this.state.isRefreshing}
-                    onRefresh={this._onRefresh}
-                    onEndReached={this._onEndReached}
-                />
+                <View style={[{flex:1}, styles.explorePadding]}>
+                    <FlatList
+                        keyExtractor={this._keyExtractor}
+                        data={this.state.observations}
+                        renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
+                        numColumns={numColumns}
+                        refreshing={this.state.isRefreshing}
+                        onRefresh={this._onRefresh}
+                        onEndReached={this._onEndReached}
+                    />
+                </View>
             </View>
         );
     }

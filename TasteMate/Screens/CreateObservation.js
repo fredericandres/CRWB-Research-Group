@@ -75,7 +75,7 @@ export class CreateObservationScreen extends React.Component {
 
         this.isEditing = this.props.navigation.getParam('edit');
         this.inputs = {};
-        const obs = this.props.navigation.state.params.observation;
+        const obs = this.props.navigation.getParam('observation');
         this.state = {
             observation: this.isEditing ? obs : new Observation(),
             activePageIndex: this.isEditing ? PagesEnum.DETAILS : PagesEnum.SELECTIMAGE,

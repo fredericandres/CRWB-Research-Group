@@ -26,15 +26,18 @@ export const FURTHER_AWAY = 'furtherAway';
 const ScreensEnum = Object.freeze({LIST:1, MAP:2});
 
 export class EatingOutListScreen extends React.Component {
-    static navigationOptions = ({navigation})=> ({
-        title: strings.eatingOutList + ' ',
-        headerLeft: (
-            <NavBarProfileButton nav={navigation}/>
-        ),
-        headerRight: (
-            <NavBarCreateObsButton nav={navigation}/>
-        ),
-    });
+    static navigationOptions = ({navigation})=> {
+        const {params = {}} = navigation.state;
+        return {
+            title: strings.eatingOutList + ' ',
+            headerLeft: (
+                <NavBarProfileButton nav={navigation} action={() => params.onProfilePressed()}/>
+            ),
+            headerRight: (
+                <NavBarCreateObsButton nav={navigation} action={() => params.onCreateObsPressed()}/>
+            ),
+        }
+    };
 
     constructor() {
         super();
@@ -51,9 +54,14 @@ export class EatingOutListScreen extends React.Component {
         this._onPressMap = this._onPressMap.bind(this);
         this._getEatingOutObservations = this._getEatingOutObservations.bind(this);
         this._getDistanceFromLatLonInKm = this._getDistanceFromLatLonInKm.bind(this);
+        this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
     }
 
     componentDidMount() {
+        this.props.navigation.setParams({
+            onProfilePressed: (() => this._onNavBarButtonPressed(true)),
+            onCreateObsPressed: this._onNavBarButtonPressed,
+        });
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
             this.setState({
@@ -64,8 +72,7 @@ export class EatingOutListScreen extends React.Component {
                 userlocation: {}
             }, () => {
                 if (!user) {
-                    // Open SingUpLogIn screen if no account associated (not even anonymous)
-                    _navigateToScreen('SignUpLogIn', this.props.navigation);
+                    // Do nothing
                 } else {
                     Permissions.request('location').then(response => {
                         this.setState({locationPermission: response});
@@ -82,6 +89,20 @@ export class EatingOutListScreen extends React.Component {
                 }
             });
         });
+    }
+
+    _onNavBarButtonPressed(isProfile) {
+        if (this.state.user && !this.state.user.isAnonymous) {
+            if (isProfile) {
+                let params = {};
+                params.myProfile = true;
+                _navigateToScreen('MyProfile', this.props.navigation, params);
+            } else {
+                _navigateToScreen('CreateObservation', this.props.navigation);
+            }
+        } else {
+            _navigateToScreen('SignUpLogIn', this.props.navigation);
+        }
     }
 
     _getEatingOutObservations() {

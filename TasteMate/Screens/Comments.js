@@ -6,6 +6,7 @@ import {CommentComponent} from "../Components/CommentComponent";
 import {WriteCommentComponent} from "../Components/WriteCommentComponent";
 import {_sortArrayByTimestamp, brandBackground, pathComments} from "../constants/Constants";
 import firebase from 'react-native-firebase';
+import {currentUser} from "../App";
 
 const CMT_LOAD_DEPTH = 10;
 
@@ -63,7 +64,6 @@ export class CommentsScreen extends React.Component {
     _keyboardDidHide(e) {
         Animated.parallel([
             Animated.timing(this.keyboardHeight, {
-                duration: e.duration,
                 toValue: 0,
             }),
         ]).start();
@@ -123,23 +123,27 @@ export class CommentsScreen extends React.Component {
         return (
             <View style={{flex:1}}>
                 <View style={{flex:7, flexShrink:1}}>
-                    <FlatList name={'comments'}
-                              style={{flex: 1, flexDirection:'column'}}
-                              data={this.state.comments}
-                              keyExtractor={this._keyExtractor}
-                              renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
-                              onEndReached={this._onEndReached}
-                              onRefresh={this._onRefresh}
-                              refreshing={this.state.isRefreshing}
-                              ListFooterComponent={() => <View style={styles.containerPadding}><WriteCommentComponent hidden={true}/></View>}
+                    <FlatList
+                        name={'comments'}
+                        style={{flex: 1, flexDirection:'column'}}
+                        data={this.state.comments}
+                        keyExtractor={this._keyExtractor}
+                        renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
+                        onEndReached={this._onEndReached}
+                        onRefresh={this._onRefresh}
+                        refreshing={this.state.isRefreshing}
+                        ListFooterComponent={() => <View style={styles.containerPadding}><WriteCommentComponent hidden={true}/></View>}
                     />
                 </View>
-                <View style={{position:'absolute', bottom:0, left:0, right:0, backgroundColor: brandBackground}}>
-                    <View style={[styles.containerPadding, {flex:1}]}>
-                        <WriteCommentComponent observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
-                        <Animated.View style={{height: this.keyboardHeight}}/>
+                {
+                    (currentUser && !currentUser.isAnonymous) &&
+                    <View style={{position:'absolute', bottom:0, left:0, right:0, backgroundColor: brandBackground}}>
+                        <View style={[styles.containerPadding, {flex:1}]}>
+                            <WriteCommentComponent observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
+                            <Animated.View style={{height: this.keyboardHeight}}/>
+                        </View>
                     </View>
-                </View>
+                }
             </View>
         );
     }

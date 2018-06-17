@@ -67,16 +67,16 @@ export class ProfileScreen extends React.Component {
             ),
             headerRight: (
                 params.myProfile ?
-                    <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'} myProfile={true} onDataChangedAction={() => params.onDataChangedAction()/**/}/>
+                    <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'} myProfile={true} onDataChangedAction={() => params.onDataChangedAction()}/>
                     :
                     currentUser && !(params.user === currentUser.uid) && !(params.user && params.user.userid === currentUser.uid) ?
                         <View>
                             {params.isFollowing &&
                             <NavBarFollowUnFollowButton icon={'user-following'}
-                                                        actionn={() => _toggleFollowUnfollow(navigation)}/>}
+                                                        action={() => _toggleFollowUnfollow(navigation)}/>}
                             {!params.isFollowing &&
                             <NavBarFollowUnFollowButton icon={'user-follow'}
-                                                        actionn={() => _toggleFollowUnfollow(navigation)}/>}
+                                                        action={() => _toggleFollowUnfollow(navigation)}/>}
                         </View>
                         : <View/>
             ),
@@ -112,17 +112,15 @@ export class ProfileScreen extends React.Component {
 
         userid = this.state.user.userid || currentUser.uid;
 
-        console.log(this.state);
         if (!this.state.user.username) {
             // Get user from DB
-            firebase.database().ref(pathUsers).child(userid).once(
-                'value',
-                (dataSnapshot) => {
+            firebase.database().ref(pathUsers).child(userid).once('value')
+                .then((dataSnapshot) => {
                     console.log('Successfully retrieved user data');
                     const user = dataSnapshot.toJSON();
+                    console.log('A');
                     this.setState({user: user});
-                },
-                (error) => {
+                }).catch((error) => {
                     console.error('Error while retrieving user data');
                     console.error(error);
                 }
@@ -133,12 +131,11 @@ export class ProfileScreen extends React.Component {
             // Is current user following this user?
             console.log('Retrieving follower status...');
             const ref = firebase.database().ref(pathFollow).child(_generateCombinedKey(currentUser.uid, userid));
-            ref.once(
-                'value',
-                (dataSnapshot) => {
+            ref.once('value')
+                .then((dataSnapshot) => {
                     console.log('Successfully retrieved follower status');
-                    this.props.navigation.setParams({ isFollowing: dataSnapshot.toJSON() !== null })
-                },
+                    this.props.navigation.setParams({isFollowing: dataSnapshot.toJSON() !== null});
+                }).catch(
                 (error) => {
                     console.error('Error while retrieving follower status');
                     console.error(error);
@@ -315,7 +312,7 @@ export class ProfileScreen extends React.Component {
                             renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
                             numColumns={2}
                             keyExtractor={this._observationKeyExtractor}
-                            onEndReached={this._loadObservations()}
+                            onEndReached={this._loadObservations}
                         />
                     }
                     {

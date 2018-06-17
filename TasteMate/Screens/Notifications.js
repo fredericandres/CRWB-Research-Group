@@ -1,8 +1,7 @@
 import React from 'react';
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import {NotificationComponent} from "../Components/NotificationComponent";
-import styles from "../styles";
 import {LogInMessage} from "../Components/LogInMessage";
 import {
     _navigateToScreen,
@@ -18,15 +17,18 @@ import {EmptyComponent} from "../Components/EmptyComponent";
 const NTF_LOAD_DEPTH = 10;
 
 export class NotificationsScreen extends React.Component {
-    static navigationOptions = ({navigation})=> ({
-        title: strings.notifications + ' ',
-        headerLeft: (
-            <NavBarProfileButton nav={navigation}/>
-        ),
-        headerRight: (
-            <NavBarCreateObsButton nav={navigation}/>
-        ),
-    });
+    static navigationOptions = ({navigation})=> {
+        const {params = {}} = navigation.state;
+        return {
+            title: strings.notifications + ' ',
+            headerLeft: (
+                <NavBarProfileButton nav={navigation} action={() => params.onProfilePressed()}/>
+            ),
+            headerRight: (
+                <NavBarCreateObsButton nav={navigation} action={() => params.onCreateObsPressed()}/>
+            ),
+        }
+    };
 
     constructor() {
         super();
@@ -36,6 +38,7 @@ export class NotificationsScreen extends React.Component {
         this._onRefresh = this._onRefresh.bind(this);
         this._onEndReached = this._onEndReached.bind(this);
         this._loadNotifications = this._loadNotifications.bind(this);
+        this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
 
         this.unsubscriber = null;
         this.state = {
@@ -48,6 +51,10 @@ export class NotificationsScreen extends React.Component {
     }
 
     componentDidMount() {
+        this.props.navigation.setParams({
+            onProfilePressed: (() => this._onNavBarButtonPressed(true)),
+            onCreateObsPressed: this._onNavBarButtonPressed,
+        });
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
             this.setState({
@@ -57,8 +64,7 @@ export class NotificationsScreen extends React.Component {
                 observations: [],
             }, () => {
                 if (!user) {
-                    // Open SingUpLogIn screen if no account associated (not even anonymous)
-                    _navigateToScreen('SignUpLogIn', this.props.navigation);
+                    // Do nothing
                 } else {
                     this._loadNotifications(user.uid, true, false);
                 }
@@ -69,6 +75,20 @@ export class NotificationsScreen extends React.Component {
     componentWillUnmount() {
         if (this.unsubscriber) {
             this.unsubscriber();
+        }
+    }
+
+    _onNavBarButtonPressed(isProfile) {
+        if (this.state.user && !this.state.user.isAnonymous) {
+            if (isProfile) {
+                let params = {};
+                params.myProfile = true;
+                _navigateToScreen('MyProfile', this.props.navigation, params);
+            } else {
+                _navigateToScreen('CreateObservation', this.props.navigation);
+            }
+        } else {
+            _navigateToScreen('SignUpLogIn', this.props.navigation);
         }
     }
 

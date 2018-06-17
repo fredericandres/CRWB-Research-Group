@@ -122,13 +122,25 @@ const EatingOutListStack = createStackNavigator({
 const ProfileStack = createStackNavigator({
         Profile: { screen: ProfileScreen },
         Settings: { screen: SettingsScreen },
-        SignUpLogIn: { screen: SignUpLogInScreen },
         ObservationDetail: { screen: ObservationDetailScreen },
         Map: { screen: MapScreen },
         Comments: { screen: CommentsScreen },
     },
     {
         initialRouteName: 'Profile',
+        navigationOptions: {
+            headerStyle: styles.navHeaderStyle,
+            headerTintColor: brandContrast,
+            headerTitleStyle: styles.navHeaderTitleStyle,
+        }
+    }
+);
+
+const SignUpLogInStack = createStackNavigator({
+        SignUpLogIn: { screen: SignUpLogInScreen },
+    },
+    {
+        initialRouteName: 'SignUpLogIn',
         navigationOptions: {
             headerStyle: styles.navHeaderStyle,
             headerTintColor: brandContrast,
@@ -191,15 +203,15 @@ export default RootStack = createStackNavigator(
         Main: {
             screen: TabBar,
         },
+        SignUpLogIn: {
+            screen: SignUpLogInStack,
+        },
         CreateObservation: {
             screen: CreateObservationStack,
         },
         MyProfile: {
             screen: ProfileStack,
         },
-        SignUpLogIn: {
-            screen: SignUpLogInScreen,
-        }
     },
     {
         mode: 'modal',

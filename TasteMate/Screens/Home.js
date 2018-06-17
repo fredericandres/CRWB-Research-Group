@@ -12,15 +12,18 @@ import {EmptyComponent} from "../Components/EmptyComponent";
 const OBS_LOAD_DEPTH = 4;
 
 export class HomeScreen extends React.Component {
-    static navigationOptions = ({navigation})=> ({
-        title: 'Tastemate ',
-        headerLeft: (
-            <NavBarProfileButton nav={navigation}/>
-        ),
-        headerRight: (
-            <NavBarCreateObsButton nav={navigation}/>
-        ),
-    });
+    static navigationOptions = ({navigation})=> {
+        const {params = {}} = navigation.state;
+        return {
+            title: 'Tastemate ',
+            headerLeft: (
+                <NavBarProfileButton nav={navigation} action={() => params.onProfilePressed()}/>
+            ),
+            headerRight: (
+                <NavBarCreateObsButton nav={navigation} action={() => params.onCreateObsPressed()}/>
+            ),
+        }
+    };
 
     constructor() {
         super();
@@ -30,6 +33,7 @@ export class HomeScreen extends React.Component {
         this._onRefresh = this._onRefresh.bind(this);
         this._onDelete = this._onDelete.bind(this);
         this._loadObservations = this._loadObservations.bind(this);
+        this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
 
         this.unsubscriber = null;
         this.state = {
@@ -42,11 +46,15 @@ export class HomeScreen extends React.Component {
     }
 
     componentDidMount() {
+        this.props.navigation.setParams({
+            onProfilePressed: (() => this._onNavBarButtonPressed(true)),
+            onCreateObsPressed: this._onNavBarButtonPressed,
+        });
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
             this.setState({
                 user: user,
-                observation: [],
+                observations: [],
                 followees: null
             }, () => {
                 if (!user) {
@@ -57,6 +65,20 @@ export class HomeScreen extends React.Component {
                 }
             });
         });
+    }
+
+    _onNavBarButtonPressed(isProfile) {
+        if (this.state.user && !this.state.user.isAnonymous) {
+            if (isProfile) {
+                let params = {};
+                params.myProfile = true;
+                _navigateToScreen('MyProfile', this.props.navigation, params);
+            } else {
+                _navigateToScreen('CreateObservation', this.props.navigation);
+            }
+        } else {
+            _navigateToScreen('SignUpLogIn', this.props.navigation);
+        }
     }
 
     componentWillUnmount() {
