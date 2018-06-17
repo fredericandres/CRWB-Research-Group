@@ -57,38 +57,44 @@ const OBS_LOAD_DEPTH = 6;
 let userid = null;
 
 export class ProfileScreen extends React.Component {
-    static navigationOptions =({navigation})=> ({
-        title: navigation.getParam('myProfile') ? currentUserInformation.username : navigation.getParam('user') ? navigation.getParam('user').username : '',
-        // Set left header button to 'Close' if top of stack aka own profile
-        headerLeft: !navigation.getParam('myProfile') ? undefined : (
-            <NavBarCloseButton nav={navigation}/>
-        ),
-        headerRight: (
-            navigation.getParam('myProfile') ?
-                <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'} myProfile={true}/>
-                :
-                currentUser && !(navigation.getParam('user') === currentUser.uid) && !(navigation.getParam('user') && navigation.getParam('user').userid === currentUser.uid) ? <View>
-                        {navigation.getParam('isFollowing') &&
-                        <NavBarFollowUnFollowButton icon={'user-following'} actionn={() => _toggleFollowUnfollow(navigation)}/>}
-                        {!navigation.getParam('isFollowing') &&
-                        <NavBarFollowUnFollowButton icon={'user-follow'} actionn={() => _toggleFollowUnfollow(navigation)}/>}
-                    </View>
-                    : <View/>
-        ),
-        headerStyle: {
-            borderBottomWidth: 0,
-            backgroundColor: brandMain,
-            elevation: 0,
-        },
-        headerTitleStyle: {
-            color: brandMain
-        },
-    });
+    static navigationOptions =({navigation})=> {
+        const {params = {}} = navigation.state;
+        return {
+            title: '',
+            // Set left header button to 'Close' if top of stack aka own profile
+            headerLeft: !params.myProfile ? undefined : (
+                <NavBarCloseButton nav={navigation}/>
+            ),
+            headerRight: (
+                params.myProfile ?
+                    <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'} myProfile={true} onDataChangedAction={() => params.onDataChangedAction()/**/}/>
+                    :
+                    currentUser && !(params.user === currentUser.uid) && !(params.user && params.user.userid === currentUser.uid) ?
+                        <View>
+                            {params.isFollowing &&
+                            <NavBarFollowUnFollowButton icon={'user-following'}
+                                                        actionn={() => _toggleFollowUnfollow(navigation)}/>}
+                            {!params.isFollowing &&
+                            <NavBarFollowUnFollowButton icon={'user-follow'}
+                                                        actionn={() => _toggleFollowUnfollow(navigation)}/>}
+                        </View>
+                        : <View/>
+            ),
+            headerStyle: {
+                borderBottomWidth: 0,
+                backgroundColor: brandMain,
+                elevation: 0,
+            },
+            headerTitleStyle: {
+                color: brandMain
+            },
+        }
+    };
 
     constructor(props) {
         super(props);
         this.state = {
-            user: props.navigation.getParam('myProfile') ? currentUserInformation : props.navigation.getParam('user') || {},
+            user: props.navigation.getParam('myProfile') ? currentUserInformation : (props.navigation.getParam('user').userid === currentUser.uid ? currentUserInformation : props.navigation.getParam('user')),
             followers: [],
             following: [],
             observations: []
@@ -99,13 +105,15 @@ export class ProfileScreen extends React.Component {
         this._loadFollowing = this._loadFollowing.bind(this);
         this._loadFollowers = this._loadFollowers.bind(this);
         this._loadObservations = this._loadObservations.bind(this);
-
-        userid = props.navigation.getParam('myProfile') && currentUser ? currentUser.uid : props.navigation.getParam('user') && props.navigation.getParam('user').userid ? props.navigation.getParam('user').userid : props.navigation.getParam('user');
+        this._onProfileUpdated = this._onProfileUpdated.bind(this);
 
         this.followingIds = {};
         this.followersIds = {};
 
-        if (!props.navigation.getParam('myProfile') && !props.navigation.getParam('user').userid) {
+        userid = this.state.user.userid || currentUser.uid;
+
+        console.log(this.state);
+        if (!this.state.user.username) {
             // Get user from DB
             firebase.database().ref(pathUsers).child(userid).once(
                 'value',
@@ -141,6 +149,12 @@ export class ProfileScreen extends React.Component {
         this._loadObservations(true);
         this._loadFollowers();
         this._loadFollowing();
+    }
+
+    componentDidMount() {
+        this.props.navigation.setParams({
+            onDataChangedAction: this._onProfileUpdated,
+        });
     }
 
     _loadFollowers() {
@@ -249,6 +263,10 @@ export class ProfileScreen extends React.Component {
 
     _onPressFollowing() {
         this.setState({selectedIndex: 2});
+    }
+
+    _onProfileUpdated() {
+        this.setState({user: currentUserInformation});
     }
 
     _observationKeyExtractor = (item, index) => item.observationid;

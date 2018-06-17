@@ -264,7 +264,7 @@ export class ObservationComponent extends React.Component {
 
     _onPressProfile() {
         let params = {};
-        params.user = this.state.observation.userid;
+        params.user = {userid: this.state.observation.userid};
         _navigateToScreen('Profile', this.props.navigation, params);
     }
 

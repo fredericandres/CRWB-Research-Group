@@ -135,7 +135,7 @@ export class SearchExploreScreen extends React.Component {
 
     render() {
         return (
-            <View name={'wrapper'} >
+            <View name={'wrapper'} style={{flex:1}}>
                 <SearchBar placeholder={strings.foodCraving} onSubmitEditing={this._onPressSearchButton} onChangeText={this._onPressSearchButton} onPress={this._onPressSearchButton}/>
                 <FlatList
                     style={styles.explorePadding}

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, StatusBar, Text, TouchableOpacity} from 'react-native';
+import {Image, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {_navigateToScreen, brandContrast, iconSizeStandard} from "../constants/Constants";
 import {currentUser} from "../App";
@@ -9,9 +9,12 @@ import strings from "../strings";
 import firebase from 'react-native-firebase';
 
 export class NavBarButton extends React.Component {
-    _openScreen(screen) {
+    _openScreen(screen, onDataChangedAction) {
         let params = {};
         params.myProfile = true;
+        if (onDataChangedAction) {
+            params.onDataChangedAction = onDataChangedAction;
+        }
         _navigateToScreen(screen, this.props.nav, params);
     }
 
@@ -24,7 +27,8 @@ export class NavBarButton extends React.Component {
         const image = this.props.image;
         const text = this.props.text;
         const iconType = this.props.iconType;
-        const action = this.props.actionn || (isLoggedIn ? (() => this._openScreen(screen)): () => this._openScreen('SignUpLogIn'));
+        const onDataChangedAction = this.props.onDataChangedAction;
+        const action = this.props.actionn || (isLoggedIn ? (() => this._openScreen(screen, onDataChangedAction)): () => this._openScreen('SignUpLogIn'));
 
         // Content
         let content = <Text>{text}</Text>;

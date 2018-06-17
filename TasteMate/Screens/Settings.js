@@ -157,6 +157,7 @@ export class SettingsScreen extends React.Component {
     }
 
     _closeSettings() {
+        this.props.navigation.getParam('onDataChangedAction')();
         this.props.navigation.goBack();
     }
 
