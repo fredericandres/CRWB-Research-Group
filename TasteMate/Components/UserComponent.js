@@ -1,7 +1,8 @@
 import React from "react";
-import {Image, Text, TouchableOpacity, View} from "react-native";
+import {Text, TouchableOpacity, View} from "react-native";
 import styles from "../styles";
-import { _navigateToScreen } from '../constants/Constants';
+import {_navigateToScreen} from '../constants/Constants';
+import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
 
 export class UserComponent extends React.Component {
     constructor(props) {
@@ -19,7 +20,7 @@ export class UserComponent extends React.Component {
     render() {
         return (
             <TouchableOpacity onPress={this._onPressUser} style={{flexDirection:'row'}}>
-                    <Image name={'userprofilepic'} resizeMode={'cover'} source={this.user.imageUrl ? {uri: this.user.imageUrl} : require('../nouser.jpg')} style={[styles.roundProfile, styles.containerPadding, {flexDirection:'column', justifyContent:'center'}]}/>
+                <UserImageThumbnailComponent size={styles.roundProfile} source={this.user.imageUrl && {uri: this.user.imageUrl}} />
                 <View name={'textcontentwrapper'} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>
                     <Text name={'username'} style={styles.textStandardBold}>{this.user.username}</Text>
                     <Text name={'location'} style={styles.textSmall}>{this.user.location}</Text>

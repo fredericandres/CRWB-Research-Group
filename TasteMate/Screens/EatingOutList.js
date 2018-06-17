@@ -202,22 +202,26 @@ export class EatingOutListScreen extends React.Component {
     }
 
     _getDistanceFromLatLonInKm(observation) {
-        const lat1 = observation.location.latitude;
-        const lon1 = observation.location.longitude;
-        const lat2 = this.state.userlocation.latitude;
-        const lon2 = this.state.userlocation.longitude;
-        const R = 6371;
-        let dLat = EatingOutListScreen._deg2rad(lat2-lat1);
-        let dLon = EatingOutListScreen._deg2rad(lon2-lon1);
-        let a =
-            Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(EatingOutListScreen._deg2rad(lat1)) *
-            Math.cos(EatingOutListScreen._deg2rad(lat2)) *
-            Math.sin(dLon/2) * Math.sin(dLon/2)
-        ;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        const d = R * c;
-        return d;
+        if(observation.location) {
+            const lat1 = observation.location.latitude;
+            const lon1 = observation.location.longitude;
+            const lat2 = this.state.userlocation.latitude;
+            const lon2 = this.state.userlocation.longitude;
+            const R = 6371;
+            let dLat = EatingOutListScreen._deg2rad(lat2 - lat1);
+            let dLon = EatingOutListScreen._deg2rad(lon2 - lon1);
+            let a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(EatingOutListScreen._deg2rad(lat1)) *
+                Math.cos(EatingOutListScreen._deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2)
+            ;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const d = R * c;
+            return d;
+        } else {
+            return 100000000;
+        }
     }
 
     static _deg2rad(deg) {
@@ -261,24 +265,25 @@ export class EatingOutListScreen extends React.Component {
                             }
                             {
                                 this.state.selectedIndex === ScreensEnum.MAP &&
-                                <MapView style={{flex: 1}}
-                                         initialRegion={{
-                                             latitude: this.state.userlocation ? this.state.userlocation.latitude : this.state.observations[0].location.latitude,
-                                             longitude: this.state.userlocation ? this.state.userlocation.longitude : this.state.observations[0].location.longitude,
-                                             latitudeDelta: 1,
-                                             longitudeDelta: 1,
-                                         }}
-                                         showsCompass={true}
-                                         showsScale={true}
-                                         showsUserLocation={true}
-                                         showsMyLocationButton={true}
-                                         showsIndoors={false}
-                                         showsBuildings={false}
-                                         showsTraffic={false}
-                                         userLocationAnnotationTitle={''}
+                                <MapView
+                                    style={{flex: 1}}
+                                    initialRegion={{
+                                        latitude: this.state.userlocation ? this.state.userlocation.latitude : this.state.observations[0].location.latitude,
+                                        longitude: this.state.userlocation ? this.state.userlocation.longitude : this.state.observations[0].location.longitude,
+                                        latitudeDelta: 1,
+                                        longitudeDelta: 1,
+                                    }}
+                                    showsCompass={true}
+                                    showsScale={true}
+                                    showsUserLocation={true}
+                                    showsMyLocationButton={true}
+                                    showsIndoors={false}
+                                    showsBuildings={false}
+                                    showsTraffic={false}
+                                    userLocationAnnotationTitle={''}
                                 >
                                     {this.state.observations && this.state.observations.map(obs => (
-                                        <MapMarkerComponent observation={obs} key={obs.observationid}/>
+                                        obs.location ? <MapMarkerComponent observation={obs} key={obs.observationid}/> : <View key={obs.observationid}/>
                                     ))}
                                 </MapView>
                             }

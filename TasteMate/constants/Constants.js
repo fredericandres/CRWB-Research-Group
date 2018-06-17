@@ -195,7 +195,6 @@ export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setA
                                     .then(() => {
                                         console.log('Successfully updated item to include image url.');
                                         stopActivityIndicator();
-                                        currentUserInformation.imageUrl = url;
                                         if (callback) {
                                             callback();
                                         }

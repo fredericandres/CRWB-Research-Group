@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, Image, SafeAreaView, Text, View} from 'react-native';
+import {FlatList, SafeAreaView, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
 import {_formatNumber, _sortArrayByTimestamp, brandMain, pathFollow, pathUsers} from "../constants/Constants";
 import styles from "../styles";
@@ -10,6 +10,7 @@ import strings from "../strings";
 import {currentUser, currentUserInformation} from "../App";
 import firebase from 'react-native-firebase';
 import {EmptyComponent} from "../Components/EmptyComponent";
+import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
 
 function _toggleFollowUnfollow(navigation) {
     const isFollowing = navigation.getParam('isFollowing');
@@ -273,9 +274,7 @@ export class ProfileScreen extends React.Component {
         return (
             <SafeAreaView style={{flex: 1,}}>
                 <View name={'header'} style={{flex: 2, backgroundColor: brandMain}}>
-                    <View name={'userpic'} style={[styles.containerPadding, {flex: 3, flexDirection: 'column', justifyContent: 'center'}]}>
-                        <Image name={'userprofilepic'} resizeMode={'cover'} source={this.state.user.imageUrl ? {uri: this.state.user.imageUrl} : require('../nouser.jpg')} style={[{flex: 0}, styles.roundProfileLarge]}/>
-                    </View>
+                    <UserImageThumbnailComponent size={styles.roundProfileLarge} source={this.state.user.imageUrl && {uri: this.state.user.imageUrl}}/>
                     <View name={'username'} style={{flex: 1, alignItems: 'flex-end', flexDirection: 'row'}}>
                         <Text name={'username'}
                               style={[styles.textTitleBoldDark, {textAlign: 'center', flex: 1}]}>{this.state.user.username}</Text>

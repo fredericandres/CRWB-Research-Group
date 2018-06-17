@@ -165,6 +165,7 @@ export default strings = new LocalizedStrings({
         savingObservation: 'Saving observation...',
         savingProfile: 'Saving profile...',
         uploadingPicture: 'Uploading picture...',
+        unknownLocation: 'Unknown location',
     },
     fr: {
     },

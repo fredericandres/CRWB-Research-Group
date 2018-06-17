@@ -1,5 +1,5 @@
 import React from "react";
-import {ActionSheetIOS, Alert, FlatList, Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {ActionSheetIOS, Alert, FlatList, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {
     _formatNumberWithString,
@@ -28,6 +28,8 @@ import Share from 'react-native-share';
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
 import {WriteCommentComponent} from "./WriteCommentComponent";
+import {CachedImage} from 'react-native-cached-image';
+import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -286,9 +288,7 @@ export class ObservationComponent extends React.Component {
         return (
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
-                    <TouchableOpacity name={'header'} onPress={this._onPressProfile} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
-                        <Image name={'userprofilepic'} resizeMode={'cover'} source={(this.state.user && this.state.user.imageUrl) ? {uri: this.state.user.imageUrl} : require('../nouser.jpg')} style={styles.roundProfile}/>
-                    </TouchableOpacity>
+                    <UserImageThumbnailComponent size={styles.roundProfile} onPress={this._onPressProfile} source={(this.state.user && this.state.user.imageUrl) && {uri: this.state.user.imageUrl}}/>
                     <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
                         <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
                             <Text name={'dishnames'} >
@@ -302,7 +302,7 @@ export class ObservationComponent extends React.Component {
                 </View>
                 <View name={'picture'} style={{flexDirection:'row'}}>
                     <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
-                        <Image name={'image'} resizeMode={'cover'} source={this.state.observation.imageUrl ? {uri: this.state.observation.imageUrl} : require('../noimage.png')} style={{flex: 1, aspectRatio: 1}}/>
+                        <CachedImage name={'image'} resizeMode={'cover'} source={this.state.observation.imageUrl ? {uri: this.state.observation.imageUrl} : require('../noimage.png')} style={{flex: 1, aspectRatio: 1}}/>
                     </TouchableOpacity>
                     <View style={[styles.containerOpacityDark, {padding: 6, position: 'absolute', bottom: 0, right: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
@@ -323,7 +323,7 @@ export class ObservationComponent extends React.Component {
                     </ScrollView>
                     }
                     <View name={'emojiwrapper'} style={{flexDirection:'row', position:'absolute', top:-smileySuperLargeFontSize/2, right:10, height: smileySuperLargeFontSize, width: smileySuperLargeFontSize}}>
-                        <Image name={'emoji'} resizeMode={'cover'} source={EmojiEnum[this.state.observation.rating]} style={{flex: 1, aspectRatio: 1}}/>
+                        <CachedImage name={'emoji'} resizeMode={'cover'} source={EmojiEnum[this.state.observation.rating]} style={{flex: 1, aspectRatio: 1}}/>
                     </View>
                 </View>
                 <View name={'details'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'row'}]}>
@@ -355,7 +355,6 @@ export class ObservationComponent extends React.Component {
                             {(currentUser && !currentUser.isAnonymous) && <WriteCommentComponent observation={this.state.observation} onCommentAddedAction={this._addCommentToState}/>}
                         </View>
                     }
-
                 />
             </View>
         );

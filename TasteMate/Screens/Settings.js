@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert, Button, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Button, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {NavBarLogoutButton} from "../Components/NavBarButton";
 import strings from "../strings";
 import {TextInputComponent} from "../Components/TextInputComponent";
@@ -18,6 +18,7 @@ import {currentUser, currentUserInformation} from "../App";
 import firebase from 'react-native-firebase';
 import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
 import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
+import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
 
 export class SettingsScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -119,20 +120,20 @@ export class SettingsScreen extends React.Component {
                     console.log('Checking if username already exists...');
                     this._setActivityIndicatorText(strings.checkingUsername);
                     const refUsername = firebase.database().ref(pathUsers).orderByChild('username').equalTo(userInfoChange.username);
-                    refUsername.once(
-                        'value',
-                        (dataSnapshot) => {
+                    refUsername.once('value')
+                        .then((dataSnapshot) => {
                             console.log('Username successfully checked');
                             if (dataSnapshot.toJSON()) {
                                 // Display error message
+                                this._stopActivityIndicator();
                                 _handleAuthError(strings.errorMessageUsernameAlreadyInUse, this._showErrorPopup);
                             } else {
                                 this._updateUserInfoInDatabase(userInfoChange);
                             }
-                        },
-                        (error) => {
-                            console.error('Error while checking if username exists');
-                            console.error(error);
+                        }).catch((error) => {
+                            console.log('Error while checking if username exists');
+                            this._stopActivityIndicator();
+                            console.log(error);
                         }
                     );
                 } else {
@@ -149,8 +150,9 @@ export class SettingsScreen extends React.Component {
 
     _uploadNewPicture() {
         if (this.state.newImageUrl) {
+            currentUserInformation.imageUrl = this.state.newImageUrl;
             const userRef = firebase.database().ref(pathUsers + '/' + currentUser.uid);
-            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._closeSettings, this._setActivityIndicatorText, this._stopActivityIndicator);
+            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '_' + firebase.database().getServerTime() + '.jpg', this.state.newImageUrl, userRef, this._closeSettings, this._setActivityIndicatorText, this._stopActivityIndicator);
         } else {
             this._closeSettings();
         }
@@ -172,7 +174,7 @@ export class SettingsScreen extends React.Component {
     }
 
     _updateUserInfoInDatabase(userInfo) {
-        this._setActivityIndicatorText(strings.uploadingProfilePicture);
+        this._setActivityIndicatorText(strings.savingProfile);
         firebase.database().ref(pathUsers).child(currentUser.uid).update(userInfo)
             .then(() => {
                 console.log('Successfully updated user information on DB.');
@@ -211,9 +213,7 @@ export class SettingsScreen extends React.Component {
                 {
                     !this.state.getPictureActive &&
                     <ScrollView style={[{flex: 1}]}>
-                        <TouchableOpacity name={'userpic'} onPress={this._selectNewProfilePicture.bind(this)} style={[styles.containerPadding, {flexDirection: 'column', justifyContent: 'center'}]}>
-                            <Image name={'userprofilepic'} resizeMode={'cover'} source={this.state.newImageUrl ? {uri: this.state.newImageUrl} : (this.state.imageUrl ? {uri: this.state.imageUrl} : require('../nouser.jpg'))} style={[{flex: 0}, styles.roundProfileLarge]}/>
-                        </TouchableOpacity>
+                        <UserImageThumbnailComponent size={styles.roundProfileLarge} source={this.state.newImageUrl ? {uri: this.state.newImageUrl} : (this.state.imageUrl && {uri: this.state.imageUrl})} onPress={this._selectNewProfilePicture.bind(this)} />
                         <View name={'inputWrapper'} style={styles.containerPadding}>
                             <TextInputComponent
                                 editable={false}
