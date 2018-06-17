@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert, Button, Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Button, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {NavBarLogoutButton} from "../Components/NavBarButton";
 import strings from "../strings";
 import {TextInputComponent} from "../Components/TextInputComponent";
@@ -17,6 +17,7 @@ import {SettingsSwitchComponent} from "../Components/SettingsSwitchComponent";
 import {currentUser, currentUserInformation} from "../App";
 import firebase from 'react-native-firebase';
 import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
+import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
 
 export class SettingsScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -35,6 +36,10 @@ export class SettingsScreen extends React.Component {
         this._onPressSave = this._onPressSave.bind(this);
         this._updateUserInfoInDatabase = this._updateUserInfoInDatabase.bind(this);
         this._onImageSelected = this._onImageSelected.bind(this);
+        this._startActivityIndicator = this._startActivityIndicator.bind(this);
+        this._stopActivityIndicator = this._stopActivityIndicator.bind(this);
+        this._setActivityIndicatorText = this._setActivityIndicatorText.bind(this);
+        this._closeSettings = this._closeSettings.bind(this);
 
         // TODO [FEATURE]: Let user change his password
         this.state = {
@@ -51,6 +56,8 @@ export class SettingsScreen extends React.Component {
             getPictureActive: false,
             imageUrl: currentUserInformation.imageUrl,
             newImageUrl: '',
+            loadingIndicatorVisible: false,
+            loadingIndicatorText: ''
         };
     }
 
@@ -68,6 +75,24 @@ export class SettingsScreen extends React.Component {
 
     _onFollowNotificationChange(){
         this.setState({followNotification: !this.state.followNotification});
+    }
+
+    _startActivityIndicator(text) {
+        if (!this.state.loadingIndicatorVisible) {
+            this.setState({loadingIndicatorVisible: true});
+            this._setActivityIndicatorText(text);
+        }
+    }
+
+    _stopActivityIndicator() {
+        if (this.state.loadingIndicatorVisible) {
+            this.setState({loadingIndicatorVisible: false});
+            this._setActivityIndicatorText('');
+        }
+    }
+
+    _setActivityIndicatorText(text) {
+        this.setState({loadingIndicatorText: text});
     }
 
     _onPressSave() {
@@ -89,8 +114,10 @@ export class SettingsScreen extends React.Component {
             }
 
             if (changes) {
+                this._startActivityIndicator(strings.savingProfile);
                 if (userInfoChange.username) {
                     console.log('Checking if username already exists...');
+                    this._setActivityIndicatorText(strings.checkingUsername);
                     const refUsername = firebase.database().ref(pathUsers).orderByChild('username').equalTo(userInfoChange.username);
                     refUsername.once(
                         'value',
@@ -112,6 +139,7 @@ export class SettingsScreen extends React.Component {
                     this._updateUserInfoInDatabase(userInfoChange);
                 }
             } else if (this.state.newImageUrl) {
+                this._startActivityIndicator(strings.savingProfile);
                 this._uploadNewPicture();
             }
 
@@ -122,7 +150,7 @@ export class SettingsScreen extends React.Component {
     _uploadNewPicture() {
         if (this.state.newImageUrl) {
             const userRef = firebase.database().ref(pathUsers + '/' + currentUser.uid);
-            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._closeSettings);
+            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._closeSettings, this._setActivityIndicatorText, this._stopActivityIndicator);
         } else {
             this._closeSettings();
         }
@@ -143,24 +171,24 @@ export class SettingsScreen extends React.Component {
     }
 
     _updateUserInfoInDatabase(userInfo) {
-        firebase.database().ref(pathUsers).child(currentUser.uid).update(userInfo,
-            (error) => {
-                if (error) {
-                    console.error('Error during user information update transmission.');
-                    console.error(error);
-                    _handleAuthError(error, this._showErrorPopup);
-                } else {
-                    console.log('Successfully updated user information on DB.');
-                    if (userInfo.username) {
-                        currentUserInformation.username = userInfo.username;
-                    }
-                    if (userInfo.location) {
-                        currentUserInformation.location = userInfo.location;
-                    }
-
-                    this._uploadNewPicture();
-                    // TODO: Reload content on Profile page
+        this._setActivityIndicatorText(strings.uploadingProfilePicture);
+        firebase.database().ref(pathUsers).child(currentUser.uid).update(userInfo)
+            .then(() => {
+                console.log('Successfully updated user information on DB.');
+                if (userInfo.username) {
+                    currentUserInformation.username = userInfo.username;
                 }
+                if (userInfo.location) {
+                    currentUserInformation.location = userInfo.location;
+                }
+
+                this._uploadNewPicture();
+                // TODO: Reload content on Profile page
+            }).catch((error) => {
+                console.error('Error during user information update transmission.');
+                this._stopActivityIndicator();
+                console.error(error);
+                _handleAuthError(error, this._showErrorPopup);
             }
         );
     }
@@ -178,12 +206,12 @@ export class SettingsScreen extends React.Component {
 
     render() {
         return (
-            <View style={{flex:1}}>
+            <SafeAreaView style={{flex:1}}>
                 {
                     !this.state.getPictureActive &&
                     <ScrollView style={[{flex: 1}]}>
                         <TouchableOpacity name={'userpic'} onPress={this._selectNewProfilePicture.bind(this)} style={[styles.containerPadding, {flexDirection: 'column', justifyContent: 'center'}]}>
-                            <Image name={'userprofilepic'} resizeMode={'cover'} source={this.state.newImageUrl ? {uri: this.state.newImageUrl} : this.state.imageUrl ? {uri: this.state.imageUrl} : require('../nouser.jpg')} style={[{flex: 0}, styles.roundProfileLarge]}/>
+                            <Image name={'userprofilepic'} resizeMode={'cover'} source={this.state.newImageUrl ? {uri: this.state.newImageUrl} : (this.state.imageUrl ? {uri: this.state.imageUrl} : require('../nouser.jpg'))} style={[{flex: 0}, styles.roundProfileLarge]}/>
                         </TouchableOpacity>
                         <View name={'inputWrapper'} style={styles.containerPadding}>
                             <TextInputComponent
@@ -251,7 +279,11 @@ export class SettingsScreen extends React.Component {
                     this.state.getPictureActive &&
                     <CameraCameraRollComponent onImageSelectedAction={this._onImageSelected}/>
                 }
-            </View>
+                {
+                    this.state.loadingIndicatorVisible &&
+                    <ActivityIndicatorComponent visible={this.state.loadingIndicatorVisible} text={this.state.loadingIndicatorText}/>
+                }
+            </SafeAreaView>
         );
     }
 }

@@ -163,6 +163,8 @@ export default strings = new LocalizedStrings({
         loggingIn: 'Logging you in...',
         creatingAnonymous: 'Creating an anonymous account...',
         savingObservation: 'Saving observation...',
+        savingProfile: 'Saving profile...',
+        uploadingPicture: 'Uploading picture...',
     },
     fr: {
     },

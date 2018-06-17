@@ -167,59 +167,59 @@ export function _formatUsername(username) {
     return username.toLowerCase().replace(/[^0-9a-z]/g, '');
 }
 
-export function _addPictureToStorage(path, imageUrl, refToUpdate, callback) {
+export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setActivityIndicatorText, stopActivityIndicator) {
     // TODO: Fix app crash on iOS picture upload
+    setActivityIndicatorText(strings.uploadingPicture);
     if (Platform.OS === 'android') {
         console.log('Adding picture to storage...');
         const imageRef = firebase.storage().ref(path);
         imageRef.putFile(imageUrl)
             .then(() => {
-                    console.log('Successfully added picture to storage');
-                    console.log('Updating metadata for image...');
-                    const settableMetadata = {
-                        contentType: 'image/jpeg',
-                    };
+                console.log('Successfully added picture to storage');
+                console.log('Updating metadata for image...');
+                const settableMetadata = {
+                    contentType: 'image/jpeg',
+                };
 
-                    imageRef.updateMetadata(settableMetadata)
-                        .then((metadata) => {
-                            console.log('Loading image url...');
-                            const refImage = firebase.storage().ref(metadata.fullPath);
-                            refImage.getDownloadURL()
-                                .then((url) => {
-                                    console.log('Saving image url to item...');
-                                    const update = {imageUrl: url};
-                                    refToUpdate.update(
-                                        update,
-                                        (error) => {
-                                            if (error) {
-                                                console.error('Error during image url transmission.');
-                                                console.error(error);
-                                                // TODO: display error message
-                                            } else {
-                                                console.log('Successfully update item to include image url.');
-                                                if (callback) {
-                                                    callback();
-                                                }
-                                            }
+                imageRef.updateMetadata(settableMetadata)
+                    .then((metadata) => {
+                        console.log('Successfully added metadata to image');
+                        console.log('Loading image url...');
+                        const refImage = firebase.storage().ref(metadata.fullPath);
+                        refImage.getDownloadURL()
+                            .then((url) => {
+                                console.log('Saving image url to item...');
+                                const update = {imageUrl: url};
+                                refToUpdate.update(update)
+                                    .then(() => {
+                                        console.log('Successfully updated item to include image url.');
+                                        stopActivityIndicator();
+                                        if (callback) {
+                                            callback();
                                         }
-                                    );
-                                })
-                                .catch((error) => {
-                                    console.log('Error while retrieving image url');
-                                    console.log(error);
-                                });
-                            console.log('Successfully added metadata to image');
-                        }) .catch((error) => {
-                            console.log('Error while updating metadata');
-                            console.log(error)
-                        }
-                    );
-                }
-            )
-            .catch((error) => {
-                    console.log('Error while adding picture to storage');
+                                    }).catch((error) => {
+                                        console.error('Error during image url transmission.');
+                                        stopActivityIndicator();
+                                        console.error(error);
+                                        // TODO: display error message
+                                    }
+                                );
+                            })
+                            .catch((error) => {
+                                stopActivityIndicator();
+                                console.log('Error while retrieving image url');
+                                console.log(error);
+                            });
+                    }) .catch((error) => {
+                    stopActivityIndicator();
+                    console.log('Error while updating metadata');
                     console.log(error)
-                }
-            );
+                });
+            })
+            .catch((error) => {
+                stopActivityIndicator();
+                console.log('Error while adding picture to storage');
+                console.log(error)
+            });
     }
 }

@@ -149,19 +149,19 @@ export class CreateObservationScreen extends React.Component {
                 }
 
                 if (this.isEditing) {
-                    firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + this.state.observation.observationid).update(observation, (error) => {
-                        this._stopActivityIndicator();
-                        if (error) {
-                            console.error('Error during observation update transmission.');
-                            console.error(error);
-                            this._handleAuthError(error);
-
-                            // TODO: display error message
-                        } else {
+                    firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + this.state.observation.observationid).update(observation)
+                        .then(() => {
+                            this._stopActivityIndicator();
                             console.log('Successfully updated observation at DB.');
                             this.props.navigation.dismiss();
+
+                        }).catch((error) => {
+                            console.error('Error during observation update transmission.');
+                            this._stopActivityIndicator();
+                            console.error(error);
+                            // TODO: display error message
                         }
-                    });
+                    );
                 } else {
                     let ref = firebase.database().ref(pathObservations + '/' + currentUser.uid);
                     observation.userid = currentUser.uid;
@@ -173,19 +173,19 @@ export class CreateObservationScreen extends React.Component {
                     delete observation.image;
 
                     const observationRef = firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + observation.observationid);
-                    observationRef.set(observation,
-                        (error) => {
+                    observationRef.set(observation)
+                        .then(() => {
+                            console.log('Successfully added observation to DB.');
+                            _addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef, this._setActivityIndicatorText, this._stopActivityIndicator);
+                            this.props.navigation.dismiss();
+                        }).catch((error) => {
+                            console.error('Error during observation transmission.');
                             this._stopActivityIndicator();
-                            if (error) {
-                                console.error('Error during observation transmission.');
-                                console.error(error);
-                                // TODO: display error message
-                            } else {
-                                console.log('Successfully added observation to DB.');
-                                _addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef);
-                                this.props.navigation.dismiss();
-                            }
-                        });
+                            console.error(error);
+                            // TODO: display error message
+
+                        }
+                    );
                 }
             }
         } else {

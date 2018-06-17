@@ -1,12 +1,11 @@
 import React from 'react';
-import {ActivityIndicator, ImageBackground, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {ImageBackground, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import strings from "../strings";
 import styles from "../styles";
 import {
     _formatUsername,
     _handleAuthError,
     brandAccent,
-    brandBackground,
     maxUsernameLength,
     pathUsers,
     tastemateFont
@@ -156,24 +155,6 @@ export class SignUpLogInScreen extends React.Component {
         _onAuthError(errorMessage);
     }
 
-    _startActivityIndicator(text) {
-        if (!this.state.loadingIndicatorVisible) {
-            this.setState({loadingIndicatorVisible: true});
-            this._setActivityIndicatorText(text);
-        }
-    }
-
-    _stopActivityIndicator() {
-        if (this.state.loadingIndicatorVisible) {
-            this.setState({loadingIndicatorVisible: false});
-            this._setActivityIndicatorText('');
-        }
-    }
-
-    _setActivityIndicatorText(text) {
-        this.setState({loadingIndicatorText: text});
-    }
-
     _onAuthError(errorMessage) {
         this.setState({error: errorMessage});
     }
@@ -188,12 +169,12 @@ export class SignUpLogInScreen extends React.Component {
             this._close();
         } else {
             firebase.auth().signInAnonymouslyAndRetrieveData().then(() => {
-                _startActivityIndicator(strings.creatingAnonymous);
+                this._startActivityIndicator(strings.creatingAnonymous);
                 console.log('Successfully signed up.');
             }).catch((error) => {
                 console.log('Error during signup.');
                 console.log(error);
-                _stopActivityIndicator();
+                this._stopActivityIndicator();
                 this._handleAuthError(error, this._onAuthError);
             });
         }
