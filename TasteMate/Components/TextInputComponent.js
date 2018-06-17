@@ -15,7 +15,7 @@ export class TextInputComponent extends React.Component {
 
     render() {
         return (
-            <View style={{flexDirection: 'row', flex: 1}}>
+            <View style={{flexDirection: 'row', flex: 1, opacity: this.props.hidden ? 0 : 100}}>
                 <View style={[styles.containerPadding, styles.leftRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>
                     <FontAwesome name={this.props.icon} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
                 </View>

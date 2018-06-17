@@ -25,24 +25,15 @@ export class EatingOutListComponent extends React.Component {
                     renderItem={({item}) =>
                         <View style={{flexDirection: 'row', alignItems: 'center', flex:1}}>
                             <View style={[styles.containerPadding, {flex: 1}]}>
-                                {
-                                    this.props.observation.location &&
-                                    <View style={{flex: 2}}>
-                                        <View style={{flex: 1, justifyContent: 'flex-end', alignItems:'center'}}>
-                                            <Text name={'placename'} numberOfLines={2} style={[styles.textTitle, {textAlign: 'center'}]}>{item.location.name}</Text>
-                                        </View>
-                                        <View style={{flex: 1, justifyContent: 'flex-start', alignItems:'center'}}>
-                                            <Text name={'address'} numberOfLines={4} style={[styles.textSmall, {textAlign: 'center'}]}>{item.location.address}</Text>
-                                        </View>
+                                <View style={{flex: 2}}>
+                                    <View style={{flex: 1, justifyContent: 'flex-end', alignItems:'center'}}>
+                                        <Text name={'placename'} numberOfLines={2} style={[styles.textTitle, {textAlign: 'center'}]}>{item.location ? item.location.name : item.dishname}</Text>
                                     </View>
-                                }
-                                {
-                                    this.props.observation.location &&
-                                    <View style={{flex: 2}}>
-                                        <Text name={'placename'} numberOfLines={4} style={[styles.textTitle, {textAlign: 'center'}]}>{strings.unknownLocation}</Text>
+                                    <View style={{flex: 1, justifyContent: 'flex-start', alignItems:'center'}}>
+                                        <Text name={'address'} numberOfLines={4} style={[styles.textSmall, {textAlign: 'center'}]}>{item.location ? item.location.address : strings.unknownLocation}</Text>
                                     </View>
-                                }
-                                    <View style={{flex: 1, justifyContent: 'center', alignItems:'center', flexDirection:'row'}}>
+                                </View>
+                                <View style={{flex: 1, justifyContent: 'center', alignItems:'center', flexDirection:'row'}}>
                                     <Text name={'description'} numberOfLines={4} style={[styles.textStandardDark, {textAlign: 'center'}]}>"{item.description}"</Text>
                                 </View>
                             </View>

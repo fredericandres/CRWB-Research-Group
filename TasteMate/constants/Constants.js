@@ -14,6 +14,7 @@ export const brandAccent = '#578fff';
 export const tastemateFont = 'TastemateRegular';
 
 export const iconSizeLarge = 50;
+export const iconSizeMedium = 35;
 export const iconSizeStandard = 25;
 export const iconSizeSmall = 15;
 

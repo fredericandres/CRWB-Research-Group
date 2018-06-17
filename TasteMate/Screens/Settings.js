@@ -186,7 +186,6 @@ export class SettingsScreen extends React.Component {
                 }
 
                 this._uploadNewPicture();
-                // TODO: Reload content on Profile page
             }).catch((error) => {
                 console.error('Error during user information update transmission.');
                 this._stopActivityIndicator();

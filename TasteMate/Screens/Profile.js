@@ -311,7 +311,7 @@ export class ProfileScreen extends React.Component {
                             renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
                             numColumns={2}
                             keyExtractor={this._observationKeyExtractor}
-                            onEndReached={this._loadObservations}
+                            onEndReached={() => this._loadObservations(false)}
                         />
                     }
                     {

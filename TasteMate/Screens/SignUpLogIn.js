@@ -1,5 +1,5 @@
 import React from 'react';
-import {ImageBackground, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {ImageBackground, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import strings from "../strings";
 import styles from "../styles";
 import {
@@ -211,51 +211,51 @@ export class SignUpLogInScreen extends React.Component {
             <ImageBackground source={require('../background.png')} resizeMode={'cover'}  style={{flex: 1}}>
                 <View style={[styles.containerOpacityMain, {position:'absolute', left: 0, right: 0, top: 0, bottom: 0}]}/>
                 <SafeAreaView style={{flex:1}}>
-                    <View style={{flex: 2, flexDirection: 'row'}}>
-                        <View style={{flex: 1}}/>
-                        <View style={{flex: 6, alignItems: 'center'}}>
-                            <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-end'}}>
-                                <Text style={[styles.textStandardDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.welcomeTo}</Text>
+                    <ScrollView style={{flex:1}} contentContainerStyle={{justifyContent:'space-between', flexGrow: 1}}>
+                        <View style={{flex: 2, flexDirection: 'row'}}>
+                            <View style={{flex: 1}}/>
+                            <View style={{flex: 6, alignItems: 'center'}}>
+                                <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-end'}}>
+                                    <Text style={[styles.textStandardDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.welcomeTo}</Text>
+                                </View>
+                                <View style={{flex: 0, flexDirection:'row', alignItems: 'flex-end'}}>
+                                    <Text style={[styles.textLargeBoldDark, styles.containerPadding, {textAlign: 'center', fontFamily:tastemateFont}]}>Tastemate </Text>
+                                </View>
+                                <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-start'}}>
+                                    <Text style={[styles.textStandardDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.tastemateDescription}</Text>
+                                </View>
+                                <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-start'}}>
+                                    <Text style={[styles.textTitleBoldDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.getEating}</Text>
+                                </View>
                             </View>
-                            <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-end'}}>
-                                <Text style={[styles.textLargeBoldDark, styles.containerPadding, {textAlign: 'center', fontFamily:tastemateFont}]}>Tastemate</Text>
-                            </View>
-                            <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-start'}}>
-                                <Text style={[styles.textStandardDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.tastemateDescription}</Text>
-                            </View>
-                            <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-start'}}>
-                                <Text style={[styles.textTitleBoldDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.getEating}</Text>
-                            </View>
+                            <View style={{flex: 1}}/>
                         </View>
-                        <View style={{flex: 1}}/>
-                    </View>
-                    <View name={'inputWrapper'} style={[styles.containerPadding, {flex: 2}]}>
-                        <TextInputComponent
-                            ref={ input => {this.inputs['email'] = input;}}
-                            placeholder={strings.emailAddress}
-                            value={this.state.email}
-                            onChangeText={(text) => this.setState({email: text})}
-                            icon={'envelope'}
-                            keyboardType={'email-address'}
-                            returnKeyType={'next'}
-                            onSubmitEditing={() => {this._focusNextField('password');}}
-                        />
-                        <TextInputComponent
-                            ref={ input => {this.inputs['password'] = input;}}
-                            placeholder={strings.password}
-                            icon={'lock'}
-                            onChangeText={(text) => this.setState({password: text})}
-                            keyboardType={'default'}
-                            secureTextEntry={true}
-                            returnKeyType={this.state.signUpActive ? 'next' : 'join' }
-                            returnKeyLabel={this.state.signUpActive ? null : strings.logIn}
-                            onSubmitEditing={() => {
-                                this.state.signUpActive ? this._focusNextField('username') : this._onPressSubmit();
-                            }}
-                        />
-                        {
-                            this.state.signUpActive &&
+                        <View name={'inputWrapper'} style={[styles.containerPadding, {flex: 2}]}>
                             <TextInputComponent
+                                ref={ input => {this.inputs['email'] = input;}}
+                                placeholder={strings.emailAddress}
+                                value={this.state.email}
+                                onChangeText={(text) => this.setState({email: text})}
+                                icon={'envelope'}
+                                keyboardType={'email-address'}
+                                returnKeyType={'next'}
+                                onSubmitEditing={() => {this._focusNextField('password');}}
+                            />
+                            <TextInputComponent
+                                ref={ input => {this.inputs['password'] = input;}}
+                                placeholder={strings.password}
+                                icon={'lock'}
+                                onChangeText={(text) => this.setState({password: text})}
+                                keyboardType={'default'}
+                                secureTextEntry={true}
+                                returnKeyType={this.state.signUpActive ? 'next' : 'join' }
+                                returnKeyLabel={this.state.signUpActive ? null : strings.logIn}
+                                onSubmitEditing={() => {
+                                    this.state.signUpActive ? this._focusNextField('username') : this._onPressSubmit();
+                                }}
+                            />
+                            <TextInputComponent
+                                hidden={!this.state.signUpActive}
                                 ref={ input => {this.inputs['username'] = input;}}
                                 placeholder={strings.username}
                                 value={this.state.username}
@@ -266,10 +266,8 @@ export class SignUpLogInScreen extends React.Component {
                                 onSubmitEditing={() => {this._focusNextField('location');}}
                                 maxLength={maxUsernameLength}
                             />
-                        }
-                        {
-                            this.state.signUpActive &&
                             <TextInputComponent
+                                hidden={!this.state.signUpActive}
                                 ref={ input => {this.inputs['location'] = input;}}
                                 placeholder={strings.location}
                                 value={this.state.location}
@@ -280,33 +278,32 @@ export class SignUpLogInScreen extends React.Component {
                                 returnKeyLabel={strings.signUp}
                                 onSubmitEditing={() => {this._onPressSubmit()}}
                             />
-                        }
-                        <View style={[this.state.error ? styles.containerOpacityMain : {}, styles.rightRoundedEdges, styles.leftRoundedEdges, {flex: 0, flexDirection:'row', alignItems: 'center', justifyContent:'center'}]}>
-                            <Text style={[styles.textStandard, styles.containerPadding, {textAlign: 'center', color:brandAccent}]}>{this.state.error}</Text>
-                        </View>
-                        {!this.state.signUpActive && <View style={{flex:2}}/>}
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
-                        <View style={{flex: 1}}/>
-                        <View style={{flex: 6, alignItems: 'center'}}>
-                            <View name={'submitButtonWrapper'} style={[styles.containerPadding]}>
-                                <TouchableOpacity name={'saveChangesButton'} onPress={this._onPressSubmit} style={[{backgroundColor:brandAccent}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
-                                    <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.signUpActive ? strings.signUp: strings.logIn}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View name={'changeButtonWrapper'} style={[styles.containerPadding]}>
-                                <TouchableOpacity name={'changeButton'} onPress={this._onPressSwitch}>
-                                    <Text name={'other'} style={[styles.textStandardDark, {textAlign: 'center'}]}>{this.state.signUpActive ? strings.alreadyAccount: strings.noAccount}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View name={'skipButtonWrapper'} style={[styles.containerPadding]}>
-                                <TouchableOpacity name={'skipButton'} onPress={this._onPressSkip}>
-                                    <Text name={'skip'} style={[styles.textStandardDark, {textAlign: 'center'}]}>{strings.skip}</Text>
-                                </TouchableOpacity>
+                            <View style={[this.state.error ? styles.containerOpacityMain : {}, styles.rightRoundedEdges, styles.leftRoundedEdges, {flex: 0, flexDirection:'row', alignItems: 'center', justifyContent:'center'}]}>
+                                <Text style={[styles.textStandard, styles.containerPadding, {textAlign: 'center', color:brandAccent}]}>{this.state.error}</Text>
                             </View>
                         </View>
-                        <View style={{flex: 1}}/>
-                    </View>
+                        <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
+                            <View style={{flex: 1}}/>
+                            <View style={{flex: 6, alignItems: 'center'}}>
+                                <View name={'submitButtonWrapper'} style={[styles.containerPadding]}>
+                                    <TouchableOpacity name={'saveChangesButton'} onPress={this._onPressSubmit} style={[{backgroundColor:brandAccent}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
+                                        <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.signUpActive ? strings.signUp: strings.logIn}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View name={'changeButtonWrapper'} style={[styles.containerPadding]}>
+                                    <TouchableOpacity name={'changeButton'} onPress={this._onPressSwitch}>
+                                        <Text name={'other'} style={[styles.textStandardDark, {textAlign: 'center'}]}>{this.state.signUpActive ? strings.alreadyAccount: strings.noAccount}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View name={'skipButtonWrapper'} style={[styles.containerPadding]}>
+                                    <TouchableOpacity name={'skipButton'} onPress={this._onPressSkip}>
+                                        <Text name={'skip'} style={[styles.textStandardDark, {textAlign: 'center'}]}>{strings.skip}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            <View style={{flex: 1}}/>
+                        </View>
+                    </ScrollView>
                 </SafeAreaView>
                 {
                     this.state.loadingIndicatorVisible &&
