@@ -233,7 +233,6 @@ export class ObservationComponent extends React.Component {
                         error.log(error);
                     } else {
                         console.log('Successfully removed observation');
-                        // TODO: Also remove likes, comments, pictures, etc from DB
                         this.props.onDelete(this.state.observation);
                     }
                 }
@@ -345,6 +344,7 @@ export class ObservationComponent extends React.Component {
                     data={this.state.comments}
                     keyExtractor={this._keyExtractor}
                     renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
+                    removeClippedSubviews={true}
                     ListHeaderComponent={() =>
                         <View>
                             {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>View more comments</Text></TouchableOpacity>}

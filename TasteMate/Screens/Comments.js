@@ -133,6 +133,7 @@ export class CommentsScreen extends React.Component {
                         onRefresh={this._onRefresh}
                         refreshing={this.state.isRefreshing}
                         ListFooterComponent={() => <View style={styles.containerPadding}><WriteCommentComponent hidden={true}/></View>}
+                        removeClippedSubviews={true}
                     />
                 </View>
                 {

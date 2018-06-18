@@ -203,7 +203,9 @@ export class NotificationsScreen extends React.Component {
         return (
             <View style={{flex:1}}>
                 {
-                    this.state.user && !this.state.user.isAnonymous &&<FlatList
+                    this.state.user && !this.state.user.isAnonymous &&
+                    <FlatList
+                        removeClippedSubviews={true}
                         data={this.state.notifications}
                         renderItem={({item}) => <NotificationComponent notification={item} user={this.state.users[item.userid]} observation={this.state.observations[item.observationid]} {...this.props}/>}
                         refreshing={this.state.isRefreshing}

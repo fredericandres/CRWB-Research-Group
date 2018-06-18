@@ -22,6 +22,7 @@ export class EatingOutListComponent extends React.Component {
                     name={'observationsList'}
                     keyExtractor={this._keyExtractor}
                     data={this.props.observationsList.observations}
+                    removeClippedSubviews={true}
                     renderItem={({item}) =>
                         <View style={{flexDirection: 'row', alignItems: 'center', flex:1}}>
                             <View style={[styles.containerPadding, {flex: 1}]}>

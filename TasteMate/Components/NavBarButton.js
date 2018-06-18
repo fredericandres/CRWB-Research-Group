@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {_navigateToScreen, brandContrast, iconSizeMedium} from "../constants/Constants";
+import {_navigateToScreen, brandContrast, iconSizeNavBar} from "../constants/Constants";
 import styles from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import strings from "../strings";
@@ -30,9 +30,9 @@ export class NavBarButton extends React.Component {
         let content = <Text style={[styles.textTitle, styles.containerPadding, {color: brandContrast}]}>{text}</Text>;
         if (icon != null) {
             if (iconType === 'SimpleLineIcons') {
-                content = <SimpleLineIcons name={icon} size={iconSizeMedium} color={brandContrast} style={styles.containerPadding}/>;
+                content = <SimpleLineIcons name={icon} size={iconSizeNavBar} color={brandContrast} style={styles.containerPadding}/>;
             } else {
-                content = <FontAwesome name={icon} size={iconSizeMedium} color={brandContrast} style={styles.containerPadding}/>;
+                content = <FontAwesome name={icon} size={iconSizeNavBar} color={brandContrast} style={styles.containerPadding}/>;
             }
         } else if (image != null) {
             content = <Image/>;

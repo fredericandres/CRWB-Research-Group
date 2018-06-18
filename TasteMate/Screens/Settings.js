@@ -153,7 +153,6 @@ export class SettingsScreen extends React.Component {
             currentUserInformation.imageUrl = this.state.newImageUrl;
             const userRef = firebase.database().ref(pathUsers).child(currentUser.uid);
             _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._closeSettings, this._setActivityIndicatorText, this._stopActivityIndicator);
-            // TODO: Remove old picture
         } else {
             this._closeSettings();
         }

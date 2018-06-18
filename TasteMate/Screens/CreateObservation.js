@@ -39,6 +39,7 @@ import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
 import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
 import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
+import {EmptyComponent} from "../Components/EmptyComponent";
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 
@@ -459,6 +460,7 @@ export class CreateObservationScreen extends React.Component {
                                 <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
                                     <FlatList
                                         name={'locationresults'}
+                                        removeClippedSubviews={true}
                                         data={this.state.locationResults}
                                         keyExtractor={this._locationResultKeyExtractor}
                                         renderItem={({item}) =>
@@ -467,7 +469,7 @@ export class CreateObservationScreen extends React.Component {
                                                 {item.formatted_address && <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.formatted_address}</Text>}
                                             </TouchableOpacity>
                                         }
-                                        ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noLocationResults}</Text>}
+                                        ListEmptyComponent={() => <EmptyComponent message={strings.noLocationResults}/>}
                                     />
                                 </View>
                             }
@@ -506,6 +508,7 @@ export class CreateObservationScreen extends React.Component {
                             <SearchBar placeholder={strings.searchVocabulary} onSubmitEditing={this._onPressSearchButton} onChangeText={this._onPressSearchButton} onPress={this._onPressSearchButton}/>
                             <FlatList
                                 name={'checkboxes'}
+                                removeClippedSubviews={true}
                                 style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
                                 data={allVocabulary}
                                 numColumns={2}

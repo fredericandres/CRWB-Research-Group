@@ -185,6 +185,7 @@ export class HomeScreen extends React.Component {
                 {
                     this.state.user && !this.state.user.isAnonymous &&
                     <FlatList
+                        removeClippedSubviews={true}
                         data={this.state.observations}
                         keyExtractor={this._keyExtractor}
                         renderItem={({item}) => <ObservationComponent observation={item} {...this.props} onDelete={this._onDelete}/>}

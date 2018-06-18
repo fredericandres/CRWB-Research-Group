@@ -312,6 +312,7 @@ export class ProfileScreen extends React.Component {
                             numColumns={2}
                             keyExtractor={this._observationKeyExtractor}
                             onEndReached={() => this._loadObservations(false)}
+                            removeClippedSubviews={true}
                         />
                     }
                     {
@@ -324,6 +325,7 @@ export class ProfileScreen extends React.Component {
                             renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
                             keyExtractor={this._followingKeyExtractor}
                             onEndReached={this._loadFollowers}
+                            removeClippedSubviews={true}
                         />
                     }
                     {
@@ -336,6 +338,7 @@ export class ProfileScreen extends React.Component {
                             renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
                             keyExtractor={this._followingKeyExtractor}
                             onEndReached={this._loadFollowing}
+                            removeClippedSubviews={true}
                         />
                     }
                 </View>

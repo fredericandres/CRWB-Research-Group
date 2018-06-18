@@ -9,6 +9,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import RNFetchBlob from "react-native-fetch-blob";
+import {EmptyComponent} from "./EmptyComponent";
 
 export class CameraCameraRollComponent extends React.Component {
     constructor(props) {
@@ -20,8 +21,8 @@ export class CameraCameraRollComponent extends React.Component {
 
         this.state = {
             cameraActive: true,
-            cameraFront: true,
-            cameraFlash: true,
+            cameraFront: false,
+            cameraFlash: false,
         }
     }
 
@@ -127,8 +128,6 @@ export class CameraCameraRollComponent extends React.Component {
     }
 
     _onAuthorizedPhoto(reload) {
-        // TODO: Fix bug where same pictures are loaded again and again
-
         if (reload) {
             this.setState({photos: null});
             this.photosPageInfo = null;
@@ -222,6 +221,7 @@ export class CameraCameraRollComponent extends React.Component {
                                 }
                                 onEndReached={() => this._onAuthorizedPhoto(false)}
                                 removeClippedSubviews={true}
+                                ListEmptyComponent={() => <EmptyComponent message={strings.noImages}/>}
                             />
                         }
                         {

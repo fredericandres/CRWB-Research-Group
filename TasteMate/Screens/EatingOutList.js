@@ -258,9 +258,10 @@ export class EatingOutListScreen extends React.Component {
                                 <FlatList
                                     data={this.state.observationsList}
                                     renderItem={({item}) => item.observations.length > 0 ? <EatingOutListComponent observationsList={item} {...this.props}/> : <View/>}
-                                    ListEmptyComponent={() => <Text style={[styles.containerPadding, styles.textStandardDark]}>{strings.noEatingOut}</Text>}
+                                    ListEmptyComponent={() => <EmptyComponent message={strings.noEatingOut}/>}
                                     ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                                     keyExtractor={this._keyExtractor}
+                                    removeClippedSubviews={true}
                                 />
                             }
                             {
@@ -290,7 +291,6 @@ export class EatingOutListScreen extends React.Component {
                             <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={{width: 60, height: 60, borderRadius: 30, backgroundColor: brandAccent, position: 'absolute', bottom: 10, right: 10, alignItems:'center', justifyContent:'center'}}>
                                 <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? 'list' : 'map'}  size={iconSizeStandard} color={brandBackground} />
                             </TouchableOpacity>
-
                         </View>
                         }
                     </View>
