@@ -45,7 +45,7 @@ export class NotificationsScreen extends React.Component {
             user: null,
             notifications: [],
             users: [],
-            observations: {},
+            observations: [],
             isRefreshing: false
         };
     }
@@ -102,10 +102,9 @@ export class NotificationsScreen extends React.Component {
             const index = (isRefreshing ? 0 : ntfSize) + NTF_LOAD_DEPTH;
 
             console.log('Loading notifications...');
-            const refNotifications = firebase.database().ref(pathNotifications + '/' + userid).orderByChild('timestamp').limitToLast(index);
-            refNotifications.once(
-                'value',
-                (dataSnapshot) => {
+            const refNotifications = firebase.database().ref(pathNotifications).child(userid).orderByChild('timestamp').limitToLast(index);
+            refNotifications.once('value')
+                .then((dataSnapshot) => {
                     console.log('Notifications successfully retrieved');
                     let notifications = dataSnapshot.toJSON() ? Object.values(dataSnapshot.toJSON()) : [];
                     this._addToNotificationState(notifications, onStartup, isRefreshing);
@@ -117,54 +116,50 @@ export class NotificationsScreen extends React.Component {
 
                         // Load username of notification sender
                         if (!iteratedUsers[notification.userid] && (!currentState.users[notification.userid])) {
+                            console.log()
                             iteratedUsers[notification.userid] = true;
-                            firebase.database().ref(pathUsers + '/' + notification.userid).once(
-                                'value',
-                                (dataSnapshot) => {
+                            firebase.database().ref(pathUsers).child(notification.userid).once('value')
+                                .then((dataSnapshot) => {
                                     console.log('User successfully retrieved');
                                     _addUserAction(dataSnapshot ? dataSnapshot.toJSON() : null, notification.userid);
-                                },
-                                (error) => {
+                                }).catch((error) => {
                                     console.error('Error while retrieving user');
                                     console.error(error);
                                 }
-                            )
+                            );
                         }
 
                         // Set read status to true
                         if (!notification.read) {
-                            firebase.database().ref(pathNotifications + '/' + userid + '/' + childSnapshot.key).update({
+                            firebase.database().ref(pathNotifications).child(userid).child(childSnapshot.key).update({
                                 read: true,
-                            }, (error) => {
-                                if (error) {
-                                    console.error('Error during read notification transmission.');
-                                    console.error(error);
-                                    this._handleAuthError(error);
-                                } else {
-                                    console.log('Successfully added read to notification on DB.');
-                                }
+                            }).then(() => {
+                                console.log('Successfully added read to notification on DB.');
+                            }).catch((error) => {
+                                console.error('Error during read notification transmission.');
+                                console.error(error);
+                                this._handleAuthError(error);
                             });
                         }
 
                         // Load observation
-                        if (!iteratedObservations[notification.observationid] && (!currentState.observations[notification.observationid])) {
-                            iteratedObservations[notifications.observationid] = true;
-                            firebase.database().ref(pathObservations + '/' + userid + '/' + notification.observationid).once(
-                                'value',
-                                (dataSnapshot) => {
+                        if (notification.observationid && !iteratedObservations[notification.observationid] && (!currentState.observations[notification.observationid])) {
+                            iteratedObservations[notification.observationid] = true;
+                            firebase.database().ref(pathObservations).child(userid).child(notification.observationid).once('value')
+                                .then((dataSnapshot) => {
                                     console.log('Observation successfully retrieved');
-                                    _addObservationAction(dataSnapshot ? dataSnapshot.toJSON() : null, notification.observationid);
-                                },
-                                (error) => {
+                                    const observation = dataSnapshot.toJSON();
+                                    if (observation) {
+                                        _addObservationAction(observation, notification.observationid);
+                                    }
+                                }).catch((error) => {
                                     console.error('Error while retrieving Observation');
                                     console.error(error);
                                 }
-                            )
-
+                            );
                         }
                     });
-                },
-                (error) => {
+                }).catch((error) => {
                     console.error('Error while retrieving notifications');
                     console.error(error);
                 }
@@ -175,10 +170,8 @@ export class NotificationsScreen extends React.Component {
     _addToNotificationState(notifications) {
         if (notifications && notifications.length > 0) {
             _sortArrayByTimestamp(notifications);
-
-            this.setState({notifications: notifications});
         }
-        this.setState({isRefreshing: false});
+        this.setState({isRefreshing: false, notifications: notifications});
     }
 
     _addUserToState(user, userid) {
@@ -215,7 +208,7 @@ export class NotificationsScreen extends React.Component {
                         renderItem={({item}) => <NotificationComponent notification={item} user={this.state.users[item.userid]} observation={this.state.observations[item.observationid]} {...this.props}/>}
                         refreshing={this.state.isRefreshing}
                         onRefresh={this._onRefresh}
-                        ListEmptyComponent={() => <EmptyComponent>{strings.noNotifications}</EmptyComponent>}
+                        ListEmptyComponent={() => <EmptyComponent message={strings.noNotifications}/>}
                         keyExtractor={this._keyExtractor}
                         onEndReached={this._onEndReached}
                     />

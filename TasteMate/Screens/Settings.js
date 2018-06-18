@@ -151,14 +151,16 @@ export class SettingsScreen extends React.Component {
     _uploadNewPicture() {
         if (this.state.newImageUrl) {
             currentUserInformation.imageUrl = this.state.newImageUrl;
-            const userRef = firebase.database().ref(pathUsers + '/' + currentUser.uid);
-            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '_' + firebase.database().getServerTime() + '.jpg', this.state.newImageUrl, userRef, this._closeSettings, this._setActivityIndicatorText, this._stopActivityIndicator);
+            const userRef = firebase.database().ref(pathUsers).child(currentUser.uid);
+            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._closeSettings, this._setActivityIndicatorText, this._stopActivityIndicator);
+            // TODO: Remove old picture
         } else {
             this._closeSettings();
         }
     }
 
-    _closeSettings() {
+    _closeSettings(url) {
+        currentUserInformation.imageUrl = url;
         this.props.navigation.getParam('onDataChangedAction')();
         this.props.navigation.goBack();
     }
@@ -212,7 +214,7 @@ export class SettingsScreen extends React.Component {
                 {
                     !this.state.getPictureActive &&
                     <ScrollView style={[{flex: 1}]}>
-                        <UserImageThumbnailComponent size={styles.roundProfileLarge} source={this.state.newImageUrl ? {uri: this.state.newImageUrl} : (this.state.imageUrl && {uri: this.state.imageUrl})} onPress={this._selectNewProfilePicture.bind(this)} />
+                        <UserImageThumbnailComponent size={styles.roundProfileLarge} uri={this.state.newImageUrl || this.state.imageUrl} onPress={this._selectNewProfilePicture.bind(this)} />
                         <View name={'inputWrapper'} style={styles.containerPadding}>
                             <TextInputComponent
                                 editable={false}

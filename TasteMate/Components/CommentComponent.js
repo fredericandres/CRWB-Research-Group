@@ -16,7 +16,7 @@ export class CommentComponent extends React.Component {
         };
 
         console.log('Loading comment writer info...');
-        const refCreator = firebase.database().ref(pathUsers + '/' + this.comment.senderid);
+        const refCreator = firebase.database().ref(pathUsers).child(this.comment.senderid);
         refCreator.once(
             'value',
             (dataSnapshot) => {
@@ -40,7 +40,7 @@ export class CommentComponent extends React.Component {
     render() {
         return (
             <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
-                <UserImageThumbnailComponent size={styles.roundProfileSmall} onPress={this._onPressProfile} source={this.state.user && this.state.user.imageUrl && {uri: this.state.user.imageUrl}}/>
+                <UserImageThumbnailComponent size={styles.roundProfileSmall} onPress={this._onPressProfile} user={this.state.user}/>
                 <View style={[{flexDirection: 'column', flex: 1}, styles.containerPadding]}>
                     <Text style={[styles.textStandardDark, {flex: 1}]}>{this.comment.message}</Text>
                     <TimeAgo name={'time'} style={styles.textSmall} time={this.comment.timestamp}/>

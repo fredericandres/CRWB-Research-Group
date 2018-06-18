@@ -81,7 +81,7 @@ export class CommentsScreen extends React.Component {
             const index = (isRefreshing ? 0 : ntfSize) + CMT_LOAD_DEPTH;
 
             console.log('Loading comments...');
-            const refComments = firebase.database().ref(pathComments + '/' + this.observation.userid + '/' + this.observation.observationid).orderByChild('timestamp').limitToLast(index);
+            const refComments = firebase.database().ref(pathComments).child(this.observation.userid).child(this.observation.observationid).orderByChild('timestamp').limitToLast(index);
             refComments.once(
                 'value',
                 (dataSnapshot) => {

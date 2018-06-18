@@ -78,7 +78,7 @@ export class NotificationComponent extends React.Component {
         return (
             <TouchableOpacity onPress={this.notification.type === ActivityEnum.FOLLOW ? this._onPressProfile : this._onPressObservation} style={[{flexDirection:'row'}]}>
                 {!this.notification.read && <Animated.View name={'fadingbackground'} style={{position: 'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:brandMain, opacity: this.state.fadeAnim}}/>}
-                <UserImageThumbnailComponent size={styles.roundProfile} source={this.props.user && this.props.user.imageUrl && {uri: this.props.user.imageUrl}} onPress={this._onPressProfile/*this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles*/} />
+                <UserImageThumbnailComponent size={styles.roundProfile} user={this.props.user} onPress={this._onPressProfile/*this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles*/} />
                 <View name={'textcontentwrapper'} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>
                     <Text name={'action'}>
                         <Text onPress={() => this._onPressProfile(0)} style={styles.textStandardBold}>{completeActionString/*this.notification.senderid[0]*/}</Text>

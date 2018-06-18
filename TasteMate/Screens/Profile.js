@@ -22,7 +22,7 @@ function _toggleFollowUnfollow(navigation) {
         // Do nothing, we are not sure yet if current user is following this user or not
     } else if (isFollowing) {
         console.log('Removing relationship of ' + follower + ' following ' + followee);
-        const ref = firebase.database().ref(pathFollow + '/' + combined);
+        const ref = firebase.database().ref(pathFollow).child(combined);
         ref.remove(
             (error) => {
                 if (error) {
@@ -274,7 +274,7 @@ export class ProfileScreen extends React.Component {
         return (
             <SafeAreaView style={{flex: 1,}}>
                 <View name={'header'} style={{flex: 2, backgroundColor: brandMain}}>
-                    <UserImageThumbnailComponent size={styles.roundProfileLarge} source={this.state.user.imageUrl && {uri: this.state.user.imageUrl}}/>
+                    <UserImageThumbnailComponent size={styles.roundProfileLarge} user={this.state.user}/>
                     <View name={'username'} style={{flex: 1, alignItems: 'flex-end', flexDirection: 'row'}}>
                         <Text name={'username'}
                               style={[styles.textTitleBoldDark, {textAlign: 'center', flex: 1}]}>{this.state.user.username}</Text>

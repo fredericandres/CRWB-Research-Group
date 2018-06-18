@@ -150,7 +150,7 @@ export class CreateObservationScreen extends React.Component {
                 }
 
                 if (this.isEditing) {
-                    firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + this.state.observation.observationid).update(observation)
+                    firebase.database().ref(pathObservations).child(currentUser.uid).child(this.state.observation.observationid).update(observation)
                         .then(() => {
                             this._stopActivityIndicator();
                             console.log('Successfully updated observation at DB.');
@@ -164,7 +164,7 @@ export class CreateObservationScreen extends React.Component {
                         }
                     );
                 } else {
-                    let ref = firebase.database().ref(pathObservations + '/' + currentUser.uid);
+                    let ref = firebase.database().ref(pathObservations).child(currentUser.uid);
                     observation.userid = currentUser.uid;
                     observation.timestamp = firebase.database().getServerTime();
                     observation.observationid = ref.push().key;
@@ -173,7 +173,7 @@ export class CreateObservationScreen extends React.Component {
                     const imageUrl = observation.image;
                     delete observation.image;
 
-                    const observationRef = firebase.database().ref(pathObservations + '/' + currentUser.uid + '/' + observation.observationid);
+                    const observationRef = firebase.database().ref(pathObservations).child(currentUser.uid).child(observation.observationid);
                     observationRef.set(observation)
                         .then(() => {
                             console.log('Successfully added observation to DB.');

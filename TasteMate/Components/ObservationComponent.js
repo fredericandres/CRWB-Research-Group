@@ -55,7 +55,7 @@ export class ObservationComponent extends React.Component {
         };
 
         console.log('Loading actions...');
-        const refActions = firebase.database().ref(pathActions + '/' + this.state.observation.userid + '/' + this.state.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
+        const refActions = firebase.database().ref(pathActions).child(this.state.observation.userid).child(this.state.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
         refActions.once(
             'value',
             (dataSnapshot) => {
@@ -80,7 +80,7 @@ export class ObservationComponent extends React.Component {
         );
 
         console.log('Checking if comments exist...');
-        const refComments = firebase.database().ref(pathComments + '/' + this.state.observation.userid + '/' + this.state.observation.observationid).orderByChild('timestamp').limitToLast(2);
+        const refComments = firebase.database().ref(pathComments).child(this.state.observation.userid).child(this.state.observation.observationid).orderByChild('timestamp').limitToLast(2);
         refComments.once(
             'value',
             (dataSnapshot) => {
@@ -103,7 +103,7 @@ export class ObservationComponent extends React.Component {
 
         if (!this.state.user) {
             console.log('Loading creator info...');
-            const refCreator = firebase.database().ref(pathUsers + '/' + this.state.observation.userid);
+            const refCreator = firebase.database().ref(pathUsers).child(this.state.observation.userid);
             refCreator.once(
                 'value',
                 (dataSnapshot) => {
@@ -141,7 +141,7 @@ export class ObservationComponent extends React.Component {
         let content = {};
         content[currentUser.uid] = true;
 
-        firebase.database().ref(pathActions + '/' + this.state.observation.userid + '/' + this.state.observation.observationid + '/' + path).update(
+        firebase.database().ref(pathActions).child(this.state.observation.userid).child(this.state.observation.observationid).child(path).update(
             content,
             (error) => {
                 if (error) {
@@ -157,7 +157,7 @@ export class ObservationComponent extends React.Component {
     }
 
     _removeAction(path) {
-        firebase.database().ref(pathActions + '/' + this.state.observation.userid + '/' + this.state.observation.observationid + '/' + path + '/' + currentUser.uid).remove(
+        firebase.database().ref(pathActions).child(this.state.observation.userid).child(this.state.observation.observationid).child(path).child(currentUser.uid).remove(
             (error) => {
                 if (error) {
                     error.log(error);
@@ -226,7 +226,7 @@ export class ObservationComponent extends React.Component {
         if (buttonIndex === 0) {
             this.props.navigation.navigate('CreateObservation', {observation: this.state.observation, edit: true});
         } else if (buttonIndex === 1) {
-            const ref = firebase.database().ref(pathObservations + '/' + this.state.observation.userid + '/' + this.state.observation.observationid);
+            const ref = firebase.database().ref(pathObservations).child(this.state.observation.userid).child(this.state.observation.observationid);
             ref.remove(
                 (error) => {
                     if (error) {
@@ -288,7 +288,7 @@ export class ObservationComponent extends React.Component {
         return (
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
-                    <UserImageThumbnailComponent size={styles.roundProfile} onPress={this._onPressProfile} source={(this.state.user && this.state.user.imageUrl) && {uri: this.state.user.imageUrl}}/>
+                    <UserImageThumbnailComponent size={styles.roundProfile} onPress={this._onPressProfile} user={this.state.user}/>
                     <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
                         <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
                             <Text name={'dishnames'} >
