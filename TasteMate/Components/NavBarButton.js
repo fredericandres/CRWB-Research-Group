@@ -18,8 +18,6 @@ export class NavBarButton extends React.Component {
     }
 
     render() {
-        // User is only logged in if he is NOT anonymous
-        const isLoggedIn = this.props.isLoggedIn === undefined ? true : this.props.isLoggedIn;
         const screen = this.props.screen;
         const icon = this.props.icon;
         const image = this.props.image;

@@ -72,6 +72,7 @@ export class CreateObservationScreen extends React.Component {
         this._startActivityIndicator = this._startActivityIndicator.bind(this);
         this._stopActivityIndicator = this._stopActivityIndicator.bind(this);
         this._setActivityIndicatorText = this._setActivityIndicatorText.bind(this);
+        this._closeWindow = this._closeWindow.bind(this);
 
         this.isEditing = this.props.navigation.getParam('edit');
         this.inputs = {};
@@ -176,14 +177,12 @@ export class CreateObservationScreen extends React.Component {
                     observationRef.set(observation)
                         .then(() => {
                             console.log('Successfully added observation to DB.');
-                            _addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef, this._setActivityIndicatorText, this._stopActivityIndicator);
-                            this.props.navigation.dismiss();
+                            _addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef, ((url) => this._closeWindow(observation, url)), this._setActivityIndicatorText, this._stopActivityIndicator);
                         }).catch((error) => {
                             console.error('Error during observation transmission.');
                             this._stopActivityIndicator();
                             console.error(error);
                             // TODO: display error message
-
                         }
                     );
                 }
@@ -191,6 +190,12 @@ export class CreateObservationScreen extends React.Component {
         } else {
             this.setState({activePageIndex: this.state.activePageIndex + 1});
         }
+    }
+
+    _closeWindow(observation, url) {
+        observation.imageUrl = url;
+        this.props.navigation.getParam('onCreate')(observation);
+        this.props.navigation.dismiss();
     }
 
     _onPressPrevious() {

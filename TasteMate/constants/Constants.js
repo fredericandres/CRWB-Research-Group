@@ -2,7 +2,6 @@ import {StackActions} from "react-navigation";
 import {NativeModules, Platform} from "react-native";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
-import {currentUserInformation} from "../App";
 
 export const brandMain = '#ffc658';
 export const brandContrast = '#333333';
@@ -197,7 +196,7 @@ export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setA
                                         console.log('Successfully updated item to include image url.');
                                         stopActivityIndicator();
                                         if (callback) {
-                                            callback();
+                                            callback(url);
                                         }
                                     }).catch((error) => {
                                         console.error('Error during image url transmission.');

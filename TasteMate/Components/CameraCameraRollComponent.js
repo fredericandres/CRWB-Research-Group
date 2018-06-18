@@ -147,9 +147,6 @@ export class CameraCameraRollComponent extends React.Component {
 
             CameraRoll.getPhotos(variables).then(r => {
                 this.photosPageInfo = r.page_info;
-
-                console.log(r.edges);
-
                 if (newlyLoaded) {
                     this.setState({ photos: r.edges });
                 } else {

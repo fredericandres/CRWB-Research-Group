@@ -32,6 +32,7 @@ export class HomeScreen extends React.Component {
         this._onEndReached = this._onEndReached.bind(this);
         this._onRefresh = this._onRefresh.bind(this);
         this._onDelete = this._onDelete.bind(this);
+        this._onCreate = this._onCreate.bind(this);
         this._loadObservations = this._loadObservations.bind(this);
         this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
 
@@ -74,7 +75,9 @@ export class HomeScreen extends React.Component {
                 params.myProfile = true;
                 _navigateToScreen('MyProfile', this.props.navigation, params);
             } else {
-                _navigateToScreen('CreateObservation', this.props.navigation);
+                let params = {};
+                params.onCreate = this._onCreate;
+                _navigateToScreen('CreateObservation', this.props.navigation, params);
             }
         } else {
             _navigateToScreen('SignUpLogIn', this.props.navigation);
@@ -172,8 +175,8 @@ export class HomeScreen extends React.Component {
         this.setState({observations: array});
     }
 
-    _onCreate() {
-        // TODO: Add new observation to top of page
+    _onCreate(newObs) {
+        this.setState((prevState) => ({observations: [newObs].concat(prevState.observations)}));
     }
 
     render() {
