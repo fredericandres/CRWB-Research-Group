@@ -99,7 +99,7 @@ export class CameraCameraRollComponent extends React.Component {
 
     async takePicture() {
         if (this.camera) {
-            const options = { quality: 0.75, base64: true, forceUpOrientation: true, fixOrientation: true, mirrorImage: this.state.cameraFront};
+            const options = { quality: 0.65, base64: true, forceUpOrientation: true, fixOrientation: true, mirrorImage: this.state.cameraFront};
             const data = await this.camera.takePictureAsync(options);
             // TODO [FEATURE]: sound/image effects
             CameraRoll.saveToCameraRoll(data.uri).then((uri) => {
@@ -163,11 +163,11 @@ export class CameraCameraRollComponent extends React.Component {
 
     _cameraRollKeyExtractor = (item, index) => item.node.image.uri;
 
-    _onSelectImageFromCameraRoll(photo) {
+    async _onSelectImageFromCameraRoll(photo) {
         const uri = photo.node.image.uri;
         RNFetchBlob.fs.readFile(uri, 'base64')
             .then((data) => {
-                this.props.onImageSelectedAction(uri, data)
+                this.props.onImageSelectedAction(uri, data);
             });
     }
 

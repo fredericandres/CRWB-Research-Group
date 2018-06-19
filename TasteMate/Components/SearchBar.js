@@ -13,18 +13,20 @@ export class SearchBar extends React.Component {
         return (
             <View name={'searchbar'} style={{backgroundColor: brandMain}}>
                 <View style={[styles.containerPadding, {flexDirection:'row', alignItems: 'center'}]}>
-                    <TextInput style={[styles.textStandardDark, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges, {backgroundColor: brandBackground, flex: 1}]}
-                               placeholder={this.props.placeholder}
-                               placeholderTextColor={brandLight}
-                               returnKeyType={'search'}
-                               keyboardType={'default'}
-                               clearButtonMode={'always'}
-                               underlineColorAndroid={brandBackground}
-                               selectionColor={brandContrast}
-                               onSubmitEditing={this.props.onSubmitEditing}
-                               onChangeText={this.props.onChangeText}
+                    <TextInput
+                        style={[styles.textStandardDark, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges, {backgroundColor: brandBackground, flex: 1}]}
+                        value={this.props.value}
+                        placeholder={this.props.placeholder}
+                        placeholderTextColor={brandLight}
+                        returnKeyType={'search'}
+                        keyboardType={'default'}
+                        clearButtonMode={'always'}
+                        underlineColorAndroid={brandBackground}
+                        selectionColor={brandContrast}
+                        onSubmitEditing={this.props.onSubmitEditing}
+                        onChangeText={this.props.onChangeText}
                     />
-                    <TouchableOpacity onPress={this.props.onPress} style={styles.containerPadding}>
+                    <TouchableOpacity onPress={this.props.onPressSearch} style={styles.containerPadding}>
                         <FontAwesome name={'search'} size={iconSizeSmall} color={brandContrast}/>
                     </TouchableOpacity>
                 </View>

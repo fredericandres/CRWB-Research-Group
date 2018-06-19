@@ -265,10 +265,10 @@ export class SettingsScreen extends React.Component {
                                 <View style={styles.containerPadding}>
                                     <Text name={'notificationsTitle'} style={[styles.textTitle]}>{strings.notifyMe}</Text>
                                 </View>
-                                <SettingsSwitchComponent value={this.state.likeNotification} onValueChange={this._onLikeNotificationChange} text={strings.likesPicture}/>
-                                <SettingsSwitchComponent value={this.state.wantToEatNotification} onValueChange={this._onWantToEatNotificationChange} text={strings.addsToEatingOutPicture}/>
-                                <SettingsSwitchComponent value={this.state.shareNotification} onValueChange={this._onShareNotificationChange} text={strings.sharesPicture}/>
-                                <SettingsSwitchComponent value={this.state.followNotification} onValueChange={this._onFollowNotificationChange} text={strings.startsFollowing}/>
+                                <SettingsSwitchComponent selected={this.state.likeNotification} onPress={this._onLikeNotificationChange} text={strings.likesPicture}/>
+                                <SettingsSwitchComponent selected={this.state.wantToEatNotification} onPress={this._onWantToEatNotificationChange} text={strings.addsToEatingOutPicture}/>
+                                <SettingsSwitchComponent selected={this.state.shareNotification} onPress={this._onShareNotificationChange} text={strings.sharesPicture}/>
+                                <SettingsSwitchComponent selected={this.state.followNotification} onPress={this._onFollowNotificationChange} text={strings.startsFollowing}/>
                             </View>
                         </View>
                         <View name={'saveButtonWrapper'} style={[styles.containerPadding, {flex: 1}]}>

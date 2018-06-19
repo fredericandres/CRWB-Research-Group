@@ -21,9 +21,11 @@ import {
     brandAccent,
     brandBackground,
     brandContrast,
+    brandMain,
     EmojiEnum,
     iconSizeStandard,
-    pathObservations
+    pathObservations,
+    VocabEnum
 } from "../constants/Constants";
 import {googleApiKey} from "../constants/GoogleApiKey";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
@@ -42,6 +44,7 @@ import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorCompone
 import {EmptyComponent} from "../Components/EmptyComponent";
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
+let allVocabs = null;
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -78,12 +81,19 @@ export class CreateObservationScreen extends React.Component {
         this.isEditing = this.props.navigation.getParam('edit');
         this.inputs = {};
         const obs = this.props.navigation.getParam('observation');
+
         this.state = {
             observation: this.isEditing ? obs : new Observation(),
             activePageIndex: this.isEditing ? PagesEnum.DETAILS : PagesEnum.SELECTIMAGE,
             locationText: (this.isEditing && obs.location) ? (obs.location.name ? obs.location.name : '') + (obs.location.address ? ', ' + obs.location.address : '') : '',
             myPocEdited: false,
+            sections: [],
+            searchText: ''
         };
+    }
+
+    componentDidMount() {
+        this._onPressSearchButton(null);
     }
 
     /************* NAVIGATION *************/
@@ -136,7 +146,9 @@ export class CreateObservationScreen extends React.Component {
             if (!this.state.observation.currency) {
                 missing.push(strings.currency);
             }
-            // TODO: At least 3 (?) tastes should be selected
+            if (!this.state.observation.vocabulary || Object.keys(this.state.observation.vocabulary).length < 3) {
+                missing.push(strings.tasteTerms);
+            }
 
             if (missing.length > 0) {
                 this._handleMissing(missing);
@@ -158,9 +170,9 @@ export class CreateObservationScreen extends React.Component {
                             this.props.navigation.dismiss();
 
                         }).catch((error) => {
-                            console.error('Error during observation update transmission.');
+                            console.log('Error during observation update transmission.');
                             this._stopActivityIndicator();
-                            console.error(error);
+                            console.log(error);
                             // TODO: display error message
                         }
                     );
@@ -180,9 +192,9 @@ export class CreateObservationScreen extends React.Component {
                             console.log('Successfully added observation to DB.');
                             _addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef, ((url) => this._closeWindow(observation, url)), this._setActivityIndicatorText, this._stopActivityIndicator);
                         }).catch((error) => {
-                            console.error('Error during observation transmission.');
+                            console.log('Error during observation transmission.');
                             this._stopActivityIndicator();
-                            console.error(error);
+                            console.log(error);
                             // TODO: display error message
                         }
                     );
@@ -209,7 +221,7 @@ export class CreateObservationScreen extends React.Component {
 
     /************* CAMERA ROLL *************/
 
-    _onImageSelected(uri, base64) {
+    async _onImageSelected(uri, base64) {
         let obs = this.state.observation;
         obs.image = uri;
         this._updateObservationState(obs);
@@ -217,6 +229,7 @@ export class CreateObservationScreen extends React.Component {
         this._sendToMyPoC(base64, this._onUpdateMypoc).then(() => {
             console.log('MyPoC blob created');
         });
+
         this._onPressNext();
     }
 
@@ -307,20 +320,18 @@ export class CreateObservationScreen extends React.Component {
                 this.setState({locationResults: responseJson.results});
             })
             .catch((error) => {
-                console.error(error);
+                console.log(error);
             });
     }
 
     _onPressLocationResult(location) {
         let obs = this.state.observation;
         obs.location = {};
-
         obs.location.name = location.name;
         obs.location.address = location.formatted_address;
         obs.location.googleMapsId = location.place_id;
         obs.location.latitude = location.geometry.location.lat;
         obs.location.longitude = location.geometry.location.lng;
-        console.log(obs);
         this._updateObservationState(obs);
         this._setLocationText();
     }
@@ -354,13 +365,43 @@ export class CreateObservationScreen extends React.Component {
 
     /************* EATING EXPERIENCE *************/
 
-    _onPressSearchButton(search) {
-        // TODO filter items
+    _onPressSearchButton(searchText) {
+        this.setState({searchText: searchText || ''});
+
+        if (searchText) {
+            searchText = searchText.toLowerCase();
+        }
+
+        let sections = allVocabs;
+        if (!allVocabs || (searchText && searchText !== '')) {
+            let vocabMap = {};
+            allVocabulary.forEach(function (vocabItem) {
+                if (!allVocabs || vocabItem.value.name.toLowerCase().indexOf(searchText) >= 0) {
+                    if (!vocabMap[vocabItem.type]) {
+                        vocabMap[vocabItem.type] = [];
+                    }
+                    vocabMap[vocabItem.type].push(vocabItem);
+                }
+            });
+            sections = [
+                {title: VocabEnum.ODOR, data: vocabMap[VocabEnum.ODOR]},
+                {title: VocabEnum.TASTE, data: vocabMap[VocabEnum.TASTE]},
+                {title: VocabEnum.TEXTURE, data: vocabMap[VocabEnum.TEXTURE]},
+            ];
+        }
+        this.setState({sections: sections});
+        if (!allVocabs) {
+            allVocabs = sections;
+        }
     }
 
     _onCheckBoxChanged(id) {
         let obs = this.state.observation;
-        obs.vocabulary[id] = !obs.vocabulary[id];
+        if (obs.vocabulary[id]) {
+            delete obs.vocabulary[id];
+        } else {
+            obs.vocabulary[id] = true;
+        }
         this._updateObservationState(obs);
     }
 
@@ -504,21 +545,67 @@ export class CreateObservationScreen extends React.Component {
                     }
                     {
                         this.state.activePageIndex === PagesEnum.TASTE &&
-                        <View name={'adjectivesscreen'} style={{flex:1}}>
-                            <SearchBar placeholder={strings.searchVocabulary} onSubmitEditing={this._onPressSearchButton} onChangeText={this._onPressSearchButton} onPress={this._onPressSearchButton}/>
-                            <FlatList
-                                name={'checkboxes'}
-                                removeClippedSubviews={true}
-                                style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
-                                data={allVocabulary}
-                                numColumns={2}
-                                renderItem={({item}) =>
-                                    <View style={[styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges, {flex:1}]}>
-                                        <SettingsSwitchComponent value={this.state.observation.vocabulary && this.state.observation.vocabulary[item.key] ? this.state.observation.vocabulary[item.key] : false} onValueChange={() => this._onCheckBoxChanged(item.key)} text={item.value.en}/>
-                                    </View>
-                                }
-                            />
-                        </View>
+                        <ScrollView name={'adjectivesscreen'} style={{flex:1}}>
+                            <SearchBar placeholder={strings.searchVocabulary}  value={this.state.searchText} onChangeText={(text) => this._onPressSearchButton(text)}/>
+                            <View style={{flex:1}}>
+                                <FlatList
+                                    name={'selectedcheckboxes'}
+                                    style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
+                                    data={Object.keys(this.state.observation.vocabulary)}
+                                    numColumns={3}
+                                    keyExtractor={(item, index) =>  'selected_' + item}
+                                    removeClippedSubviews={true}
+                                    ListHeaderComponent={() =>
+                                        <Text style={[styles.containerPadding, styles.textTitleBoldDark]}>{strings.selected}</Text>
+                                    }
+                                    ListEmptyComponent={() => <EmptyComponent message={strings.noSelectedTerms}/>}
+                                    renderItem={({item}) =>
+                                        <TouchableOpacity
+                                            style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {
+                                                flex: 1,
+                                                backgroundColor: brandMain
+                                            }]} onPress={() => this._onCheckBoxChanged(item)}>
+                                            <SettingsSwitchComponent
+                                                selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item]}
+                                                text={allVocabulary[item].value.name}/>
+                                        </TouchableOpacity>
+                                    }
+                                />
+                            </View>
+                            {
+                                Object.keys(this.state.sections).map(index => {
+                                    const section = this.state.sections[index];
+                                    return (
+                                        <View style={{flex:1}} key={section.title}>
+                                            <FlatList
+                                                name={'checkboxes'}
+                                                style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
+                                                data={section.data}
+                                                numColumns={3}
+                                                keyExtracor={(item, index) => section.title + '_' + item.key}
+                                                removeClippedSubviews={true}
+                                                ListEmptyComponent={() => <EmptyComponent message={strings.noMatchingTerms}/>}
+                                                ListHeaderComponent={() =>
+                                                    <Text style={[styles.containerPadding, styles.textTitleBoldDark]}>{section.title === VocabEnum.TASTE ? strings.flavor : section.title === VocabEnum.TEXTURE ? strings.texture : strings.odor}</Text>
+                                                }
+                                                renderItem={({item}) =>
+                                                    <TouchableOpacity
+                                                        style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {
+                                                            flex: 1,
+                                                            backgroundColor: (this.state.observation.vocabulary && this.state.observation.vocabulary[item.key] ? brandMain : brandBackground)
+                                                        }]} onPress={() => this._onCheckBoxChanged(item.key)}>
+                                                        <SettingsSwitchComponent
+                                                            selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item.key]}
+                                                            text={item.value.name}/>
+                                                    </TouchableOpacity>
+                                                }
+                                            />
+                                        </View>
+                                    );
+                                })
+
+                            }
+                        </ScrollView>
                     }
                 </View>
                 {(this.state.observation.image || this.state.observation.imageUrl) && <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>

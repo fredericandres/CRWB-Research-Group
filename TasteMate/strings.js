@@ -153,6 +153,7 @@ export default strings = new LocalizedStrings({
         missingValuesTextPl: 'Please add the {0} and {1} of your dish before publishing it.',
         itemization: '{0}, {1}',
         picture:'picture',
+        tasteTerms:'3 taste terms',
         lessThanKm: 'Less than {0}km away',
         furtherAway: 'Further away',
         noEatingOutList: 'Looks like you haven\'t added anything to your Eating Out list. Just click the cutlery icon next to an observation to add it to the list!',
@@ -174,6 +175,10 @@ export default strings = new LocalizedStrings({
         flavor:'Flavor',
         odor:'Odor',
         texture:'Texture',
+
+        selected:'Selected',
+        noMatchingTerms: 'There are no terms that match your search.',
+        noSelectedTerms: 'Click on one of the terms below to add it to your observation.'
     },
     fr: {
         explorer: 'Explorer',

@@ -1,7 +1,6 @@
 import React from "react";
-import {FlatList, ScrollView, Text, View} from "react-native";
+import {FlatList, Text, View} from "react-native";
 import styles from "../styles";
-import {observations} from "../MockupData";
 import {ObservationExploreComponent} from "./ObservationExploreComponent";
 import {FURTHER_AWAY, NO_LOCATION} from "../Screens/EatingOutList";
 

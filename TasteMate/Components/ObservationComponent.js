@@ -20,7 +20,6 @@ import {
     pathUsers
 } from "../constants/Constants";
 import styles, {smileySuperLargeFontSize} from "../styles";
-import {adjectives, comments} from "../MockupData";
 import TimeAgo from "react-native-timeago";
 import {CommentComponent} from "./CommentComponent";
 import strings from "../strings";
@@ -30,10 +29,12 @@ import {currentUser} from "../App";
 import {WriteCommentComponent} from "./WriteCommentComponent";
 import {CachedImage} from 'react-native-cached-image';
 import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
+import {allVocabulary} from "../constants/Vocabulary";
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
         super(props);
+
         this._onPressMenuButton = this._onPressMenuButton.bind(this);
         this._onPressMenuDetailButton = this._onPressMenuDetailButton.bind(this);
         this._onPressLocationText = this._onPressLocationText.bind(this);
@@ -43,6 +44,15 @@ export class ObservationComponent extends React.Component {
         this._onPressCutleryButton = this._onPressCutleryButton.bind(this);
         this._addCommentToState = this._addCommentToState.bind(this);
         this._onPressMoreComments = this._onPressMoreComments.bind(this);
+
+        let adjs = null;
+        if (this.props.observation.vocabulary) {
+            adjs = '';
+            Object.keys(this.props.observation.vocabulary).map(index => {
+                adjs += '#' + allVocabulary[index].value.name + ' ';
+            });
+        }
+
         this.state = {
             overlayIsHidden: true,
             liked: false,
@@ -52,6 +62,7 @@ export class ObservationComponent extends React.Component {
             newComment: '',
             observation: this.props.observation,
             user: this.props.user,
+            adjectives: adjs
         };
 
         console.log('Loading actions...');
@@ -279,11 +290,6 @@ export class ObservationComponent extends React.Component {
     _keyExtractor = (item, index) => item.timestamp + item.senderid;
 
     render() {
-        let adjs = '';
-        for (let i = 0; i < adjectives.length; i++) {
-            adjs = adjs + '#' + adjectives[i].value.adjective + ' ';
-        }
-
         return (
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
@@ -317,7 +323,7 @@ export class ObservationComponent extends React.Component {
                     {!this.state.overlayIsHidden &&
                     <ScrollView style={[styles.containerOpacityDark, {position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}]} contentContainerStyle={{flexGrow: 1}}>
                         <TouchableOpacity name={'adjectivesoverlay'} onPress={this._toggleOverlay.bind(this)} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={[styles.textLargeBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{adjs} </Text>
+                            <Text style={[styles.textLargeBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{this.state.adjectives} </Text>
                         </TouchableOpacity>
                     </ScrollView>
                     }
@@ -347,7 +353,7 @@ export class ObservationComponent extends React.Component {
                     removeClippedSubviews={true}
                     ListHeaderComponent={() =>
                         <View>
-                            {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>View more comments</Text></TouchableOpacity>}
+                            {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>{strings.viewMoreComments}</Text></TouchableOpacity>}
                         </View>
                     }
                     ListFooterComponent={() =>

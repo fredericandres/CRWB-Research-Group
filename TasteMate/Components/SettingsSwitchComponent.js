@@ -1,9 +1,8 @@
 import React from "react";
 import styles from "../styles";
-import {brandAccent, brandBackground, brandContrast, brandLight, iconSizeStandard} from "../constants/Constants";
-import {Switch, Text, TextInput, View} from "react-native";
+import {iconSizeSmall, iconSizeStandard} from "../constants/Constants";
+import {Text, TouchableOpacity, View} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import strings from "../strings";
 
 export class SettingsSwitchComponent extends React.Component {
     constructor(props) {
@@ -12,10 +11,12 @@ export class SettingsSwitchComponent extends React.Component {
 
     render() {
         return (
-            <View style={[{flexDirection:'row', alignItems:'center'}, styles.containerPadding, {flex: 1}]}>
-                <Switch value={this.props.value} onValueChange={this.props.onValueChange} style={{transform: [{ scaleX: .8 }, { scaleY: .8 }]}}tintColor={brandContrast} onTintColor={brandAccent}/>
-                <Text style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]}>{this.props.text}</Text>
-            </View>
+            <TouchableOpacity onPress={this.props.onPress} disabled={!this.props.onPress} style={[{flexDirection:'row', alignItems:'center'}, styles.containerPadding, {flex: 1}]}>
+                <FontAwesome name={this.props.selected ? 'check-square-o' : 'square-o'} size={iconSizeSmall} style={[styles.containerPadding]}/>
+                <View styles={[styles.containerPadding, {justifyContent:'center', flex: 1}]}>
+                    <Text style={[styles.textStandardDark]}>{this.props.text}</Text>
+                </View>
+            </TouchableOpacity>
         );
     }
 }

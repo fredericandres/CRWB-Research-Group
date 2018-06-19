@@ -7,9 +7,17 @@ import strings from "../strings";
 import {SearchBar} from "../Components/SearchBar";
 import {_navigateToScreen, brandMain} from "../constants/Constants";
 import firebase from 'react-native-firebase';
+import {EmptyComponent} from "../Components/EmptyComponent";
 
 const numColumns = 3;
-const OBS_LOAD_DEPTH = 12;
+const OBS_LOAD_DEPTH = 9;
+const initialState = {
+    user: null,
+    isRefreshing: false,
+    observations: [],
+    searchText: '',
+    searchTextSearched: ''
+};
 
 export class SearchExploreScreen extends React.Component {
     static navigationOptions = ({navigation})=> {
@@ -38,13 +46,12 @@ export class SearchExploreScreen extends React.Component {
         this._onRefresh = this._onRefresh.bind(this);
         this._loadObservations = this._loadObservations.bind(this);
         this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
+        this._setEmptyMessage = this._setEmptyMessage.bind(this);
+        this._handleError = this._handleError.bind(this);
+        this._onPressSearchButton = this._onPressSearchButton.bind(this);
 
         this.unsubscriber = null;
-        this.state = {
-            user: null,
-            isRefreshing: false,
-            observations: []
-        };
+        this.state = initialState;
     }
 
     componentDidMount() {
@@ -54,10 +61,9 @@ export class SearchExploreScreen extends React.Component {
         });
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
-            this.setState({
-                user: user,
-                observations: [],
-            }, () => {
+            let resetState = initialState;
+            resetState.user = user;
+            this.setState(resetState, () => {
                 if (!user) {
                     // Do nothing
                 } else {
@@ -91,14 +97,15 @@ export class SearchExploreScreen extends React.Component {
         const obsSize = this.state.observations.length;
         if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0 || isRefreshing)) {
             const index = isRefreshing ? 0 : this.state.observations.length;
-
-            console.log('Loading observations... Starting at ' + index + ' to ' + (index + OBS_LOAD_DEPTH));
+            const searchText = this.state.searchTextSearched;
+            console.log('Loading ' + searchText + ' observations... Starting at ' + index + ' to ' + (index + OBS_LOAD_DEPTH));
             this.isLoadingObservations = true;
 
             const httpsCallable = firebase.functions().httpsCallable('getXMostRecentObs');
             httpsCallable({
                 from: index,
-                to: index + OBS_LOAD_DEPTH
+                to: index + OBS_LOAD_DEPTH,
+                searchText: searchText
             }).then(({data}) => {
                 console.log('Observations successfully retrieved');
                 this.isLoadingObservations = false;
@@ -106,6 +113,7 @@ export class SearchExploreScreen extends React.Component {
             }).catch(httpsError => {
                 console.log(httpsError.code);
                 console.log(httpsError.message);
+                this._handleError(httpsError);
                 this.isLoadingObservations = false;
             })
         }
@@ -120,7 +128,7 @@ export class SearchExploreScreen extends React.Component {
             return 0;
         });
 
-        if (observations && observations.length > 0) {
+        if (onStartup || isRefreshing || (observations && observations.length > 0)) {
             observations.sort(function (a, b) {
                 if (a.timestamp < b.timestamp)
                     return 1;
@@ -135,6 +143,17 @@ export class SearchExploreScreen extends React.Component {
                 this.setState(prevState => ({observations: prevState.observations.concat(observations), isRefreshing: false}));
             }
         }
+
+        this._setEmptyMessage(strings.noSearchResults);
+    }
+
+    _handleError(error){
+        console.log(error);
+        this._setEmptyMessage(strings.errorOccurred);
+    }
+
+    _setEmptyMessage(message) {
+        this.setState({emptyListMessage: message});
     }
 
     _onRefresh() {
@@ -148,8 +167,13 @@ export class SearchExploreScreen extends React.Component {
         this._loadObservations(false, false);
     }
 
+    _onUpdateSearchText(searchText) {
+        this.setState({searchText: searchText});
+    }
+
     _onPressSearchButton() {
-        // TODO: search for matching posts
+        // TODO: test if search is really working
+        this.setState((prevState) => ({searchTextSearched: prevState.searchText}), () => this._loadObservations(true, true));
     }
 
     _keyExtractor = (item, index) => item.observationid;
@@ -157,7 +181,7 @@ export class SearchExploreScreen extends React.Component {
     render() {
         return (
             <View name={'wrapper'} style={{flex:1}}>
-                <SearchBar placeholder={strings.foodCraving} onSubmitEditing={this._onPressSearchButton} onChangeText={this._onPressSearchButton} onPress={this._onPressSearchButton}/>
+                <SearchBar placeholder={strings.foodCraving}  value={this.state.searchText} onChangeText={(text) => this._onUpdateSearchText(text)} onSubmitEditing={this._onPressSearchButton} onPressSearch={this._onPressSearchButton}/>
                 <View style={[{flex:1}, styles.explorePadding]}>
                     <FlatList
                         keyExtractor={this._keyExtractor}
@@ -168,6 +192,7 @@ export class SearchExploreScreen extends React.Component {
                         onRefresh={this._onRefresh}
                         onEndReached={this._onEndReached}
                         removeClippedSubviews={true}
+                        ListEmptyComponent={() => <EmptyComponent message={this.state.emptyListMessage}/>}
                     />
                 </View>
             </View>
