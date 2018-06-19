@@ -173,57 +173,37 @@ export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setA
     setActivityIndicatorText(strings.uploadingPicture);
     if (Platform.OS === 'android') {
         console.log('Adding picture to storage...');
-        const imageRef = firebase.storage().ref(path);
-        imageRef.putFile(imageUrl)
-            .then(() => {
-                console.log('Successfully added picture to storage');
-                console.log('Updating metadata for image...');
-                const settableMetadata = {
-                    contentType: 'image/jpeg',
-                    customMetadata: {
-                        userid: currentUser.uid
-                    }
-                };
+        const settableMetadata = {
+            contentType: 'image/jpeg',
+            customMetadata: {
+                userid: currentUser.uid
+            }
+        };
 
-                imageRef.updateMetadata(settableMetadata)
-                    .then((metadata) => {
-                        console.log('Successfully added metadata to image');
-                        console.log('Loading image url...');
-                        const refImage = firebase.storage().ref(metadata.fullPath);
-                        refImage.getDownloadURL()
-                            .then((url) => {
-                                console.log('Saving image url to item...');
-                                const update = {imageUrl: url};
-                                refToUpdate.update(update)
-                                    .then(() => {
-                                        console.log('Successfully updated item to include image url.');
-                                        stopActivityIndicator();
-                                        if (callback) {
-                                            callback(url);
-                                        }
-                                    }).catch((error) => {
-                                        console.error('Error during image url transmission.');
-                                        stopActivityIndicator();
-                                        console.error(error);
-                                        // TODO: display error message
-                                    }
-                                );
-                            })
-                            .catch((error) => {
-                                stopActivityIndicator();
-                                console.log('Error while retrieving image url');
-                                console.log(error);
-                            });
-                    }) .catch((error) => {
-                    stopActivityIndicator();
-                    console.log('Error while updating metadata');
-                    console.log(error)
-                });
-            })
-            .catch((error) => {
-                stopActivityIndicator();
-                console.log('Error while adding picture to storage');
-                console.log(error)
-            });
+        const imageRef = firebase.storage().ref(path);
+        imageRef.putFile(imageUrl, settableMetadata)
+            .then((response) => {
+                console.log('Successfully added picture to storage');
+                console.log('Saving image url to item...');
+                const update = {imageUrl: response.downloadURL};
+                refToUpdate.update(update)
+                    .then(() => {
+                        console.log('Successfully updated item to include image url.');
+                        stopActivityIndicator();
+                        if (callback) {
+                            callback(response.downloadURL);
+                        }
+                    }).catch((error) => {
+                        console.log('Error during image url transmission.');
+                        stopActivityIndicator();
+                        console.log(error);
+                        // TODO: display error message
+                    }
+                );
+            }).catch((error) => {
+            stopActivityIndicator();
+            console.log('Error while adding picture to storage');
+            console.log(error);
+        });
     }
 }

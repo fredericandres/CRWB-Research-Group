@@ -122,6 +122,12 @@ export class HomeScreen extends React.Component {
     _loadObservations(followees, onStartup, isRefreshing) {
         const obsSize = this.state.observations.length;
         if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0 || isRefreshing)) {
+            if (isRefreshing) {
+                this.setState({
+                    observations: [], length,
+                    emptyListMessage: strings.loading
+                });
+            }
             const index = isRefreshing ? 0 : this.state.observations.length;
 
             console.log('Loading observations... Starting at ' + index + ' to ' + (index + OBS_LOAD_DEPTH));

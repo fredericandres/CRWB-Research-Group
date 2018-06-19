@@ -15,11 +15,12 @@ export class UserImageThumbnailComponent extends React.Component {
                 imageUrl = currentUserInformation.imageUrl;
             }
         }
-        const source = imageUrl ? {uri: imageUrl} : require('../nouser.jpg');
+        const defaultSource = require('../nouser.jpg');
+        const source = imageUrl ? {uri: imageUrl} : defaultSource;
 
         return (
             <TouchableOpacity name={'header'} disabled={!this.props.onPress} onPress={this.props.onPress} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
-                <CachedImage name={'userprofilepic'} resizeMode={'cover'} source={source} style={this.props.size}/>
+                <CachedImage name={'userprofilepic'} resizeMode={'cover'} defaultSource={defaultSource} source={source} style={this.props.size}/>
             </TouchableOpacity>
         );
     }

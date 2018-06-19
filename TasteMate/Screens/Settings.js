@@ -19,6 +19,9 @@ import firebase from 'react-native-firebase';
 import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
 import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
 import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
+import {ImageCacheManager} from 'react-native-cached-image'
+
+const ICM = new ImageCacheManager();
 
 export class SettingsScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -41,6 +44,7 @@ export class SettingsScreen extends React.Component {
         this._stopActivityIndicator = this._stopActivityIndicator.bind(this);
         this._setActivityIndicatorText = this._setActivityIndicatorText.bind(this);
         this._closeSettings = this._closeSettings.bind(this);
+        this._clearImageCacheAndClose = this._clearImageCacheAndClose.bind(this);
 
         // TODO [FEATURE]: Let user change his password
         this.state = {
@@ -152,14 +156,26 @@ export class SettingsScreen extends React.Component {
         if (this.state.newImageUrl) {
             currentUserInformation.imageUrl = this.state.newImageUrl;
             const userRef = firebase.database().ref(pathUsers).child(currentUser.uid);
-            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._closeSettings, this._setActivityIndicatorText, this._stopActivityIndicator);
+            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._clearImageCacheAndClose, this._setActivityIndicatorText, this._stopActivityIndicator);
         } else {
             this._closeSettings();
         }
     }
 
-    _closeSettings(url) {
-        currentUserInformation.imageUrl = url;
+    _clearImageCacheAndClose(url) {
+        console.log('Clearing image url cache...');
+        ICM.deleteUrl(currentUserInformation.imageUrl, {})
+            .then(() => {
+                console.log('Successfully cleared image url cache');
+                currentUserInformation.imageUrl = url;
+                this._closeSettings();
+            }).catch((error) => {
+            console.log('Error while clearing image url cache');
+            console.log(error);
+        });
+    }
+
+    _closeSettings() {
         this.props.navigation.getParam('onDataChangedAction')();
         this.props.navigation.goBack();
     }
