@@ -15,6 +15,14 @@ import strings from "../strings";
 import {EmptyComponent} from "../Components/EmptyComponent";
 
 const NTF_LOAD_DEPTH = 10;
+const initialState = {
+    user: null,
+    notifications: [],
+    users: [],
+    observations: [],
+    isRefreshing: false,
+    emptyListMessage: strings.loading
+};
 
 export class NotificationsScreen extends React.Component {
     static navigationOptions = ({navigation})=> {
@@ -39,15 +47,11 @@ export class NotificationsScreen extends React.Component {
         this._onEndReached = this._onEndReached.bind(this);
         this._loadNotifications = this._loadNotifications.bind(this);
         this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
+        this._setEmptyMessage = this._setEmptyMessage.bind(this);
+        this._handleError = this._handleError.bind(this);
 
         this.unsubscriber = null;
-        this.state = {
-            user: null,
-            notifications: [],
-            users: [],
-            observations: [],
-            isRefreshing: false
-        };
+        this.state = initialState;
     }
 
     componentDidMount() {
@@ -57,12 +61,9 @@ export class NotificationsScreen extends React.Component {
         });
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
-            this.setState({
-                user: user,
-                notifications: [],
-                users: [],
-                observations: [],
-            }, () => {
+            let resetState = initialState;
+            resetState.user = user;
+            this.setState(resetState, () => {
                 if (!user) {
                     // Do nothing
                 } else {
@@ -97,6 +98,7 @@ export class NotificationsScreen extends React.Component {
         if (ntfSize === 0 || ntfSize % NTF_LOAD_DEPTH === 0 || isRefreshing) {
             const _addUserAction = this._addUserToState;
             const _addObservationAction = this._addObservationToState;
+            const _handleError = this._handleError;
 
             const currentState = this.state;
             const index = (isRefreshing ? 0 : ntfSize) + NTF_LOAD_DEPTH;
@@ -116,15 +118,14 @@ export class NotificationsScreen extends React.Component {
 
                         // Load username of notification sender
                         if (!iteratedUsers[notification.userid] && (!currentState.users[notification.userid])) {
-                            console.log()
                             iteratedUsers[notification.userid] = true;
                             firebase.database().ref(pathUsers).child(notification.userid).once('value')
                                 .then((dataSnapshot) => {
                                     console.log('User successfully retrieved');
                                     _addUserAction(dataSnapshot ? dataSnapshot.toJSON() : null, notification.userid);
                                 }).catch((error) => {
-                                    console.error('Error while retrieving user');
-                                    console.error(error);
+                                    console.log('Error while retrieving user');
+                                    _handleError(error);
                                 }
                             );
                         }
@@ -136,9 +137,8 @@ export class NotificationsScreen extends React.Component {
                             }).then(() => {
                                 console.log('Successfully added read to notification on DB.');
                             }).catch((error) => {
-                                console.error('Error during read notification transmission.');
-                                console.error(error);
-                                this._handleAuthError(error);
+                                console.log('Error during read notification transmission.');
+                                _handleError(error);
                             });
                         }
 
@@ -153,25 +153,38 @@ export class NotificationsScreen extends React.Component {
                                         _addObservationAction(observation, notification.observationid);
                                     }
                                 }).catch((error) => {
-                                    console.error('Error while retrieving Observation');
-                                    console.error(error);
+                                    console.log('Error while retrieving Observation');
+                                    _handleError(error);
                                 }
                             );
                         }
                     });
                 }).catch((error) => {
-                    console.error('Error while retrieving notifications');
-                    console.error(error);
+                    console.log('Error while retrieving notifications');
+                    _handleError(error);
                 }
             );
         }
+    }
+
+    _handleError(error){
+        console.log(error);
+        this._setEmptyMessage(strings.errorOccurred);
+    }
+
+    _setEmptyMessage(message) {
+        this.setState({emptyListMessage: message});
     }
 
     _addToNotificationState(notifications) {
         if (notifications && notifications.length > 0) {
             _sortArrayByTimestamp(notifications);
         }
-        this.setState({isRefreshing: false, notifications: notifications});
+        this.setState({
+            isRefreshing: false,
+            notifications: notifications,
+        });
+        this._setEmptyMessage(strings.noNotifications);
     }
 
     _addUserToState(user, userid) {
@@ -210,7 +223,7 @@ export class NotificationsScreen extends React.Component {
                         renderItem={({item}) => <NotificationComponent notification={item} user={this.state.users[item.userid]} observation={this.state.observations[item.observationid]} {...this.props}/>}
                         refreshing={this.state.isRefreshing}
                         onRefresh={this._onRefresh}
-                        ListEmptyComponent={() => <EmptyComponent message={strings.noNotifications}/>}
+                        ListEmptyComponent={() => <EmptyComponent message={this.state.emptyListMessage}/>}
                         keyExtractor={this._keyExtractor}
                         onEndReached={this._onEndReached}
                     />

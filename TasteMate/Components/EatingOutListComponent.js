@@ -15,9 +15,12 @@ export class EatingOutListComponent extends React.Component {
     render() {
         return (
             <View name={'wrapper'} style={styles.containerPadding}>
-                {this.props.observationsList.distance !== NO_LOCATION && <View name={'header'}>
-                    <Text name={'location'} style={styles.textTitleBoldDark}>{this.props.observationsList.distance === FURTHER_AWAY ? strings.furtherAway : strings.formatString(strings.lessThanKm, this.props.observationsList.distance)}</Text>
-                </View>}
+                {
+                    this.props.observationsList.distance !== NO_LOCATION &&
+                    <View name={'header'}>
+                        <Text name={'location'} style={styles.textTitleBoldDark}>{this.props.observationsList.distance === FURTHER_AWAY ? strings.furtherAway : strings.formatString(strings.lessThanKm, this.props.observationsList.distance)}</Text>
+                    </View>
+                }
                 <FlatList
                     name={'observationsList'}
                     keyExtractor={this._keyExtractor}

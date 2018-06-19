@@ -1,8 +1,7 @@
 import React from 'react';
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, TouchableOpacity, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import strings from "../strings";
-import styles from "../styles";
 import {EatingOutListComponent} from "../Components/EatingOutListComponent";
 import MapView from 'react-native-maps';
 import Permissions from "react-native-permissions";
@@ -24,6 +23,15 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 export const NO_LOCATION = 'noLocation';
 export const FURTHER_AWAY = 'furtherAway';
 const ScreensEnum = Object.freeze({LIST:1, MAP:2});
+const initialState = {
+    selectedIndex: ScreensEnum.MAP,
+    observationsList: [],
+    observations: [],
+    user: null,
+    userlocation: {},
+    isRefreshing: false,
+    emptyListMessage: strings.loading
+};
 
 export class EatingOutListScreen extends React.Component {
     static navigationOptions = ({navigation})=> {
@@ -43,13 +51,7 @@ export class EatingOutListScreen extends React.Component {
         super();
 
         this.unsubscriber = null;
-        this.state = {
-            selectedIndex: ScreensEnum.MAP,
-            observationsList: [],
-            observations: [],
-            user: null,
-            userlocation: {}
-        };
+        this.state = initialState;
         this._onPressList = this._onPressList.bind(this);
         this._onPressMap = this._onPressMap.bind(this);
         this._getEatingOutObservations = this._getEatingOutObservations.bind(this);
@@ -64,13 +66,9 @@ export class EatingOutListScreen extends React.Component {
         });
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
-            this.setState({
-                user: user,
-                selectedIndex: ScreensEnum.MAP,
-                observationsList: [],
-                observations: [],
-                userlocation: {}
-            }, () => {
+            let resetState = initialState;
+            resetState.user = user;
+            this.setState(resetState, () => {
                 if (!user) {
                     // Do nothing
                 } else {
@@ -84,8 +82,6 @@ export class EatingOutListScreen extends React.Component {
                             this._getEatingOutObservations();
                         }
                     });
-
-
                 }
             });
         });
@@ -111,9 +107,8 @@ export class EatingOutListScreen extends React.Component {
 
         console.log('Loading observations ids saved as Eating Out...');
         const refEatingOut = firebase.database().ref(pathActions).orderByKey().equalTo(this.state.user.uid);
-        refEatingOut.once(
-            'value',
-            (dataSnapshot) => {
+        refEatingOut.once('value')
+            .then((dataSnapshot) => {
                 console.log('Observations ids saved as Eating Out successfully retrieved');
                 let observations = [];
                 let asyncWorkers = [];
@@ -122,9 +117,8 @@ export class EatingOutListScreen extends React.Component {
                     userIdSnapshot.forEach(function (obsIdSnapshot) {
                         const obsid = obsIdSnapshot.key;
                         const promise = new Promise (function(resolve, reject) {
-                            firebase.database().ref(pathObservations).child(userid).child(obsid).once(
-                                'value').then(
-                                (dataSnapshot) => {
+                            firebase.database().ref(pathObservations).child(userid).child(obsid).once('value')
+                                .then((dataSnapshot) => {
                                     console.log('Eating Out observation successfully retrieved');
                                     let observation = dataSnapshot.toJSON();
                                     if (curState.locationPermission &&curState.userlocation) {
@@ -132,11 +126,9 @@ export class EatingOutListScreen extends React.Component {
                                     }
                                     observations.push(observation);
                                     resolve();
-                                }
-                            ).catch(
-                                (error) => {
-                                    console.error('Error while retrieving Eating Out observation');
-                                    console.error(error);
+                                }).catch((error) => {
+                                    console.log('Error while retrieving Eating Out observation');
+                                    console.log(error);
                                     reject(error);
                                 }
                             );
@@ -185,18 +177,20 @@ export class EatingOutListScreen extends React.Component {
                         observationsList.push({distance: NO_LOCATION, observations:observations});
                     }
 
-                    this.setState({observations: observations});
-                    this.setState({observationsList: observationsList});
+                    this.setState({
+                        observations: observations,
+                        observationsList: observationsList,
+                        emptyListMessage: strings.noEatingOutList
+                    });
                 }).catch(
                     (error) => {
-                        console.error('Error while retrieving observations in Eating Out');
-                        console.error(error);
+                        console.log('Error while retrieving observations in Eating Out');
+                        console.log(error);
                     }
                 );
-            },
-            (error) => {
-                console.error('Error while retrieving observations ids saved as Eating Out');
-                console.error(error);
+            }).catch((error) => {
+                console.log('Error while retrieving observations ids saved as Eating Out');
+                console.log(error);
             }
         );
     }
@@ -250,18 +244,18 @@ export class EatingOutListScreen extends React.Component {
                 {
                     this.state.user && !this.state.user.isAnonymous &&
                     <View style={{ flex: 1 }}>
-                        {(!this.state.observations || this.state.observations.length === 0) && <EmptyComponent message={strings.noEatingOutList}/>}
+                        {(!this.state.observations || this.state.observations.length === 0) && <EmptyComponent message={this.state.emptyListMessage}/>}
                         {(this.state.observations &&  this.state.observations.length > 0) &&
                         <View style={{ flex: 1 }}>
                             {
                                 this.state.selectedIndex === ScreensEnum.LIST &&
                                 <FlatList
                                     data={this.state.observationsList}
-                                    renderItem={({item}) => item.observations.length > 0 ? <EatingOutListComponent observationsList={item} {...this.props}/> : <View/>}
-                                    ListEmptyComponent={() => <EmptyComponent message={strings.noEatingOut}/>}
-                                    ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
+                                    renderItem={({item}) => item.observations.length > 0 ? <EatingOutListComponent observationsList={item} {...this.props}/> : <View style={{backgroundColor: 'red'}}/>}
                                     keyExtractor={this._keyExtractor}
                                     removeClippedSubviews={true}
+                                    onRefresh={this._getEatingOutObservations}
+                                    refreshing={this.state.isRefreshing}
                                 />
                             }
                             {
@@ -288,11 +282,11 @@ export class EatingOutListScreen extends React.Component {
                                     ))}
                                 </MapView>
                             }
-                            <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={{width: 60, height: 60, borderRadius: 30, backgroundColor: brandAccent, position: 'absolute', bottom: 10, right: 10, alignItems:'center', justifyContent:'center'}}>
-                                <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? 'list' : 'map'}  size={iconSizeStandard} color={brandBackground} />
-                            </TouchableOpacity>
                         </View>
                         }
+                        <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={{width: 60, height: 60, borderRadius: 30, backgroundColor: brandAccent, position: 'absolute', bottom: 10, right: 10, alignItems:'center', justifyContent:'center'}}>
+                            <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? 'list' : 'map'}  size={iconSizeStandard} color={brandBackground} />
+                        </TouchableOpacity>
                     </View>
                 }
                 {

@@ -10,6 +10,14 @@ import {LogInMessage} from "../Components/LogInMessage";
 import {EmptyComponent} from "../Components/EmptyComponent";
 
 const OBS_LOAD_DEPTH = 4;
+const initialState ={
+    observations: [],
+    followees: null,
+    user: null,
+    noMoreObservations: false,
+    isRefreshing: false,
+    emptyListMessage: strings.loading
+};
 
 export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation})=> {
@@ -35,15 +43,11 @@ export class HomeScreen extends React.Component {
         this._onCreate = this._onCreate.bind(this);
         this._loadObservations = this._loadObservations.bind(this);
         this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
+        this._setEmptyMessage = this._setEmptyMessage.bind(this);
+        this._handleError = this._handleError.bind(this);
 
         this.unsubscriber = null;
-        this.state = {
-            observations: [],
-            followees: null,
-            user: null,
-            noMoreObservations: false,
-            isRefreshing: false
-        };
+        this.state = initialState;
     }
 
     componentDidMount() {
@@ -53,11 +57,9 @@ export class HomeScreen extends React.Component {
         });
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
-            this.setState({
-                user: user,
-                observations: [],
-                followees: null
-            }, () => {
+            let resetState = initialState;
+            resetState.user = user;
+            this.setState(resetState, () => {
                 if (!user) {
                     // Open SingUpLogIn screen if no account associated (not even anonymous)
                     _navigateToScreen('SignUpLogIn', this.props.navigation);
@@ -110,8 +112,8 @@ export class HomeScreen extends React.Component {
                     _loadObservations(followees, onStartup, isRefreshing);
                 },
                 (error) => {
-                    console.error('Error while retrieving followees');
-                    console.error(error);
+                    console.log('Error while retrieving followees');
+                    this._handleError(error);
                 }
             );
         }
@@ -137,9 +139,19 @@ export class HomeScreen extends React.Component {
             }).catch(httpsError => {
                 console.log(httpsError.code);
                 console.log(httpsError.message);
+                this._handleError(httpsError);
                 this.isLoadingObservations = false;
             })
         }
+    }
+
+    _handleError(error){
+        console.log(error);
+        this._setEmptyMessage(strings.errorOccurred);
+    }
+
+    _setEmptyMessage(message) {
+        this.setState({emptyListMessage: message});
     }
 
     _addToObservationState(observations, onStartup, isRefreshing) {
@@ -153,6 +165,7 @@ export class HomeScreen extends React.Component {
             }
         }
         this.setState({isRefreshing: false});
+        this._setEmptyMessage(strings.emptyFeed);
     }
 
     _onRefresh() {
@@ -185,11 +198,10 @@ export class HomeScreen extends React.Component {
                 {
                     this.state.user && !this.state.user.isAnonymous &&
                     <FlatList
-                        removeClippedSubviews={true}
                         data={this.state.observations}
                         keyExtractor={this._keyExtractor}
                         renderItem={({item}) => <ObservationComponent observation={item} {...this.props} onDelete={this._onDelete}/>}
-                        ListEmptyComponent={() => <EmptyComponent message={strings.emptyFeed}/>}
+                        ListEmptyComponent={() => <EmptyComponent message={this.state.emptyListMessage}/>}
                         ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                         refreshing={this.state.isRefreshing}
                         onRefresh={this._onRefresh}
