@@ -2,6 +2,7 @@ import {StackActions} from "react-navigation";
 import {NativeModules, Platform} from "react-native";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
+import {currentUser} from "../App";
 
 export const brandMain = '#ffc658';
 export const brandContrast = '#333333';
@@ -20,7 +21,6 @@ export const iconSizeSmall = 15;
 export const maxUsernameLength = 15;
 
 // TODO [FEATURE]: Custom icons based on logo
-const emojiEnumPath = '../Images/emojienum_';
 export const EmojiEnum = Object.freeze({
     1:require('../Images/emojienum_1.png'),
     2:require('../Images/emojienum_2.png'),
@@ -180,6 +180,9 @@ export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setA
                 console.log('Updating metadata for image...');
                 const settableMetadata = {
                     contentType: 'image/jpeg',
+                    customMetadata: {
+                        userid: currentUser.uid
+                    }
                 };
 
                 imageRef.updateMetadata(settableMetadata)

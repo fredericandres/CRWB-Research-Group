@@ -207,7 +207,11 @@ export class CreateObservationScreen extends React.Component {
 
     _closeWindow(observation, url) {
         observation.imageUrl = url;
-        this.props.navigation.getParam('onCreate')(observation);
+        if (this.isEditing) {
+            this.props.onUpdate(observation);
+        } else {
+            this.props.navigation.getParam('onCreate')(observation);
+        }
         this.props.navigation.dismiss();
     }
 

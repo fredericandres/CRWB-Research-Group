@@ -98,7 +98,8 @@ export class ProfileScreen extends React.Component {
             user: props.navigation.getParam('myProfile') ? currentUserInformation : (props.navigation.getParam('user').userid === currentUser.uid ? currentUserInformation : props.navigation.getParam('user')),
             followers: [],
             following: [],
-            observations: []
+            observations: [],
+            selectedIndex: 4
         };
         this._onPressFollowers = this._onPressFollowers.bind(this);
         this._onPressPhotos = this._onPressPhotos.bind(this);
@@ -302,6 +303,7 @@ export class ProfileScreen extends React.Component {
                                                          action={this._onPressFollowing}/>
                         </View>
                     </View>
+                    {this.state.selectedIndex === 4 && <EmptyComponent message={strings.loading}/>}
                     {
                         this.state.selectedIndex === 0 &&
                         <FlatList

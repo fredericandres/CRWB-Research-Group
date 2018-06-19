@@ -44,6 +44,7 @@ export class ObservationComponent extends React.Component {
         this._onPressCutleryButton = this._onPressCutleryButton.bind(this);
         this._addCommentToState = this._addCommentToState.bind(this);
         this._onPressMoreComments = this._onPressMoreComments.bind(this);
+        this._onUpdate = this._onUpdate.bind(this);
 
         let adjs = null;
         if (this.props.observation.vocabulary) {
@@ -235,7 +236,7 @@ export class ObservationComponent extends React.Component {
 
     _onPressMenuDetailButton(buttonIndex) {
         if (buttonIndex === 0) {
-            this.props.navigation.navigate('CreateObservation', {observation: this.state.observation, edit: true});
+            this.props.navigation.navigate('CreateObservation', {observation: this.state.observation, edit: true, onUpdate: this._onUpdate});
         } else if (buttonIndex === 1) {
             const ref = firebase.database().ref(pathObservations).child(this.state.observation.userid).child(this.state.observation.observationid);
             ref.remove(
@@ -251,6 +252,10 @@ export class ObservationComponent extends React.Component {
         }
     }
 
+    _onUpdate(newObservation) {
+        this.setState({observation: newObservation});
+    }
+
     async _onPressShareButton() {
         this._sendAction(pathShares);
 
@@ -260,7 +265,7 @@ export class ObservationComponent extends React.Component {
             subject: strings.shareSubject,
             message: strings.shareMessage,
             dialogTitle: strings.shareDialogTitle,
-            url: this.state.observation.image,
+            url: this.state.observation.imageUrl,
         }).catch(
             (err) => {
                 err && console.log(err);
