@@ -167,8 +167,143 @@ export default strings = new LocalizedStrings({
         savingProfile: 'Saving profile...',
         uploadingPicture: 'Uploading picture...',
         unknownLocation: 'Unknown location',
+        loading: 'Loading...',
+        errorOccurred: 'An error occurred. Please try again later.',
+        noSearchResults: 'There are no observations that match your search. Please enter something else.',
+        viewMoreComments: 'View more comments',
+        flavor:'Flavor',
+        odor:'Odor',
+        texture:'Texture',
     },
     fr: {
+        explorer: 'Explorer',
+        notifications: "Notifications",
+        eatingOutList: 'Eating Out List',
+        profile: 'Profile',
+        settings: "Paramètres",
+        observationDetail: 'Détail',
+        createObservation: 'Créer une observation',
+        signUpLogIn: 'Inscription Connexion',
+        mapDetail: 'Détails de la carte',
+
+        // Texte lorsque l'utilisateur n'est pas connecté
+        hiThere: "Salut",
+        welcomeToTastemate: 'Bienvenue à Tastemate!' ,
+        limitedContentExplanation: 'Malheureusement, vous n\'êtes pas connecté, nous ne pouvons vous montrer que du contenu et des fonctionnalités limités. Une fois que vous êtes prêt à explorer plus l\'application, cliquez sur le bouton de l\'icône utilisateur dans le coin supérieur gauche pour vous connecter ou créer un nouveau compte. Pendant ce temps, ',
+        HaveFun: 'Amusez-vous!',
+
+        // Home screen --  Écran d'accueil
+        emptyFeed: 'Votre flux semble être vide. Pourquoi ne pas suivre quelques dégustations?',
+        selectAction: 'Sélectionnez une action',
+        doWithPost: 'Que voudriez-vous faire avec le post \ "{0} \" par {1}',
+        share: 'Partage',
+        edit: 'Modifier',
+        delete: 'Supprimer',
+        cancel: 'Annuler',
+        shareDialogTitle: 'Où voulez-vous partager ce post?',
+        shareSubject: 'Cool Dish sur Tastemate',
+        shareMessage: 'Regardez ce plat impressionnant sur Tastemate!',
+        likes: '{0} aime',
+        shares: '{0} partages',
+        cutleries: '{0} couverts',
+        likesSg: '{0} aime',
+        sharesSg: '{0} partage',
+        cutleriesSg: '{0} coutellerie',
+        thousand: '{0}k', // e.g., 1k
+        million: '{0}m',
+        writeComment: 'Ecrire un commentaire ...',
+        close: 'Fermer',
+
+        // Notifications screen
+        likedPicture: '{0} a aimé votre photo.', // e.g. Lukas liked your picture.
+        sharedPicture: '{0} a partagé votre photo..',
+        addedToEatingOutPicture: '{0} a ajouté votre image à sa liste Eating Out.',
+        startedFollowing: '{0} a commencé à vous suivre.',
+        userAndUser: '{0} et {1}', // e.g., Tom and Susie
+        others: '{0} autres', // e.g. 42 others
+
+        // Profile screen
+        photos: 'Photos',
+        followers: 'Abonnés',
+        following: 'Suivant',
+        noPictures: 'Cet utilisateur n\'a ajouté aucune photo.',
+        noUsers: 'Aucun utilisateur à afficher.',
+
+        // Explore screen
+        foodCraving: 'De quelle nourriture avez-vous envie ?',
+
+        // Settings screen
+        username: 'username',
+        emailAddress: 'adresse email',
+        location: 'location',
+        oldPassword: 'ancien mot de passe',
+        newPassword: 'nouveau mot de passe',
+        newPasswordRepeat: 'nouveau mot de passe (répétition)',
+        notifyMe: 'Prévenez-moi quand ...',
+        likesPicture: 'quelqu\'un aime ma photo',
+        addsToEatingOutPicture: 'quelqu\'un ajoute ma photo à sa liste Eating Out',
+        sharesPicture: 'quelqu\'un partage ma photo',
+        startsFollowing: 'quelqu\'un commence à me suivre',
+        saveChanges: 'Enregistrer les modifications',
+
+        // Eating Out List screen
+        list: 'Liste',
+        map: 'Carte',
+        noEatingOut: 'On dirait que vous n\'avez pas ajouté un plat à votre liste. Cliquez simplement sur l\'icône Couteau pour le faire!',
+
+        // Login/Signup screen
+        welcomeTo: 'Bienvenue à',
+        tastemateDescription: 'l\'endroit pour partager vos expériences culinaires avec les autres',
+        getEating: 'Allons manger!',
+        signUp: 'Inscription',
+        logIn: 'Connexion',
+        password: 'mot de passe',
+        noAccount: 'Vous n\'avez pas encore de compte? Inscrivez-vous ici!',
+        alreadyAccount: 'Vous avez déjà un compte? Connectez-vous ici!',
+        skip: 'Skip',
+
+        errorMessageEnterUsername: 'Veuillez entrer un nom d\'utilisateur.',
+        errorMessageEnterEmail: 'Veuillez entrer une adresse e-mail.',
+        errorMessageEnterPassword: 'Veuillez entrer un mot de passe.',
+        errorMessageEnterLocation: 'Veuillez entrer un lieu.',
+        errorMessageInvalidEmail: 'L\'adresse e-mail que vous avez entrée est invalide.',
+        errorMessageUserDisabled: 'Le compte associé à cette adresse e-mail a été désactivé.',
+        errorMessageUserNotFound: 'Aucun compte n\'est associé à cette adresse e-mail.',
+        errorMessageWrongPassword: 'Le mot de passe que vous avez entré est incorrect.',
+        errorMessageWeakPassword: 'Le mot de passe que vous avez entré est trop faible.',
+        errorMessageEmailAlreadyInUse: 'Cette adresse e-mail est déjà connectée à un compte Tastemate.',
+
+        // Create Observation screen
+        next:'Suivant',
+        previous: 'Precedent',
+        publish: 'Publish',
+        description: 'description',
+        dishname: 'nom de plat',
+        price: 'prix',
+        rateExperience: 'Comment évaluez-vous votre expérience majeure?',
+        currency: 'Devise',
+        selectCurrency: 'Veuillez sélectionner la devise du prix que vous avez indiqué.',
+        searchVocabulary: 'Quels étaient le goût, la texture et l\'odeur du plat?',
+        noLocationResults: 'Aucun emplacement correspondant trouvé, veuillez entrer plus d\'informations.',
+        yes: 'Oui',
+        no: 'Non',
+        ok: 'OK',
+        openSettings: 'Ouvrir les paramètres',
+        accessCameraQuestion: 'Pouvons-nous accéder à votre caméra?',
+        accessCameraExplanation: 'Nous avons besoin d\'un accès pour pouvoir prendre et partager des photos de votre nourriture.',
+        accessPhotoQuestion: 'Pouvons-nous accéder à votre rouleau de photos?',
+        accessPhotoExplanation: 'Nous avons besoin d\'un accès pour pouvoir sélectionner et partager des photos de votre nourriture.',
+        enableCamera: 'Veuillez activer l\'autorisation de la caméra dans les paramètres Tastemate de votre téléphone pour utiliser cette fonction.',
+        enablePhoto: 'Nous avons besoin d\'un accès pour pouvoir sélectionner et partager des photos de votre nourriture.',
+        enableCameraAndPhoto: 'Veuillez activer l\'autorisation de stockage dans le paramètre Tastemate de votre téléphone pour utiliser cette fonctionnalité. S\'il vous plaît cliquez ici pour ouvrir la permission là. Vous pouvez aller aux paramètres Tastemate de votre smartphone et accorder les autorisations là.',
+        permissionDenied: 'Autorisation refusée',
+        mypocExplanationTitle: 'Le champ de texte MyPoC',
+        mypocExplanationText: 'Ce champ affiche un nom de plat général comme prédit par notre système MyPoC. N\'hésitez pas à modifier le nom si la prédiction est incorrecte!',
+        more: 'Plus',
+
+        accessLocationQuestion: 'Pouvons-nous accéder à votre position?',
+        accessLocationExplanation:'Nous avons besoin d\'un accès pour voir quelles observations sont à proximité.',
+        enableLocation: 'Veuillez activer l\'autorisation de localisation dans les paramètres Tastemate',
     },
     ja: {
         // Page title headers  ----
