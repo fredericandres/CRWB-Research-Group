@@ -306,42 +306,63 @@ export class ProfileScreen extends React.Component {
                     {this.state.selectedIndex === 4 && <EmptyComponent message={strings.loading}/>}
                     {
                         this.state.selectedIndex === 0 &&
-                        <FlatList
-                            style={styles.explorePadding}
-                            ListEmptyComponent={() => <EmptyComponent message={strings.noPictures}/>}
-                            data={this.state.observations}
-                            renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
-                            numColumns={2}
-                            keyExtractor={this._observationKeyExtractor}
-                            onEndReached={() => this._loadObservations(false)}
-                            removeClippedSubviews={true}
-                        />
+                        <View style={{flex:1}}>
+                            {
+                                this.state.observations.length === 0 && <EmptyComponent message={strings.noPictures}/>
+                            }
+                            {
+                                this.state.observations.length > 0 &&
+                                <FlatList
+                                    style={styles.explorePadding}
+                                    data={this.state.observations}
+                                    renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
+                                    numColumns={2}
+                                    keyExtractor={this._observationKeyExtractor}
+                                    onEndReached={() => this._loadObservations(false)}
+                                    removeClippedSubviews={true}
+                                />
+                            }
+                        </View>
                     }
                     {
                         this.state.selectedIndex === 1 &&
-                        <FlatList
-                            style={styles.containerPadding}
-                            data={this.state.followers}
-                            ListEmptyComponent={() => <EmptyComponent message={strings.noUsers}/>}
-                            ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
-                            renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
-                            keyExtractor={this._followingKeyExtractor}
-                            onEndReached={this._loadFollowers}
-                            removeClippedSubviews={true}
-                        />
+                        <View style={{flex:1}}>
+                            {
+                                this.state.followers.length === 0 && <EmptyComponent message={strings.noUsers}/>
+                            }
+                            {
+                                this.state.followers.length > 0 &&
+                                <FlatList
+                                    style={styles.containerPadding}
+                                    data={this.state.followers}
+                                    ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
+                                    renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
+                                    keyExtractor={this._followingKeyExtractor}
+                                    onEndReached={this._loadFollowers}
+                                    removeClippedSubviews={true}
+                                />
+                            }
+                        </View>
                     }
                     {
                         this.state.selectedIndex === 2 &&
-                        <FlatList
-                            style={styles.containerPadding}
-                            data={this.state.following}
-                            ListEmptyComponent={() => <EmptyComponent message={strings.noUsers}/>}
-                            ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
-                            renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
-                            keyExtractor={this._followingKeyExtractor}
-                            onEndReached={this._loadFollowing}
-                            removeClippedSubviews={true}
-                        />
+                        <View style={{flex:1}}>
+                            {
+                                this.state.following.length === 0 && <EmptyComponent message={strings.noUsers}/>
+                            }
+                            {
+                                this.state.following.length > 0 &&
+                                <FlatList
+                                    style={styles.containerPadding}
+                                    data={this.state.following}
+                                    ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
+                                    renderItem={({item}) => <UserComponent user={item} {...this.props}/>}
+                                    keyExtractor={this._followingKeyExtractor}
+                                    onEndReached={this._loadFollowing}
+                                    removeClippedSubviews={true}
+                                />
+                            }
+                        </View>
                     }
                 </View>
             </SafeAreaView>

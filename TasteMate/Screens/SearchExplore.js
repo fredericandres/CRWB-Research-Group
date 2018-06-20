@@ -16,7 +16,8 @@ const initialState = {
     isRefreshing: false,
     observations: [],
     searchText: '',
-    searchTextSearched: ''
+    searchTextSearched: '',
+    emptyListMessage: strings.loading
 };
 
 export class SearchExploreScreen extends React.Component {
@@ -183,17 +184,22 @@ export class SearchExploreScreen extends React.Component {
             <View name={'wrapper'} style={{flex:1}}>
                 <SearchBar placeholder={strings.foodCraving}  value={this.state.searchText} onChangeText={(text) => this._onUpdateSearchText(text)} onSubmitEditing={this._onPressSearchButton} onPressSearch={this._onPressSearchButton}/>
                 <View style={[{flex:1}, styles.explorePadding]}>
-                    <FlatList
-                        keyExtractor={this._keyExtractor}
-                        data={this.state.observations}
-                        renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
-                        numColumns={numColumns}
-                        refreshing={this.state.isRefreshing}
-                        onRefresh={this._onRefresh}
-                        onEndReached={this._onEndReached}
-                        removeClippedSubviews={true}
-                        ListEmptyComponent={() => <EmptyComponent message={this.state.emptyListMessage}/>}
-                    />
+                    {
+                        this.state.observations.length === 0 && <EmptyComponent message={this.state.emptyListMessage}/>
+                    }
+                    {
+                        this.state.observations.length > 0 &&
+                        <FlatList
+                            keyExtractor={this._keyExtractor}
+                            data={this.state.observations}
+                            renderItem={({item}) => <ObservationExploreComponent observation={item} {...this.props}/>}
+                            numColumns={numColumns}
+                            refreshing={this.state.isRefreshing}
+                            onRefresh={this._onRefresh}
+                            onEndReached={this._onEndReached}
+                            removeClippedSubviews={true}
+                        />
+                    }
                 </View>
             </View>
         );

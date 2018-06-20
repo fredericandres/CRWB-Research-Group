@@ -217,16 +217,25 @@ export class NotificationsScreen extends React.Component {
             <View style={{flex:1}}>
                 {
                     this.state.user && !this.state.user.isAnonymous &&
-                    <FlatList
-                        removeClippedSubviews={true}
-                        data={this.state.notifications}
-                        renderItem={({item}) => <NotificationComponent notification={item} user={this.state.users[item.userid]} observation={this.state.observations[item.observationid]} {...this.props}/>}
-                        refreshing={this.state.isRefreshing}
-                        onRefresh={this._onRefresh}
-                        ListEmptyComponent={() => <EmptyComponent message={this.state.emptyListMessage}/>}
-                        keyExtractor={this._keyExtractor}
-                        onEndReached={this._onEndReached}
-                    />
+                    <View style={{flex:1}}>
+                        {
+                            this.state.users.length === 0 && <EmptyComponent message={this.state.emptyListMessage}/>
+                        }
+                        {
+                            this.state.users.length > 0 &&
+                            <FlatList
+                                removeClippedSubviews={true}
+                                data={this.state.notifications}
+                                renderItem={({item}) => <NotificationComponent notification={item}
+                                                                               user={this.state.users[item.userid]}
+                                                                               observation={this.state.observations[item.observationid]} {...this.props}/>}
+                                refreshing={this.state.isRefreshing}
+                                onRefresh={this._onRefresh}
+                                keyExtractor={this._keyExtractor}
+                                onEndReached={this._onEndReached}
+                            />
+                        }
+                    </View>
                 }
                 {
                     !this.state.user || this.state.user.isAnonymous &&

@@ -203,16 +203,23 @@ export class HomeScreen extends React.Component {
             <View style={{flex:1}}>
                 {
                     this.state.user && !this.state.user.isAnonymous &&
-                    <FlatList
-                        data={this.state.observations}
-                        keyExtractor={this._keyExtractor}
-                        renderItem={({item}) => <ObservationComponent observation={item} {...this.props} onDelete={this._onDelete}/>}
-                        ListEmptyComponent={() => <EmptyComponent message={this.state.emptyListMessage}/>}
-                        ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
-                        refreshing={this.state.isRefreshing}
-                        onRefresh={this._onRefresh}
-                        onEndReached={this._onEndReached}
-                    />
+                    <View style={{flex:1}}>
+                        {
+                            this.state.observations.length === 0 && <EmptyComponent message={this.state.emptyListMessage}/>
+                        }
+                        {
+                            this.state.observations.length > 0 &&
+                            <FlatList
+                                data={this.state.observations}
+                                keyExtractor={this._keyExtractor}
+                                renderItem={({item}) => <ObservationComponent observation={item} {...this.props} onDelete={this._onDelete}/>}
+                                ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
+                                refreshing={this.state.isRefreshing}
+                                onRefresh={this._onRefresh}
+                                onEndReached={this._onEndReached}
+                            />
+                        }
+                    </View>
                 }
                 {
                     !this.state.user || this.state.user.isAnonymous &&
