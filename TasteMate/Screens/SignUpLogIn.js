@@ -208,7 +208,7 @@ export class SignUpLogInScreen extends React.Component {
 
     render() {
         return (
-            <ImageBackground source={require('../background.png')} resizeMode={'cover'}  style={{flex: 1}}>
+            <ImageBackground source={require('../background.jpg')} resizeMode={'cover'}  style={{flex: 1}}>
                 <View style={[styles.containerOpacityMain, {position:'absolute', left: 0, right: 0, top: 0, bottom: 0}]}/>
                 <SafeAreaView style={{flex:1}}>
                     <ScrollView style={{flex:1}} contentContainerStyle={{justifyContent:'space-between', flexGrow: 1}}>
