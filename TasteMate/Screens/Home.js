@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";

@@ -76,6 +76,10 @@ export default StyleSheet.create({
         fontWeight: bold,
         color: brandContrast,
     },
+    textLargeDark: {
+        fontSize: extraLargeFontSize,
+        color: brandContrast,
+    },
     textLargeBold: {
         fontSize: extraLargeFontSize,
         fontWeight: bold,

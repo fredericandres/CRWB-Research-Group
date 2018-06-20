@@ -140,7 +140,7 @@ export default strings = new LocalizedStrings({
         accessLocationExplanation: 'We need access so you can see which saved observations are nearby.',
         enableLocation: 'Please enable the location permission in the Tastemate settings of your phone to use this feature.',
 
-        // NEW
+        // NEW - 20.06.2018
         editObservation: 'Edit Observation',
         save: 'Save',
         errorMessageUsernameAlreadyInUse: 'This username is already connected to a Tastemate account.',
