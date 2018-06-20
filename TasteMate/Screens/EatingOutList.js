@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, TouchableOpacity, View} from 'react-native';
+import {FlatList, TouchableOpacity, View, Platform} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import strings from "../strings";
 import {EatingOutListComponent} from "../Components/EatingOutListComponent";
@@ -28,7 +28,7 @@ const initialState = {
     observationsList: [],
     observations: [],
     user: null,
-    userlocation: {},
+    userlocation: null,
     isRefreshing: false,
     emptyListMessage: strings.loading
 };
@@ -72,16 +72,25 @@ export class EatingOutListScreen extends React.Component {
                 if (!user) {
                     // Do nothing
                 } else {
-                    Permissions.request('location').then(response => {
-                        this.setState({locationPermission: response});
-                        if (response === 'authorized') {
-                            navigator.geolocation.getCurrentPosition((position) => {
-                                this.setState({ userlocation: position.coords}, () => this._getEatingOutObservations());
-                            });
-                        } else {
+                    if (Platform.OS === 'android' && Platform.Version < 23) {
+                        // Do not check permission pre-Marshmallow
+                        this._getEatingOutObservations();
+                    } else {
+                        Permissions.request('location').then(response => {
+                            this.setState({locationPermission: response});
+                            if (response === 'authorized') {
+                                navigator.geolocation.getCurrentPosition((position) => {
+                                    this.setState({ userlocation: position.coords}, () => this._getEatingOutObservations());
+                                });
+                            } else {
+                                this._getEatingOutObservations();
+                            }
+                        }).catch((error) => {
+                            console.log('Error while requesting location permission');
+                            console.log(error);
                             this._getEatingOutObservations();
-                        }
-                    });
+                        });
+                    }
                 }
             });
         });
@@ -116,28 +125,30 @@ export class EatingOutListScreen extends React.Component {
                     const userid = userIdSnapshot.key;
                     userIdSnapshot.forEach(function (obsIdSnapshot) {
                         const obsid = obsIdSnapshot.key;
-                        const promise = new Promise (function(resolve, reject) {
-                            firebase.database().ref(pathObservations).child(userid).child(obsid).once('value')
-                                .then((dataSnapshot) => {
-                                    console.log('Eating Out observation successfully retrieved');
-                                    let observation = dataSnapshot.toJSON();
-                                    if (curState.locationPermission &&curState.userlocation) {
-                                        observation.distance = _getDistanceFromLatLonInKm(observation);
+                        if (obsIdSnapshot.toJSON().cutleries) {
+                            const promise = new Promise(function (resolve, reject) {
+                                firebase.database().ref(pathObservations).child(userid).child(obsid).once('value')
+                                    .then((dataSnapshot) => {
+                                        console.log('Eating Out observation successfully retrieved');
+                                        let observation = dataSnapshot.toJSON();
+                                        if (curState.locationPermission && curState.userlocation) {
+                                            observation.distance = _getDistanceFromLatLonInKm(observation);
+                                        }
+                                        observations.push(observation);
+                                        resolve();
+                                    }).catch((error) => {
+                                        console.log('Error while retrieving Eating Out observation');
+                                        console.log(error);
+                                        reject(error);
                                     }
-                                    observations.push(observation);
-                                    resolve();
-                                }).catch((error) => {
-                                    console.log('Error while retrieving Eating Out observation');
-                                    console.log(error);
-                                    reject(error);
-                                }
-                            );
-                        });
-                        asyncWorkers.push(promise);
+                                );
+                            });
+                            asyncWorkers.push(promise);
+                        }
                     });
                 });
 
-                Promise.all(asyncWorkers).then(results => {
+                Promise.all(asyncWorkers).then(() => {
                     let observationsList = [];
 
                     if (curState.userlocation) {
@@ -239,50 +250,62 @@ export class EatingOutListScreen extends React.Component {
     _keyExtractor = (item, index) => item.distance.toString();
 
     render() {
+        let location = this.state.userlocation;
+        if (!location && this.state.observations) {
+            for (let i = 0; i < this.state.observations.length; i++) {
+                const obs = this.state.observations[i];
+                if (obs.location) {
+                    location = obs.location;
+                    break;
+                }
+            }
+        }
+
         return (
             <View style={{flex:1}}>
                 {
                     this.state.user && !this.state.user.isAnonymous &&
                     <View style={{ flex: 1 }}>
                         {(!this.state.observations || this.state.observations.length === 0) && <EmptyComponent message={this.state.emptyListMessage}/>}
-                        {(this.state.observations &&  this.state.observations.length > 0) &&
-                        <View style={{ flex: 1 }}>
-                            {
-                                this.state.selectedIndex === ScreensEnum.LIST &&
-                                <FlatList
-                                    data={this.state.observationsList}
-                                    renderItem={({item}) => item.observations.length > 0 ? <EatingOutListComponent observationsList={item} {...this.props}/> : <View style={{backgroundColor: 'red'}}/>}
-                                    keyExtractor={this._keyExtractor}
-                                    removeClippedSubviews={true}
-                                    onRefresh={this._getEatingOutObservations}
-                                    refreshing={this.state.isRefreshing}
-                                />
-                            }
-                            {
-                                this.state.selectedIndex === ScreensEnum.MAP &&
-                                <MapView
-                                    style={{flex: 1}}
-                                    initialRegion={{
-                                        latitude: this.state.userlocation ? this.state.userlocation.latitude : this.state.observations[0].location.latitude,
-                                        longitude: this.state.userlocation ? this.state.userlocation.longitude : this.state.observations[0].location.longitude,
-                                        latitudeDelta: 1,
-                                        longitudeDelta: 1,
-                                    }}
-                                    showsCompass={true}
-                                    showsScale={true}
-                                    showsUserLocation={true}
-                                    showsMyLocationButton={true}
-                                    showsIndoors={false}
-                                    showsBuildings={false}
-                                    showsTraffic={false}
-                                    userLocationAnnotationTitle={''}
-                                >
-                                    {this.state.observations && this.state.observations.map(obs => (
-                                        obs.location ? <MapMarkerComponent observation={obs} key={obs.observationid}/> : <View key={obs.observationid}/>
-                                    ))}
-                                </MapView>
-                            }
-                        </View>
+                        {
+                            (this.state.observations &&  this.state.observations.length > 0) &&
+                            <View style={{ flex: 1 }}>
+                                {
+                                    (this.state.selectedIndex === ScreensEnum.LIST || !location) &&
+                                    <FlatList
+                                        data={this.state.observationsList}
+                                        renderItem={({item}) => item.observations.length > 0 ? <EatingOutListComponent observationsList={item} {...this.props}/> : <View style={{backgroundColor: 'red'}}/>}
+                                        keyExtractor={this._keyExtractor}
+                                        removeClippedSubviews={true}
+                                        onRefresh={this._getEatingOutObservations}
+                                        refreshing={this.state.isRefreshing}
+                                    />
+                                }
+                                {
+                                    this.state.selectedIndex === ScreensEnum.MAP && location &&
+                                    <MapView
+                                        style={{flex: 1}}
+                                        initialRegion={{
+                                            latitude: location.latitude,
+                                            longitude: location.longitude,
+                                            latitudeDelta: 1,
+                                            longitudeDelta: 1,
+                                        }}
+                                        showsCompass={true}
+                                        showsScale={true}
+                                        showsUserLocation={true}
+                                        showsMyLocationButton={true}
+                                        showsIndoors={false}
+                                        showsBuildings={false}
+                                        showsTraffic={false}
+                                        userLocationAnnotationTitle={''}
+                                    >
+                                        {this.state.observations && this.state.observations.map(obs => (
+                                            obs.location ? <MapMarkerComponent observation={obs} key={obs.observationid}/> : <View key={obs.observationid}/>
+                                        ))}
+                                    </MapView>
+                                }
+                            </View>
                         }
                         <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={{width: 60, height: 60, borderRadius: 30, backgroundColor: brandAccent, position: 'absolute', bottom: 10, right: 10, alignItems:'center', justifyContent:'center'}}>
                             <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? 'list' : 'map'}  size={iconSizeStandard} color={brandBackground} />

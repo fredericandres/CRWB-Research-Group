@@ -10,7 +10,7 @@ export class ObservationExploreComponent extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity name={'picture'} style={[styles.explorePadding, {flex: 1, flexDirection:'row'}]} onPress={() => this.props.navigation.navigate('ObservationDetail',  { observation: this.props.observation })}>
+            <TouchableOpacity name={'picture'} style={[styles.explorePadding, {flex: 1, flexDirection:'row'}]} onPress={() => this.props.disabled ? console.log('image pressed') : this.props.navigation.navigate('ObservationDetail',  { observation: this.props.observation })}>
                 <CachedImage name={'image'} resizeMode={'cover'} source={this.props.source || ((this.props.observation && this.props.observation.imageUrl) ? {uri: this.props.observation.imageUrl} : require('../noimage.png'))} style={{flex: 1, aspectRatio: 1}}/>
             </TouchableOpacity>
         );

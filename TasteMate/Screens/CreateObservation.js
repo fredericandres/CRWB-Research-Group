@@ -149,6 +149,9 @@ export class CreateObservationScreen extends React.Component {
             if (!this.state.observation.vocabulary || Object.keys(this.state.observation.vocabulary).length < 3) {
                 missing.push(strings.tasteTerms);
             }
+            if (!this.state.observation.mypoc) {
+                missing.push(strings.myPoc);
+            }
 
             if (missing.length > 0) {
                 this._handleMissing(missing);
@@ -198,6 +201,7 @@ export class CreateObservationScreen extends React.Component {
                             // TODO: display error message
                         }
                     );
+                    observation.image = imageUrl;
                 }
             }
         } else {
@@ -210,7 +214,9 @@ export class CreateObservationScreen extends React.Component {
         if (this.isEditing) {
             this.props.onUpdate(observation);
         } else {
-            this.props.navigation.getParam('onCreate')(observation);
+            if (this.props.navigation.getParam('onCreate')) {
+                this.props.navigation.getParam('onCreate')(observation);
+            }
         }
         this.props.navigation.dismiss();
     }
@@ -449,7 +455,7 @@ export class CreateObservationScreen extends React.Component {
                         <ScrollView name={'detailsscreen'} style={[styles.containerPadding, {flex: 1}]}>
                             <View name={'picanddescription'} style={{flexDirection:'row', flex: 1}}>
                                 <View style={[styles.containerPadding, {flex:1}]}>
-                                    <ObservationExploreComponent source={{uri: this.state.observation.image || this.state.observation.imageUrl}} style={{flexShrink:1, flex: 1}}/>
+                                    <ObservationExploreComponent disabled={true} source={{uri: this.state.observation.image || this.state.observation.imageUrl}} style={{flexShrink:1, flex: 1}}/>
                                 </View>
                                 <View style={{flex: 2}}>
                                     <TextInputComponent style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />

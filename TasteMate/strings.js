@@ -178,7 +178,10 @@ export default strings = new LocalizedStrings({
 
         selected:'Selected',
         noMatchingTerms: 'There are no terms that match your search.',
-        noSelectedTerms: 'Click on one of the terms below to add it to your observation.'
+        noSelectedTerms: 'Click on one of the terms below to add it to your observation.',
+
+        // NEW - 20.06.2019
+        myPoc: 'MyPoC prediction',
     },
     fr: {
         explorer: 'Explorer',

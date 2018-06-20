@@ -3,6 +3,7 @@ import {NativeModules, Platform} from "react-native";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
+import ImageResizer from 'react-native-image-resizer';
 
 export const brandMain = '#ffc658';
 export const brandContrast = '#333333';
@@ -172,37 +173,46 @@ export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setA
     // TODO: Fix app crash on iOS picture upload
     setActivityIndicatorText(strings.uploadingPicture);
     if (Platform.OS === 'android') {
-        console.log('Adding picture to storage...');
-        const settableMetadata = {
-            contentType: 'image/jpeg',
-            customMetadata: {
-                userid: currentUser.uid
-            }
-        };
+        console.log('Resizing picture...');
 
-        const imageRef = firebase.storage().ref(path);
-        imageRef.putFile(imageUrl, settableMetadata)
-            .then((response) => {
-                console.log('Successfully added picture to storage');
-                console.log('Saving image url to item...');
-                const update = {imageUrl: response.downloadURL};
-                refToUpdate.update(update)
-                    .then(() => {
-                        console.log('Successfully updated item to include image url.');
-                        stopActivityIndicator();
-                        if (callback) {
-                            callback(response.downloadURL);
-                        }
-                    }).catch((error) => {
-                        console.log('Error during image url transmission.');
-                        stopActivityIndicator();
-                        console.log(error);
-                        // TODO: display error message
+        ImageResizer.createResizedImage(imageUrl, 2000, 2000, 'JPEG', 80, 0)
+            .then(reply => {
+                console.log('Adding picture to storage...');
+                const settableMetadata = {
+                    contentType: 'image/jpeg',
+                    customMetadata: {
+                        userid: currentUser.uid
                     }
-                );
+                };
+
+                const imageRef = firebase.storage().ref(path);
+                imageRef.putFile(reply.uri, settableMetadata)
+                    .then((response) => {
+                        console.log('Successfully added picture to storage');
+                        console.log('Saving image url to item...');
+                        const update = {imageUrl: response.downloadURL};
+                        refToUpdate.update(update)
+                            .then(() => {
+                                console.log('Successfully updated item to include image url.');
+                                stopActivityIndicator();
+                                if (callback) {
+                                    callback(response.downloadURL);
+                                }
+                            }).catch((error) => {
+                                console.log('Error during image url transmission.');
+                                stopActivityIndicator();
+                                console.log(error);
+                                // TODO: display error message
+                            }
+                        );
+                    }).catch((error) => {
+                    stopActivityIndicator();
+                    console.log('Error while adding picture to storage');
+                    console.log(error);
+                });
             }).catch((error) => {
             stopActivityIndicator();
-            console.log('Error while adding picture to storage');
+            console.log('Error while resizing picture');
             console.log(error);
         });
     }

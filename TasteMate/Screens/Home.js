@@ -124,7 +124,7 @@ export class HomeScreen extends React.Component {
         if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0 || isRefreshing)) {
             if (isRefreshing) {
                 this.setState({
-                    observations: [], length,
+                    observations: [],
                     emptyListMessage: strings.loading
                 });
             }
