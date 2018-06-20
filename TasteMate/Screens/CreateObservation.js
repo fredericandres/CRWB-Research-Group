@@ -44,7 +44,8 @@ import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorCompone
 import {EmptyComponent} from "../Components/EmptyComponent";
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
-let allVocabs = null;
+// let allVocabs = null;
+let allVocabSorted = null;
 
 export class CreateObservationScreen extends React.Component {
     static navigationOptions =({navigation})=> ({
@@ -84,15 +85,26 @@ export class CreateObservationScreen extends React.Component {
         this.inputs = {};
         const obs = this.props.navigation.getParam('observation');
 
+
+        allVocabSorted = allVocabulary.slice();
+        allVocabSorted.sort(function (a, b) {
+            if (a.value.name < b.value.name)
+                return -1;
+            if (a.value.name > b.value.name)
+                return 1;
+            return 0;
+        });
+
         this.state = {
             observation: this.isEditing ? obs : new Observation(),
             activePageIndex: this.isEditing ? PagesEnum.DETAILS : PagesEnum.SELECTIMAGE,
             locationText: (this.isEditing && obs.location) ? (obs.location.name ? obs.location.name : '') + (obs.location.address ? ', ' + obs.location.address : '') : '',
             myPocEdited: false,
-            sections: [],
+            // sections: [],
             searchText: '',
             smallEmojiSize: 0,
-            selectedEmojiSize: 0
+            selectedEmojiSize: 0,
+            searchedVocabSorted: allVocabSorted
         };
     }
 
@@ -386,27 +398,39 @@ export class CreateObservationScreen extends React.Component {
             searchText = searchText.toLowerCase();
         }
 
-        let sections = allVocabs;
-        if (!allVocabs || (searchText && searchText !== '')) {
-            let vocabMap = {};
-            allVocabulary.forEach(function (vocabItem) {
-                if (!allVocabs || vocabItem.value.name.toLowerCase().indexOf(searchText) >= 0) {
-                    if (!vocabMap[vocabItem.type]) {
-                        vocabMap[vocabItem.type] = [];
-                    }
-                    vocabMap[vocabItem.type].push(vocabItem);
+        let vocabArray = [];
+        if (!allVocabSorted || (searchText && searchText !== '')) {
+            allVocabSorted.forEach(function (vocabItem) {
+                if (!allVocabSorted || vocabItem.value.name.toLowerCase().indexOf(searchText) >= 0) {
+                    vocabArray.push(vocabItem);
                 }
             });
-            sections = [
-                {title: VocabEnum.ODOR, data: vocabMap[VocabEnum.ODOR]},
-                {title: VocabEnum.TASTE, data: vocabMap[VocabEnum.TASTE]},
-                {title: VocabEnum.TEXTURE, data: vocabMap[VocabEnum.TEXTURE]},
-            ];
+        } else {
+            vocabArray = allVocabSorted;
         }
-        this.setState({sections: sections});
-        if (!allVocabs) {
-            allVocabs = sections;
-        }
+        this.setState({searchedVocabSorted: vocabArray});
+
+        // let sections = allVocabs;
+        // if (!allVocabs || (searchText && searchText !== '')) {
+        //     let vocabMap = {};
+        //     allVocabulary.forEach(function (vocabItem) {
+        //         if (!allVocabs || vocabItem.value.name.toLowerCase().indexOf(searchText) >= 0) {
+        //             if (!vocabMap[vocabItem.type]) {
+        //                 vocabMap[vocabItem.type] = [];
+        //             }
+        //             vocabMap[vocabItem.type].push(vocabItem);
+        //         }
+        //     });
+        //     sections = [
+        //         {title: VocabEnum.ODOR, data: vocabMap[VocabEnum.ODOR]},
+        //         {title: VocabEnum.TASTE, data: vocabMap[VocabEnum.TASTE]},
+        //         {title: VocabEnum.TEXTURE, data: vocabMap[VocabEnum.TEXTURE]},
+        //     ];
+        // }
+        // this.setState({sections: sections});
+        // if (!allVocabs) {
+        //     allVocabs = sections;
+        // }
     }
 
     _onCheckBoxChanged(id) {
@@ -566,64 +590,52 @@ export class CreateObservationScreen extends React.Component {
                         this.state.activePageIndex === PagesEnum.TASTE &&
                         <ScrollView name={'adjectivesscreen'} style={{flex:1}}>
                             <SearchBar placeholder={strings.searchVocabulary}  value={this.state.searchText} onChangeText={(text) => this._onPressSearchButton(text)}/>
-                            <View style={{flex:1}}>
-                                <FlatList
-                                    name={'selectedcheckboxes'}
-                                    style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
-                                    data={Object.keys(this.state.observation.vocabulary)}
-                                    numColumns={3}
-                                    keyExtractor={(item, index) =>  'selected_' + item}
-                                    removeClippedSubviews={true}
-                                    ListHeaderComponent={() =>
-                                        <Text style={[styles.containerPadding, styles.textTitleBoldDark]}>{strings.selected}</Text>
-                                    }
-                                    ListEmptyComponent={() => <EmptyComponent message={strings.noSelectedTerms}/>}
-                                    renderItem={({item}) =>
-                                        <TouchableOpacity
-                                            style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {
-                                                flex: 1,
-                                                backgroundColor: brandMain
-                                            }]} onPress={() => this._onCheckBoxChanged(item)}>
-                                            <SettingsSwitchComponent
-                                                selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item]}
-                                                text={allVocabulary[item].value.name}/>
-                                        </TouchableOpacity>
-                                    }
-                                />
-                            </View>
-                            {
-                                Object.keys(this.state.sections).map(index => {
-                                    const section = this.state.sections[index];
-                                    return (
-                                        <View style={{flex:1}} key={section.title}>
-                                            <FlatList
-                                                name={'checkboxes'}
-                                                style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
-                                                data={section.data}
-                                                numColumns={3}
-                                                keyExtracor={(item, index) => section.title + '_' + item.key}
-                                                removeClippedSubviews={true}
-                                                ListEmptyComponent={() => <EmptyComponent message={strings.noMatchingTerms}/>}
-                                                ListHeaderComponent={() =>
-                                                    <Text style={[styles.containerPadding, styles.textTitleBoldDark]}>{section.title === VocabEnum.TASTE ? strings.flavor : section.title === VocabEnum.TEXTURE ? strings.texture : strings.odor}</Text>
-                                                }
-                                                renderItem={({item}) =>
-                                                    <TouchableOpacity
-                                                        style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {
-                                                            flex: 1,
-                                                            backgroundColor: (this.state.observation.vocabulary && this.state.observation.vocabulary[item.key] ? brandMain : brandBackground)
-                                                        }]} onPress={() => this._onCheckBoxChanged(item.key)}>
-                                                        <SettingsSwitchComponent
-                                                            selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item.key]}
-                                                            text={item.value.name}/>
-                                                    </TouchableOpacity>
-                                                }
-                                            />
-                                        </View>
-                                    );
-                                })
-
-                            }
+                            <FlatList
+                                name={'selectedcheckboxes'}
+                                style={[styles.containerPadding]}
+                                data={Object.keys(this.state.observation.vocabulary)}
+                                numColumns={3}
+                                keyExtractor={(item, index) =>  'selected_' + item}
+                                removeClippedSubviews={true}
+                                ListHeaderComponent={() =>
+                                    <Text style={[styles.containerPadding, styles.textTitleBoldDark]}>{strings.selected}</Text>
+                                }
+                                ListEmptyComponent={() => <EmptyComponent message={strings.noSelectedTerms}/>}
+                                renderItem={({item}) =>
+                                    <TouchableOpacity
+                                        style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {
+                                            flex: 1,
+                                            backgroundColor: brandMain
+                                        }]} onPress={() => this._onCheckBoxChanged(item)}>
+                                        <SettingsSwitchComponent
+                                            selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item]}
+                                            text={allVocabulary[item].value.name}/>
+                                    </TouchableOpacity>
+                                }
+                            />
+                            <FlatList
+                                name={'checkboxes'}
+                                style={[styles.containerPadding, {flex: 1}]}
+                                data={this.state.searchedVocabSorted}
+                                numColumns={3}
+                                keyExtracor={(item, index) => item.key}
+                                removeClippedSubviews={true}
+                                ListEmptyComponent={() => <EmptyComponent message={strings.noMatchingTerms}/>}
+                                ListHeaderComponent={() =>
+                                    <Text style={[styles.containerPadding, styles.textTitleBoldDark]}>{strings.all/*section.title === VocabEnum.TASTE ? strings.flavor : section.title === VocabEnum.TEXTURE ? strings.texture : strings.odor*/}</Text>
+                                }
+                                renderItem={({item}) =>
+                                    <TouchableOpacity
+                                        style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {
+                                            flex: 1,
+                                            backgroundColor: (this.state.observation.vocabulary && this.state.observation.vocabulary[item.key] ? brandMain : brandBackground)
+                                        }]} onPress={() => this._onCheckBoxChanged(item.key)}>
+                                        <SettingsSwitchComponent
+                                            selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item.key]}
+                                            text={item.value.name}/>
+                                    </TouchableOpacity>
+                                }
+                            />
                         </ScrollView>
                     }
                 </View>
@@ -647,3 +659,34 @@ export class CreateObservationScreen extends React.Component {
         );
     }
 }
+
+// Object.keys(this.state.sections).map(index => {
+//     const section = this.state.sections[index];
+//     return (
+//         <View style={{flex:1}} key={section.title}>
+//             <FlatList
+//                 name={'checkboxes'}
+//                 style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
+//                 data={section.data}
+//                 numColumns={3}
+//                 keyExtracor={(item, index) => section.title + '_' + item.key}
+//                 removeClippedSubviews={true}
+//                 ListEmptyComponent={() => <EmptyComponent message={strings.noMatchingTerms}/>}
+//                 ListHeaderComponent={() =>
+//                     <Text style={[styles.containerPadding, styles.textTitleBoldDark]}>{section.title === VocabEnum.TASTE ? strings.flavor : section.title === VocabEnum.TEXTURE ? strings.texture : strings.odor}</Text>
+//                 }
+//                 renderItem={({item}) =>
+//                     <TouchableOpacity
+//                         style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {
+//                             flex: 1,
+//                             backgroundColor: (this.state.observation.vocabulary && this.state.observation.vocabulary[item.key] ? brandMain : brandBackground)
+//                         }]} onPress={() => this._onCheckBoxChanged(item.key)}>
+//                         <SettingsSwitchComponent
+//                             selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item.key]}
+//                             text={item.value.name}/>
+//                     </TouchableOpacity>
+//                 }
+//             />
+//         </View>
+//     );
+// })

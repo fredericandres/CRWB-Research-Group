@@ -50,7 +50,9 @@ export class ObservationComponent extends React.Component {
         if (this.props.observation.vocabulary) {
             adjs = '';
             Object.keys(this.props.observation.vocabulary).map(index => {
-                adjs += '#' + allVocabulary[index].value.name + ' ';
+                if (allVocabulary[index]) {
+                    adjs += '#' + allVocabulary[index].value.name + ' ';
+                }
             });
         }
 

@@ -182,6 +182,7 @@ export default strings = new LocalizedStrings({
 
         // NEW - 20.06.2019
         myPoc: 'MyPoC prediction',
+        all: 'all',
     },
     fr: {
         explorer: 'Explorer',
@@ -349,9 +350,10 @@ export default strings = new LocalizedStrings({
         odor:'Odeur',
         texture:'Texture',
 
-        selected:'sélectionné',
+        selected:'Sélectionné',
         noMatchingTerms: 'Aucun terme ne correspond à votre recherche.',
-        noSelectedTerms: 'Cliquez sur l\'un des termes ci-dessous pour l\'ajouter à votre observation.'
+        noSelectedTerms: 'Cliquez sur l\'un des termes ci-dessous pour l\'ajouter à votre observation.',
+        all:'Tout'
     },
     ja: {
         // Page title headers  ----
@@ -522,6 +524,7 @@ export default strings = new LocalizedStrings({
 
         selected:'選択済み',
         noMatchingTerms: 'あなたの検索に該当する用語はありません',
-        noSelectedTerms: '下方にある用語の一つをクリックしてあなたの観察に追加しなさい'
+        noSelectedTerms: '下方にある用語の一つをクリックしてあなたの観察に追加しなさい',
+        all: 'すべて'
     }
 });
