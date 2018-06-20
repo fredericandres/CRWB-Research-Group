@@ -54,6 +54,8 @@ export class CreateObservationScreen extends React.Component {
         ),
     });
 
+    // TODO [FEATURE]: Disable orientation change when camera open
+
     constructor(props) {
         super(props);
         this._onPressNext = this._onPressNext.bind(this);
@@ -88,7 +90,9 @@ export class CreateObservationScreen extends React.Component {
             locationText: (this.isEditing && obs.location) ? (obs.location.name ? obs.location.name : '') + (obs.location.address ? ', ' + obs.location.address : '') : '',
             myPocEdited: false,
             sections: [],
-            searchText: ''
+            searchText: '',
+            smallEmojiSize: 0,
+            selectedEmojiSize: 0
         };
     }
 
@@ -149,7 +153,7 @@ export class CreateObservationScreen extends React.Component {
             if (!this.state.observation.vocabulary || Object.keys(this.state.observation.vocabulary).length < 3) {
                 missing.push(strings.tasteTerms);
             }
-            if (!this.state.observation.mypoc) {
+            if (!this.state.observation.mypoc || this.state.observation.mypoc === '') {
                 missing.push(strings.myPoc);
             }
 
@@ -231,53 +235,53 @@ export class CreateObservationScreen extends React.Component {
 
     /************* CAMERA ROLL *************/
 
-    async _onImageSelected(uri, base64) {
+    async _onImageSelected(uri) {
         let obs = this.state.observation;
         obs.image = uri;
         this._updateObservationState(obs);
 
-        this._sendToMyPoC(base64, this._onUpdateMypoc).then(() => {
-            console.log('MyPoC blob created');
+        this._sendToMyPoC(uri, this._onUpdateMypoc).then(() => {
+            console.log('MyPoC request sent');
         });
-
         this._onPressNext();
     }
 
-    async _sendToMyPoC(base64, action) {
-        // let obs = this.state.observation;
-        // obs.imageBase64 = base64;
-        // this._updateObservationState(obs);
-
+    async _sendToMyPoC(uri, action) {
         // Create blob from base64
-        const Blob = RNFetchBlob.polyfill.Blob;
-        Blob.build(base64, { type : 'image/jpg;BASE64' }).then((blob) => {
-            // Send blob as octet-stream POST request to MyPoC server
-            let xhr = new RNFetchBlob.polyfill.XMLHttpRequest();
-            xhr.open('POST', 'http://odbenchmark.isima.fr/CRWB-Erina-web/resource/observation');
-            xhr.setRequestHeader("Content-Type", "application/octet-stream");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === xhr.DONE) {
-                    if (xhr.status === 200) {
-                        // GET xml file for observation
-                        fetch(xhr.response)
-                            .then((response) => response.text())
-                            .then((xmlText) => {
-                                console.log('MyPoC prediction successfully retrieved');
-                                // Parse xml text into object and look for 'text' element --> MyPoC prediction of image
-                                const xml = new XMLParser().parseFromString(xmlText);
-                                const mypoc = xml.getElementsByTagName("text")[0].value;
-                                action(mypoc);
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    } else {
-                        console.log('An error occurred while sending image to MyPoC server');
-                        console.log(xhr);
-                    }
-                }
-            };
-            xhr.send(blob);
+        RNFetchBlob.fs.readFile(uri, 'base64')
+            .then((data) => {
+                const Blob = RNFetchBlob.polyfill.Blob;
+                Blob.build(data, { type : 'image/jpg;BASE64' }).then((blob) => {
+                    // Send blob as octet-stream POST request to MyPoC server
+                    let xhr = new RNFetchBlob.polyfill.XMLHttpRequest();
+                    xhr.open('POST', 'http://odbenchmark.isima.fr/CRWB-Erina-web/resource/observation');
+                    xhr.setRequestHeader("Content-Type", "application/octet-stream");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === xhr.DONE) {
+                            if (xhr.status === 200) {
+                                // GET xml file for observation
+                                fetch(xhr.response)
+                                    .then((response) => response.text())
+                                    .then((xmlText) => {
+                                        console.log('MyPoC prediction successfully retrieved');
+                                        // Parse xml text into object and look for 'text' element --> MyPoC prediction of image
+                                        const xml = new XMLParser().parseFromString(xmlText);
+                                        const mypoc = xml.getElementsByTagName("text")[0].value;
+                                        action(mypoc);
+                                    }).catch((error) => {
+                                    console.log(error);
+                                });
+                            } else {
+                                console.log('An error occurred while sending image to MyPoC server');
+                                console.log(xhr);
+                            }
+                        }
+                    };
+                    xhr.send(blob);
+                });
+            }).catch((error) => {
+            console.log('An error occurred while converting image to base64');
+            console.log(error);
         });
     }
 
@@ -435,17 +439,22 @@ export class CreateObservationScreen extends React.Component {
         this.setState({loadingIndicatorText: text});
     }
 
+    onLayout(e) {
+        const smallEmojiSize = (Dimensions.get('window').width - 4 * 6)/(Object.keys(EmojiEnum).length + 1);
+        this.setState({
+            smallEmojiSize: smallEmojiSize,
+            selectedEmojiSize: smallEmojiSize * 1.5
+        })
+    }
+
     render() {
         const myPocAlertButtons = [
             {text: strings.ok},
             {text: strings.more, onPress: () => Linking.openURL('https://github.com/fredericandres/CRWB-Research-Group/wiki/MyPoC-App')}
         ];
 
-        const smallEmojiSize = (Dimensions.get('window').width - 4 * 6)/(Object.keys(EmojiEnum).length + 1);
-        const selectedEmojiSize = smallEmojiSize * 1.5;
-
         return (
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1 }} onLayout={this.onLayout.bind(this)}>
                 <View name={'content'} style={{flex: 1}}>
                     {
                         this.state.activePageIndex === PagesEnum.SELECTIMAGE && <CameraCameraRollComponent onImageSelectedAction={this._onImageSelected}/>
@@ -466,7 +475,7 @@ export class CreateObservationScreen extends React.Component {
                                 <View style={[{flexDirection: 'row', flex: 1, flexWrap: 'wrap', justifyContent: 'center'}]}>
                                     {
                                         Object.keys(EmojiEnum).map(index => (
-                                            <TouchableOpacity style={[{justifyContent: 'center', alignSelf:'center', width: this.state.observation.rating === parseInt(index, 10) ? selectedEmojiSize : smallEmojiSize, aspectRatio: 1}]} key={index} onPress={() => this._onPressSmiley(parseInt(index, 10))}>
+                                            <TouchableOpacity style={[{justifyContent: 'center', alignSelf:'center', width: this.state.observation.rating === parseInt(index, 10) ? this.state.selectedEmojiSize : this.state.smallEmojiSize, aspectRatio: 1}]} key={index} onPress={() => this._onPressSmiley(parseInt(index, 10))}>
                                                 <Image name={'emoji'} resizeMode={'cover'} source={EmojiEnum[index]} style={{flex: 1, aspectRatio: 1}}/>
                                             </TouchableOpacity>
                                         ))

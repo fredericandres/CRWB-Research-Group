@@ -8,7 +8,6 @@ import {RNCamera} from 'react-native-camera';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import RNFetchBlob from "react-native-fetch-blob";
 import {EmptyComponent} from "./EmptyComponent";
 
 export class CameraCameraRollComponent extends React.Component {
@@ -23,6 +22,7 @@ export class CameraCameraRollComponent extends React.Component {
             cameraActive: true,
             cameraFront: false,
             cameraFlash: false,
+            loading: false
         }
     }
 
@@ -99,11 +99,20 @@ export class CameraCameraRollComponent extends React.Component {
 
     async takePicture() {
         if (this.camera) {
-            const options = { quality: 1, base64: true, fixOrientation: true, mirrorImage: this.state.cameraFront};
+            this.setState({loading: true});
+            const options = { quality: 1, base64: true, fixOrientation: false, mirrorImage: this.state.cameraFront, skipProcessing: true};
             const data = await this.camera.takePictureAsync(options);
             // TODO [FEATURE]: sound/image effects
-            CameraRoll.saveToCameraRoll(data.uri).then((uri) => {
-                this.props.onImageSelectedAction(uri, data.base64);
+            this.setState({loading: false});
+            this.props.onImageSelectedAction(data.uri);
+
+            console.log('Adding picture to camera roll');
+            CameraRoll.saveToCameraRoll(data.uri)
+                .then((uri) => {
+                    console.log('Successfully added picture to camera roll');
+                }).catch((err) => {
+                console.log("Error while adding picture to camera roll");
+                console.log(err);
             });
         }
     }
@@ -153,22 +162,19 @@ export class CameraCameraRollComponent extends React.Component {
                         return {photos: prevState.photos.concat(r.edges)};
                     });
                 }
-            })
-                .catch((err) => {
-                    console.log("Error while loading images from camera roll");
-                    console.log(err);
-                });
+            }).catch((err) => {
+                console.log("Error while loading images from camera roll");
+                console.log(err);
+            });
         }
     }
 
     _cameraRollKeyExtractor = (item, index) => item.node.image.uri;
 
     async _onSelectImageFromCameraRoll(photo) {
+        this.setState({loading: true});
         const uri = photo.node.image.uri;
-        RNFetchBlob.fs.readFile(uri, 'base64')
-            .then((data) => {
-                this.props.onImageSelectedAction(uri, data);
-            });
+        this.props.onImageSelectedAction(uri);
     }
 
     render() {
@@ -239,6 +245,10 @@ export class CameraCameraRollComponent extends React.Component {
                     <TouchableOpacity onPress={this._onPressPermissionNeeded.bind(this)} style={{flex:1, alignItems:'center', justifyContent:'center'}}>
                         <Text style={[styles.containerPadding, styles.textStandardDark, {textAlign:'center'}]}>{strings.enableCameraAndPhoto}</Text>
                     </TouchableOpacity>
+                }
+                {
+                    this.state.loading &&
+                        <View style={[styles.containerOpacityDark, {position: 'absolute', start:0, end:0, top:0, bottom:0}]}/>
                 }
             </SafeAreaView>
         );
