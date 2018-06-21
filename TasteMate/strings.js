@@ -153,7 +153,7 @@ export default strings = new LocalizedStrings({
         missingValuesTextPl: 'Please add the {0} and {1} of your dish before publishing it.',
         itemization: '{0}, {1}',
         picture:'picture',
-        tasteTerms:'3 taste terms',
+        tasteTerms:'1 taste term',
         lessThanKm: 'Less than {0}km away',
         furtherAway: 'Further away',
         noEatingOutList: 'Looks like you haven\'t added anything to your Eating Out list. Just click the cutlery icon next to an observation to add it to the list!',
@@ -182,7 +182,7 @@ export default strings = new LocalizedStrings({
 
         // NEW - 20.06.2019
         myPoc: 'MyPoC prediction',
-        all: 'all',
+        all: 'All',
     },
     fr: {
         explorer: 'Explorer',
@@ -327,7 +327,7 @@ export default strings = new LocalizedStrings({
         missingValuesTextPl: 'Veuillez ajouter le {0} et le {1} de votre plat avant de le publier.',
         itemization: '{0}, {1}',
         picture:'image',
-        tasteTerms:'3 termes gustatifs',
+        tasteTerms:'1 terme gustatif',
         lessThanKm: 'Moins de {0} km',
         furtherAway: 'Plus loin',
         noEatingOutList: 'Apparemment, vous n\'avez rien ajouté à votre liste de restaurants. Il suffit de cliquer sur l\'icône de la coutellerie à côté d\'une observation pour l\'ajouter à la liste!',
@@ -499,7 +499,7 @@ export default strings = new LocalizedStrings({
         missingValuesTextPl: '印刷する前にあなたの皿の {0} と{1}を追加してください',
         itemization: '{0}, {1}',
         picture:'写真',
-        tasteTerms:'3テイストの条件',
+        tasteTerms:'1テイストの条件',
         lessThanKm: ' {0}kmより短く',
         furtherAway: 'さらに遠く',
         noEatingOutList: 'イーティングアウトリストに何も追加したくなければ、観察の横にある刃物のアイコンをクリックしてリストに追加してください',

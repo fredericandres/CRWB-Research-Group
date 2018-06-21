@@ -45,16 +45,7 @@ export class ObservationComponent extends React.Component {
         this._addCommentToState = this._addCommentToState.bind(this);
         this._onPressMoreComments = this._onPressMoreComments.bind(this);
         this._onUpdate = this._onUpdate.bind(this);
-
-        let adjs = null;
-        if (this.props.observation.vocabulary) {
-            adjs = '';
-            Object.keys(this.props.observation.vocabulary).map(index => {
-                if (allVocabulary[index]) {
-                    adjs += '#' + allVocabulary[index].value.name + ' ';
-                }
-            });
-        }
+        this._loadAdjectives = this._loadAdjectives.bind(this);
 
         this.state = {
             overlayIsHidden: true,
@@ -65,7 +56,7 @@ export class ObservationComponent extends React.Component {
             newComment: '',
             observation: this.props.observation,
             user: this.props.user,
-            adjectives: adjs
+            adjectives: ''
         };
 
         console.log('Loading actions...');
@@ -131,6 +122,23 @@ export class ObservationComponent extends React.Component {
                 }
             );
         }
+    }
+
+    componentDidMount() {
+        this._loadAdjectives();
+    }
+
+    _loadAdjectives() {
+        let adjs = '';
+        if (this.state.observation.vocabulary) {
+            adjs = '';
+            Object.keys(this.state.observation.vocabulary).map(index => {
+                if (allVocabulary[index]) {
+                    adjs += '#' + allVocabulary[index].value.name + ' ';
+                }
+            });
+        }
+        this.setState({adjectives: adjs});
     }
 
     _onPressLikeButton() {
@@ -255,7 +263,7 @@ export class ObservationComponent extends React.Component {
     }
 
     _onUpdate(newObservation) {
-        this.setState({observation: newObservation});
+        this.setState({observation: newObservation}, () => this._loadAdjectives());
     }
 
     async _onPressShareButton() {

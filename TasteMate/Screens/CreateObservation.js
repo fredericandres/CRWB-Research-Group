@@ -162,7 +162,7 @@ export class CreateObservationScreen extends React.Component {
             if (!this.state.observation.currency) {
                 missing.push(strings.currency);
             }
-            if (!this.state.observation.vocabulary || Object.keys(this.state.observation.vocabulary).length < 3) {
+            if (!this.state.observation.vocabulary || Object.keys(this.state.observation.vocabulary).length < 1) {
                 missing.push(strings.tasteTerms);
             }
             if (!this.state.observation.mypoc || this.state.observation.mypoc === '') {
@@ -186,8 +186,7 @@ export class CreateObservationScreen extends React.Component {
                         .then(() => {
                             this._stopActivityIndicator();
                             console.log('Successfully updated observation at DB.');
-                            this.props.navigation.dismiss();
-
+                            this._closeWindow(observation, null);
                         }).catch((error) => {
                             console.log('Error during observation update transmission.');
                             this._stopActivityIndicator();
@@ -226,10 +225,12 @@ export class CreateObservationScreen extends React.Component {
     }
 
     _closeWindow(observation, url) {
-        observation.imageUrl = url;
         if (this.isEditing) {
-            this.props.onUpdate(observation);
+            if (this.props.navigation.getParam('onUpdate')) {
+                this.props.navigation.getParam('onUpdate')(observation);
+            }
         } else {
+            observation.imageUrl = url;
             if (this.props.navigation.getParam('onCreate')) {
                 this.props.navigation.getParam('onCreate')(observation);
             }

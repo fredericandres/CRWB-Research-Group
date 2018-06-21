@@ -145,7 +145,7 @@ export class CameraCameraRollComponent extends React.Component {
         const newlyLoaded = !this.photosPageInfo;
         if (newlyLoaded || this.photosPageInfo.has_next_page) {
             let variables = {
-                first: 5,
+                first: 25,
                 assetType: 'Photos',
             };
 
@@ -218,7 +218,7 @@ export class CameraCameraRollComponent extends React.Component {
                                 name={'camerarollimages'}
                                 style={[{flex: 1, flexDirection:'column'}]}
                                 data={this.state.photos}
-                                numColumns={2}
+                                numColumns={3}
                                 keyExtractor={this._cameraRollKeyExtractor}
                                 renderItem={({item}) =>
                                     <TouchableOpacity onPress={() => this._onSelectImageFromCameraRoll(item)} style={{flex:1}}>
