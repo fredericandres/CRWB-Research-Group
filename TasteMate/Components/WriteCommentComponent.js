@@ -48,7 +48,7 @@ export class WriteCommentComponent extends React.Component {
             <View style={{flex: 1, flexDirection:'row', alignItems: 'center', opacity:this.props.hidden ? 0 : 100}}>
                 <UserImageThumbnailComponent size={styles.roundProfileSmall} user={currentUser}/>
                 <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} value={this.state.newComment} onChangeText={(text) => this.setState({newComment: text})} placeholder={strings.writeComment} placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
-                <TouchableOpacity onPress={this._onPressSendButton}>
+                <TouchableOpacity onPress={this._onPressSendButton} style={styles.containerPadding}>
                     <FontAwesome name={'send'} size={iconSizeSmall} color={brandContrast}/>
                 </TouchableOpacity>
             </View>

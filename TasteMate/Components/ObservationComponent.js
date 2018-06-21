@@ -353,22 +353,20 @@ export class ObservationComponent extends React.Component {
                     </View>
                 </View>
                 <FlatList
-                    name={'comments'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}
+                    name={'comments'} style={{flex: 1, flexDirection:'column'}}
                     data={this.state.comments}
                     keyExtractor={this._keyExtractor}
                     renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
                     removeClippedSubviews={true}
                     ListHeaderComponent={() =>
                         <View>
-                            {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={styles.textStandardBold}>{strings.viewMoreComments}</Text></TouchableOpacity>}
-                        </View>
-                    }
-                    ListFooterComponent={() =>
-                        <View>
-                            {(currentUser && !currentUser.isAnonymous) && <WriteCommentComponent observation={this.state.observation} onCommentAddedAction={this._addCommentToState}/>}
+                            {this.state.moreComments && <TouchableOpacity onPress={this._onPressMoreComments}><Text style={[styles.textStandardBold, styles.containerPadding]}>{strings.viewMoreComments}</Text></TouchableOpacity>}
                         </View>
                     }
                 />
+                <View>
+                    {(currentUser && !currentUser.isAnonymous) && <WriteCommentComponent observation={this.state.observation} onCommentAddedAction={this._addCommentToState}/>}
+                </View>
             </View>
         );
     }
