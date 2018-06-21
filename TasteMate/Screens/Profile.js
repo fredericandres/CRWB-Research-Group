@@ -299,7 +299,7 @@ export class ProfileScreen extends React.Component {
                                                          isSelected={this.state.selectedIndex === 1} number={_formatNumber(this.state.user.followers)}
                                                          action={this._onPressFollowers}/>
                             <ProfileSegmentedControlItem name={'following'} text={strings.following}
-                                                         isSelected={this.state.selectedIndex === 2} number={_formatNumber(this.state.user.followers)}
+                                                         isSelected={this.state.selectedIndex === 2} number={_formatNumber(this.state.user.followees)}
                                                          action={this._onPressFollowing}/>
                         </View>
                     </View>
