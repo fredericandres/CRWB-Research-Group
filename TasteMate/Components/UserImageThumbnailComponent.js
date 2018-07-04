@@ -11,7 +11,7 @@ export class UserImageThumbnailComponent extends React.Component {
             imageUrl = this.props.uri;
         } else if (this.props.user) {
             imageUrl = this.props.user.imageUrl;
-            if (this.props.user.userid === currentUserInformation.uid) {
+            if (currentUserInformation && this.props.user.userid === currentUserInformation.uid) {
                 imageUrl = currentUserInformation.imageUrl;
             }
         }
