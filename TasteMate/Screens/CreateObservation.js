@@ -362,7 +362,6 @@ export class CreateObservationScreen extends React.Component {
         obs.location = {};
         obs.location.name = location.text;
         obs.location.address = location.place_name;
-        obs.location.googleMapsId = location.id;
         obs.location.latitude = location.geometry.coordinates[1];
         obs.location.longitude = location.geometry.coordinates[0];
         this._updateObservationState(obs);
