@@ -27,7 +27,7 @@ import {
     pathObservations,
     VocabEnum
 } from "../constants/Constants";
-import {googleApiKey} from "../constants/GoogleApiKey";
+import {googleApiKey, mapboxApiKey} from "../constants/GoogleApiKey";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import {allCurrencies} from "../constants/Currencies";
@@ -98,7 +98,7 @@ export class CreateObservationScreen extends React.Component {
         this.state = {
             observation: this.isEditing ? obs : new Observation(),
             activePageIndex: this.isEditing ? PagesEnum.DETAILS : PagesEnum.SELECTIMAGE,
-            locationText: (this.isEditing && obs.location) ? (obs.location.name ? obs.location.name : '') + (obs.location.address ? ', ' + obs.location.address : '') : '',
+            locationText: (this.isEditing && obs.location) ? obs.location.address : '',
             myPocEdited: false,
             // sections: [],
             searchText: '',
@@ -341,12 +341,18 @@ export class CreateObservationScreen extends React.Component {
 
     _onSubmitSearch() {
         let googleUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' + encodeURI(this.state.locationText) + '&key=' + googleApiKey;
-        fetch(googleUrl)
-            .then((response) => response.json())
-            .then((responseJson) => {
-                this.setState({locationResults: responseJson.results});
-            })
-            .catch((error) => {
+        const query = this.state.locationText;
+
+        console.log('asdads');
+        let mapboxUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURIComponent(query) + '.json?access_token=' + mapboxApiKey;
+        console.log(mapboxUrl);
+        RNFetchBlob.fetch('GET', mapboxUrl)
+            .then((response) => {
+                console.log(response);
+                const data = JSON.parse(response.data);
+                console.log(data);
+                this.setState({locationResults: data && data.features});
+            }).catch((error) => {
                 console.log(error);
             });
     }
@@ -354,20 +360,20 @@ export class CreateObservationScreen extends React.Component {
     _onPressLocationResult(location) {
         let obs = this.state.observation;
         obs.location = {};
-        obs.location.name = location.name;
-        obs.location.address = location.formatted_address;
-        obs.location.googleMapsId = location.place_id;
-        obs.location.latitude = location.geometry.location.lat;
-        obs.location.longitude = location.geometry.location.lng;
+        obs.location.name = location.text;
+        obs.location.address = location.place_name;
+        obs.location.googleMapsId = location.id;
+        obs.location.latitude = location.geometry.coordinates[1];
+        obs.location.longitude = location.geometry.coordinates[0];
         this._updateObservationState(obs);
         this._setLocationText();
     }
 
-    _locationResultKeyExtractor = (item, index) => item.place_id;
+    _locationResultKeyExtractor = (item, index) => item.id;
 
 
     _setLocationText(text) {
-        this.setState({locationText: text ? text : (this.state.observation.location.name || '') + (this.state.observation.location.address ? ', ' + this.state.observation.location.address : '')});
+        this.setState({locationText: text ? text : this.state.observation.location.address});
     }
 
     _updateObservationState(obs) {
@@ -550,8 +556,8 @@ export class CreateObservationScreen extends React.Component {
                                         keyExtractor={this._locationResultKeyExtractor}
                                         renderItem={({item}) =>
                                             <TouchableOpacity style={[styles.containerPadding, {flex:1, flexDirection:'column'}]} onPress={() => this._onPressLocationResult(item)}>
-                                                <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.name}</Text>
-                                                {item.formatted_address && <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.formatted_address}</Text>}
+                                                <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.text}</Text>
+                                                {item.properties && <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.place_name}</Text>}
                                             </TouchableOpacity>
                                         }
                                         ListEmptyComponent={() => <EmptyComponent message={strings.noLocationResults}/>}

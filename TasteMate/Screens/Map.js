@@ -1,8 +1,8 @@
 import React from 'react';
-import MapView from "react-native-maps";
 import strings from "../strings";
 import Permissions from "react-native-permissions";
 import {MapMarkerComponent} from "../Components/MapMarkerComponent";
+import MapboxGL from '@mapbox/react-native-mapbox-gl';
 
 export class MapScreen extends React.Component {
     static navigationOptions = ({navigation})=> ({
@@ -19,25 +19,16 @@ export class MapScreen extends React.Component {
     render() {
         this.observation = this.props.navigation.getParam('observation');
         return (
-            <MapView style={{flex: 1}}
-                     initialRegion={{
-                         latitude: this.observation.location.latitude,
-                         longitude: this.observation.location.longitude,
-                         latitudeDelta: 0.01,
-                         longitudeDelta: 0.01,
-                     }}
-                     showsCompass={true}
-                     showsScale={true}
-                     showsUserLocation={true}
-                     showsMyLocationButton={true}
-                     showsIndoors={false}
-                     showsBuildings={false}
-                     showsTraffic={false}
-                     userLocationAnnotationTitle={''}
-                     loadingEnabled={true}
+            <MapboxGL.MapView
+                style={{flex: 1}}
+                centerCoordinate={[this.observation.location.longitude, this.observation.location.latitude]}
+                compassEnabled={true}
+                showUserLocation={true}
+                zoomEnabled={true}
+                localizeLabels={true}
             >
-                <MapMarkerComponent observation={this.observation}/>
-            </MapView>
+                <MapMarkerComponent observation={this.observation} key={this.observation.observationid} selected={true}/>
+            </MapboxGL.MapView>
 
         );
     }

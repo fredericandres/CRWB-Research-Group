@@ -81,6 +81,10 @@ PODS:
     - Google-Maps-iOS-Utils (= 2.1.0)
     - GoogleMaps (= 2.5.0)
     - React
+  - react-native-image-resizer (1.0.0):
+    - React
+  - react-native-mapbox-gl (6.1.2-beta2):
+    - React
   - react-native-maps (0.21.0):
     - React
   - React/Core (0.55.4):
@@ -142,6 +146,8 @@ DEPENDENCIES:
   - Google-Maps-iOS-Utils
   - GoogleMaps
   - react-native-google-maps (from `../node_modules/react-native-maps`)
+  - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
+  - "react-native-mapbox-gl (from `../node_modules/@mapbox/react-native-mapbox-gl`)"
   - react-native-maps (from `../node_modules/react-native-maps`)
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
@@ -187,6 +193,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   react-native-google-maps:
     :path: "../node_modules/react-native-maps"
+  react-native-image-resizer:
+    :path: "../node_modules/react-native-image-resizer"
+  react-native-mapbox-gl:
+    :path: "../node_modules/@mapbox/react-native-mapbox-gl"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   yoga:
@@ -213,9 +223,11 @@ SPEC CHECKSUMS:
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   React: aa2040dbb6f317b95314968021bd2888816e03d5
   react-native-google-maps: 2cfe3b01f8422c7dae51d8764139fd70f888cfce
+  react-native-image-resizer: 04a3409e7d4ad646c4468671c69dec490def139c
+  react-native-mapbox-gl: b42480060cdcc515dfa3d8e403fb4dd32466a1b9
   react-native-maps: 066c2afcc89e18726377bcc685315f989ca22449
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: d3a1ef44ab520ecd36cba40fd2c2e3b63b3dd4a4
+PODFILE CHECKSUM: 406e0f39281fb5a10d8dd5e69ba6d9bed1407d87
 
 COCOAPODS: 1.5.2

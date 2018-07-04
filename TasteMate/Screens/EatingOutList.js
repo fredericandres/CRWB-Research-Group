@@ -1,9 +1,8 @@
 import React from 'react';
-import {FlatList, TouchableOpacity, View, Platform} from 'react-native';
+import {FlatList, Platform, TouchableOpacity, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import strings from "../strings";
 import {EatingOutListComponent} from "../Components/EatingOutListComponent";
-import MapView from 'react-native-maps';
 import Permissions from "react-native-permissions";
 import firebase from 'react-native-firebase';
 import {
@@ -19,6 +18,7 @@ import {LogInMessage} from "../Components/LogInMessage";
 import {MapMarkerComponent} from "../Components/MapMarkerComponent";
 import {EmptyComponent} from "../Components/EmptyComponent";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import MapboxGL from '@mapbox/react-native-mapbox-gl';
 
 export const NO_LOCATION = 'noLocation';
 export const FURTHER_AWAY = 'furtherAway';
@@ -79,8 +79,13 @@ export class EatingOutListScreen extends React.Component {
                         Permissions.request('location').then(response => {
                             this.setState({locationPermission: response});
                             if (response === 'authorized') {
+                                console.log('asdasd');
                                 navigator.geolocation.getCurrentPosition((position) => {
                                     this.setState({ userlocation: position.coords}, () => this._getEatingOutObservations());
+                                }).catch((error) => {
+                                    console.log('Error while getting user location');
+                                    console.log(error);
+                                    this._getEatingOutObservations();
                                 });
                             } else {
                                 this._getEatingOutObservations();
@@ -283,31 +288,22 @@ export class EatingOutListScreen extends React.Component {
                                 }
                                 {
                                     this.state.selectedIndex === ScreensEnum.MAP && location &&
-                                    <MapView
+                                    <MapboxGL.MapView
                                         style={{flex: 1}}
-                                        initialRegion={{
-                                            latitude: location.latitude,
-                                            longitude: location.longitude,
-                                            latitudeDelta: 1,
-                                            longitudeDelta: 1,
-                                        }}
-                                        showsCompass={true}
-                                        showsScale={true}
-                                        showsUserLocation={true}
-                                        showsMyLocationButton={true}
-                                        showsIndoors={false}
-                                        showsBuildings={false}
-                                        showsTraffic={false}
-                                        userLocationAnnotationTitle={''}
+                                        centerCoordinate={[location.longitude, location.latitude]}
+                                        compassEnabled={true}
+                                        showUserLocation={true}
+                                        zoomEnabled={true}
+                                        localizeLabels={true}
                                     >
                                         {this.state.observations && this.state.observations.map(obs => (
-                                            obs.location ? <MapMarkerComponent observation={obs} key={obs.observationid}/> : <View key={obs.observationid}/>
+                                            obs.location && <MapMarkerComponent observation={obs} key={obs.observationid}/>
                                         ))}
-                                    </MapView>
+                                    </MapboxGL.MapView>
                                 }
                             </View>
                         }
-                        <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={{width: 60, height: 60, borderRadius: 30, backgroundColor: brandAccent, position: 'absolute', bottom: 10, right: 10, alignItems:'center', justifyContent:'center'}}>
+                        <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={{width: 60, height: 60, borderRadius: 30, backgroundColor: brandAccent, position: 'absolute', top: 10, left: 10, alignItems:'center', justifyContent:'center'}}>
                             <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? 'list' : 'map'}  size={iconSizeStandard} color={brandBackground} />
                         </TouchableOpacity>
                     </View>
@@ -320,3 +316,4 @@ export class EatingOutListScreen extends React.Component {
         );
     }
 }
+
