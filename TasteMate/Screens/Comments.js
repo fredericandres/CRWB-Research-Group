@@ -86,7 +86,17 @@ export class CommentsScreen extends React.Component {
                 'value',
                 (dataSnapshot) => {
                     console.log('Comments successfully retrieved');
-                    let comments = dataSnapshot.toJSON() ? Object.values(dataSnapshot.toJSON()) : [];
+                    const commentsJson = dataSnapshot.toJSON();
+                    let comments = [];
+                    if (commentsJson) {
+                        Object.keys(commentsJson).map((commentid) => {
+                            let comment = commentsJson[commentid];
+                            comment.id = commentid;
+                            comments.push(comment);
+                        });
+                    }
+
+                    // let comments = dataSnapshot.toJSON() ? Object.values(dataSnapshot.toJSON()) : [];
                     this._addToCommentState(comments);
                 },
                 (error) => {
@@ -117,6 +127,14 @@ export class CommentsScreen extends React.Component {
         this._loadComments(false, false);
     }
 
+    _onCommentDelete(comment, index) {
+        let comments = this.state.comments;
+        if (index > -1) {
+            comments.splice(index, 1);
+        }
+        this.setState({comments:comments});
+    }
+
     _keyExtractor = (item, index) => item.timestamp + item.senderid;
 
     render() {
@@ -128,7 +146,7 @@ export class CommentsScreen extends React.Component {
                         style={{flex: 1, flexDirection:'column'}}
                         data={this.state.comments}
                         keyExtractor={this._keyExtractor}
-                        renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
+                        renderItem={({item, index}) => <CommentComponent comment={item} {...this.props} observation={this.observation} onDelete={() => this._onCommentDelete(item, index)}/>}
                         onEndReached={this._onEndReached}
                         onRefresh={this._onRefresh}
                         refreshing={this.state.isRefreshing}

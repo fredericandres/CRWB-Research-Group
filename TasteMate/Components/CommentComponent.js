@@ -1,17 +1,18 @@
 import React from "react";
 import styles from "../styles";
-import {Text, View} from "react-native";
-import {_navigateToScreen, pathUsers} from "../constants/Constants";
+import {Text, TouchableOpacity, View} from "react-native";
+import {_navigateToScreen, brandContrast, iconSizeSmall, pathComments, pathUsers} from "../constants/Constants";
 import TimeAgo from "react-native-timeago";
 import firebase from 'react-native-firebase';
 import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
-
-// TODO [FEATURE]: Delete comment
+import {currentUser} from "../App";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export class CommentComponent extends React.Component {
     constructor(props) {
         super(props);
         this._onPressProfile = this._onPressProfile.bind(this);
+        this._onPressDeleteButton = this._onPressDeleteButton.bind(this);
         this.comment = this.props.comment;
         this.state = {
             user: {},
@@ -39,6 +40,25 @@ export class CommentComponent extends React.Component {
         _navigateToScreen('Profile', this.props.navigation, params);
     }
 
+    _onPressDeleteButton() {
+        const userid = this.props.observation.userid;
+        const obsid = this.props.observation.observationid;
+        const commentid = this.comment.id;
+
+        console.log('Removing comment...');
+        const ref = firebase.database().ref(pathComments).child(userid).child(obsid).child(commentid);
+        ref.remove(
+            (error) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Successfully removed comment');
+                    this.props.onDelete(this.state.observation);
+                }
+            }
+        );
+    }
+
     render() {
         return (
             <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
@@ -47,6 +67,12 @@ export class CommentComponent extends React.Component {
                     <Text style={[styles.textStandardDark, {flex: 1}]}>{this.comment.message}</Text>
                     <TimeAgo name={'time'} style={styles.textSmall} time={this.comment.timestamp}/>
                 </View>
+                {
+                    currentUser && this.comment.senderid === currentUser.uid &&
+                    <TouchableOpacity onPress={this._onPressDeleteButton}>
+                        <FontAwesome name={'close'} size={iconSizeSmall} color={brandContrast} style={styles.containerPadding}/>
+                    </TouchableOpacity>
+                }
             </View>
         );
     }

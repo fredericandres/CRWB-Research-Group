@@ -26,7 +26,10 @@ export class WriteCommentComponent extends React.Component {
             comment.senderid = currentUser.uid;
             comment.message = this.state.newComment;
             comment.timestamp = firebase.database().getServerTime();
-            firebase.database().ref(pathComments).child(this.observation.userid).child(this.observation.observationid).push(
+            const ref = firebase.database().ref(pathComments).child(this.observation.userid).child(this.observation.observationid);
+            const id = ref.push().key;
+
+            ref.child(id).set(
                 comment,
                 (error) => {
                     if (error) {
@@ -36,6 +39,7 @@ export class WriteCommentComponent extends React.Component {
                     } else {
                         console.log('Successfully added comment.');
                         this.setState({newComment: ''});
+                        comment.id = id;
                         this.props.onCommentAddedAction(comment);
                     }
                 }

@@ -96,7 +96,14 @@ export class ObservationComponent extends React.Component {
             (dataSnapshot) => {
                 console.log('Received comments.');
                 const commentsJson = dataSnapshot.toJSON();
-                const comments = commentsJson ? Object.values(commentsJson) : [];
+                let comments = [];
+                if (commentsJson) {
+                    Object.keys(commentsJson).map((commentid) => {
+                        let comment = commentsJson[commentid];
+                        comment.id = commentid;
+                        comments.push(comment);
+                    });
+                }
                 _sortArrayByTimestamp(comments, true);
                 if (comments.length > 1) {
                     this.setState({moreComments: true});
@@ -308,6 +315,14 @@ export class ObservationComponent extends React.Component {
         _navigateToScreen('Comments', this.props.navigation, params);
     }
 
+    _onCommentDelete(comment, index) {
+        let comments = this.state.comments;
+        if (index > -1) {
+            comments.splice(index, 1);
+        }
+        this.setState({comments:comments});
+    }
+
     _keyExtractor = (item, index) => item.timestamp + item.senderid;
 
     render() {
@@ -336,7 +351,12 @@ export class ObservationComponent extends React.Component {
                             <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this.state.observation.location && this._onPressLocationText}> {this.state.observation.location ? this.state.observation.location.name : (this.state.observation.homemade ? strings.homemade : strings.unknownLocation)}</Text>
                         </View>
                     </View>
-                    {currentUser && this.state.observation.userid === currentUser.uid && <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>}
+                    {
+                        currentUser && this.state.observation.userid === currentUser.uid &&
+                        <TouchableOpacity name={'menubutton'} onPress={this._onPressMenuButton}>
+                            <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding}/>
+                        </TouchableOpacity>
+                    }
                 </View>
                 <View name={'picture'} style={{flexDirection:'row'}}>
                     <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
@@ -390,7 +410,7 @@ export class ObservationComponent extends React.Component {
                     name={'comments'} style={{flex: 1, flexDirection:'column'}}
                     data={this.state.comments}
                     keyExtractor={this._keyExtractor}
-                    renderItem={({item}) => <CommentComponent comment={item} {...this.props}/>}
+                    renderItem={({item, index}) => <CommentComponent comment={item} {...this.props} onDelete={() => this._onCommentDelete(item, index)}/>}
                     removeClippedSubviews={true}
                     ListHeaderComponent={() =>
                         <View>

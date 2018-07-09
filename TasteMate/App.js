@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
 
 // TODO: Firebase other DB
 // TODO: Parse strings to remove empty spaces/lines before/after when uploading to DB
+// TODO: Fix image upload going wrong when no network connection/done later
 MapboxGL.setAccessToken(mapboxApiKey);
 
 export let currentUser = null;
