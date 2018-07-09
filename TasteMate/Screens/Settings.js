@@ -9,6 +9,7 @@ import {
     _handleAuthError,
     brandAccent,
     brandBackground,
+    brandContrast,
     maxUsernameLength,
     pathUsers
 } from "../constants/Constants";
@@ -20,6 +21,7 @@ import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent
 import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
 import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
 import {ImageCacheManager} from 'react-native-cached-image'
+import {icons} from "../Attributions";
 
 const ICM = new ImageCacheManager();
 
@@ -223,6 +225,19 @@ export class SettingsScreen extends React.Component {
         });
     }
 
+    _onPressViewAttributions () {
+        let message = '';
+        for (let i = 0; i < icons.length; i++) {
+            message += icons[i] + '\n';
+        }
+
+        Alert.alert(strings.attributions, message,
+            [
+                {text: strings.ok},
+            ]
+        );
+    }
+
     render() {
         return (
             <SafeAreaView style={{flex:1}}>
@@ -232,6 +247,7 @@ export class SettingsScreen extends React.Component {
                         <UserImageThumbnailComponent size={styles.roundProfileLarge} uri={this.state.newImageUrl || this.state.imageUrl} onPress={this._selectNewProfilePicture.bind(this)} />
                         <View name={'inputWrapper'} style={styles.containerPadding}>
                             <TextInputComponent
+                                fontawesome={true}
                                 editable={false}
                                 placeholder={strings.emailAddress}
                                 value={this.state.email}
@@ -240,6 +256,7 @@ export class SettingsScreen extends React.Component {
                                 keyboardType={'email-address'}
                             />
                             <TextInputComponent
+                                fontawesome={true}
                                 placeholder={strings.username}
                                 value={this.state.username}
                                 onChangeText={(text) => this.setState({username: _formatUsername(text)})}
@@ -248,27 +265,28 @@ export class SettingsScreen extends React.Component {
                                 maxLength={maxUsernameLength}
                             />
                             <TextInputComponent
+                                fontawesome={true}
                                 placeholder={strings.location}
                                 value={this.state.location}
                                 onChangeText={(text) => this.setState({location: text})}
                                 icon={'location-arrow'}
                                 keyboardType={'default'}
                             />
-                            {/*<TextInputComponent*/}
+                            {/*<TextInputComponent fontawesome={true}*/}
                             {/*placeholder={strings.oldPassword}*/}
                             {/*icon={'lock'}*/}
                             {/*onChangeText={(text) => this.setState({oldPassword: text})}*/}
                             {/*keyboardType={'default'}*/}
                             {/*secureTextEntry={true}*/}
                             {/*/>*/}
-                            {/*<TextInputComponent*/}
+                            {/*<TextInputComponent fontawesome={true}*/}
                             {/*placeholder={strings.newPassword}*/}
                             {/*icon={'lock'}*/}
                             {/*onChangeText={(text) => this.setState({newPassword: text})}*/}
                             {/*keyboardType={'default'}*/}
                             {/*secureTextEntry={true}*/}
                             {/*/>*/}
-                            {/*<TextInputComponent*/}
+                            {/*<TextInputComponent fontawesome={true}*/}
                             {/*placeholder={strings.newPasswordRepeat}*/}
                             {/*icon={'lock'}*/}
                             {/*onChangeText={(text) => this.setState({newPasswordRepeat: text})}*/}
@@ -289,6 +307,9 @@ export class SettingsScreen extends React.Component {
                         </View>
                         <View name={'saveButtonWrapper'} style={[styles.containerPadding, {flex: 1}]}>
                             <Button name={'saveChangesButton'} onPress={this._onPressSave} title={strings.saveChanges} color={brandAccent}/>
+                        </View>
+                        <View name={'viewAttributions'} style={[styles.containerPadding, {flex: 1}]}>
+                            <Button name={'saveChangesButton'} onPress={this._onPressViewAttributions} title={strings.viewAttributions} color={brandContrast}/>
                         </View>
                     </ScrollView>
                 }

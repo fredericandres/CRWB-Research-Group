@@ -99,7 +99,7 @@ export class NotificationComponent extends React.Component {
                 </View>
                 {this.notification.type !== ActivityEnum.FOLLOW &&
                 <TouchableOpacity name={'image'} onPress={this._onPressObservation} style={[styles.containerPadding, {flex: 0, flexDirection:'column', justifyContent:'center'}]}>
-                    <CachedImage name={'userprofilepic'} resizeMode={'cover'} source={this.props.observation && this.props.observation.imageUrl ? {uri: this.props.observation.imageUrl} : require('../noimage.jpg')} style={styles.squareThumbnail}/>
+                    <CachedImage name={'userprofilepic'} resizeMode={'cover'} source={this.props.observation && this.props.observation.imageUrl ? {uri: this.props.observation.imageUrl} : require('../Images/noimage.jpg')} style={styles.squareThumbnail}/>
                 </TouchableOpacity>}
             </TouchableOpacity>
         );

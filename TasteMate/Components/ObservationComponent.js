@@ -1,5 +1,5 @@
 import React from "react";
-import {ActionSheetIOS, Alert, FlatList, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {ActionSheetIOS, Alert, FlatList, Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {
     _formatNumberWithString,
@@ -8,8 +8,10 @@ import {
     ActivityEnum,
     brandBackground,
     brandContrast,
+    brandLight,
     brandMain,
     EmojiEnum,
+    iconSizeSmall,
     iconSizeStandard,
     pathActions,
     pathComments,
@@ -30,6 +32,9 @@ import {WriteCommentComponent} from "./WriteCommentComponent";
 import {CachedImage} from 'react-native-cached-image';
 import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
 import {allVocabulary} from "../constants/Vocabulary";
+import {allCurrencies} from "../constants/Currencies";
+import {allDietaryRestrictions} from "../constants/DietaryRestrictions";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -160,6 +165,7 @@ export class ObservationComponent extends React.Component {
     }
 
     _sendAction(path) {
+        // TODO: Update like/share/EO count on object!
         let content = {};
         content[currentUser.uid] = true;
 
@@ -305,6 +311,8 @@ export class ObservationComponent extends React.Component {
     _keyExtractor = (item, index) => item.timestamp + item.senderid;
 
     render() {
+        const dietaryRestriction = this.state.observation.dietaryRestriction ? allDietaryRestrictions[this.state.observation.dietaryRestriction] : undefined;
+
         return (
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
@@ -316,14 +324,35 @@ export class ObservationComponent extends React.Component {
                                 <Text name={'mypoc'} style={styles.textTitle}> ({this.state.observation.mypoccorrector || this.state.observation.mypoc})</Text>
                             </Text>
                         </View>
-                        {this.state.observation.location && <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this._onPressLocationText}>{this.state.observation.location.name}</Text>}
+                        <View style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                            {
+                                this.state.observation.homemade &&
+                                <Image source={require('../Images/Homemade/homemade.png')} resizeMode={'cover'} style={{width: iconSizeSmall, height:iconSizeSmall, opacity: 0.3}}/>
+                            }
+                            {
+                                !this.state.observation.homemade &&
+                                <MaterialIcons name={'room-service'} size={iconSizeSmall} color={brandLight}/>
+                            }
+                            <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this.state.observation.location && this._onPressLocationText}> {this.state.observation.location ? this.state.observation.location.name : (this.state.observation.homemade ? strings.homemade : strings.unknownLocation)}</Text>
+                        </View>
                     </View>
                     {currentUser && this.state.observation.userid === currentUser.uid && <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding} onPress={this._onPressMenuButton}/>}
                 </View>
                 <View name={'picture'} style={{flexDirection:'row'}}>
                     <TouchableOpacity onPress={this._toggleOverlay.bind(this)} style={{flex: 1, aspectRatio: 1}}>
-                        <CachedImage name={'image'} resizeMode={'cover'} source={this.state.observation.imageUrl ? {uri: this.state.observation.imageUrl} : require('../noimage.jpg')} style={{flex: 1, aspectRatio: 1}}/>
+                        <CachedImage name={'image'} resizeMode={'cover'} source={this.state.observation.imageUrl ? {uri: this.state.observation.imageUrl} : require('../Images/noimage.jpg')} style={{flex: 1, aspectRatio: 1}}/>
                     </TouchableOpacity>
+                    <View style={[{padding: 6, position: 'absolute', bottom: 0, left: 0, flexDirection:'row'}]}>
+                        <View style={{flexDirection: 'row'}}>
+                            <View name={'dietaryinfo'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor: brandMain, flexDirection: 'column', justifyContent: 'center'}]}>
+                                <Image source={(dietaryRestriction && dietaryRestriction.source) || require('../Images/DietaryRestrictions/none.png')} resizeMode={'cover'} style={{width: iconSizeStandard, height:iconSizeStandard, opacity: 0.7}}/>
+                            </View>
+                            <View name={'price'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor:brandMain, flexDirection:'column', justifyContent:'center'}]}>
+                                {/*TODO [FEATURE]: Calculate price in currency of location or language*/}
+                                <Text style={[styles.textStandardDark]}>{allCurrencies[this.state.observation.currency].symbol}{this.state.observation.price}</Text>
+                            </View>
+                        </View>
+                    </View>
                     <View style={[styles.containerOpacityDark, {padding: 6, position: 'absolute', bottom: 0, right: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
                             <FontAwesome name={'thumbs-o-up'} size={iconSizeStandard} color={this.state.liked ? brandMain : brandBackground}/>
@@ -335,28 +364,25 @@ export class ObservationComponent extends React.Component {
                             <FontAwesome name={'share'} size={iconSizeStandard} color={this.state.shared ? brandMain : brandBackground}/>
                         </TouchableOpacity>
                     </View>
-                    {!this.state.overlayIsHidden &&
-                    <ScrollView style={[styles.containerOpacityDark, {position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}]} contentContainerStyle={{flexGrow: 1}}>
-                        <TouchableOpacity name={'adjectivesoverlay'} onPress={this._toggleOverlay.bind(this)} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={[styles.textLargeBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{this.state.adjectives} </Text>
-                        </TouchableOpacity>
-                    </ScrollView>
+                    {
+                        !this.state.overlayIsHidden &&
+                        <ScrollView style={[styles.containerOpacityDark, {position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}]} contentContainerStyle={{flexGrow: 1}}>
+                            <TouchableOpacity name={'adjectivesoverlay'} onPress={this._toggleOverlay.bind(this)} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                                <Text style={[styles.textLargeBoldLight, styles.containerPadding, {textAlign:'center'}]} adjustsFontSizeToFit={true} allowFontScaling={true}>{this.state.adjectives} </Text>
+                            </TouchableOpacity>
+                        </ScrollView>
                     }
                     <View name={'emojiwrapper'} style={{flexDirection:'row', position:'absolute', top:-smileySuperLargeFontSize/2, right:10, height: smileySuperLargeFontSize, width: smileySuperLargeFontSize}}>
                         <CachedImage name={'emoji'} resizeMode={'cover'} source={EmojiEnum[this.state.observation.rating]} style={{flex: 1, aspectRatio: 1}}/>
                     </View>
                 </View>
                 <View name={'details'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'row'}]}>
-
                     <View name={'description'} style={{flexDirection:'column', flex: 5}}>
                         <Text name={'description'} style={styles.textStandardDark}>{this.state.observation.description}</Text>
                         {/*TODO [FEATURE]: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                         <View name={'information'} style={{flexDirection: 'row'}}>
                             <TimeAgo name={'time'} style={styles.textSmall} time={this.state.observation.timestamp}/>
                             <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.state.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.state.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.state.observation.sharesCount, ActivityEnum.SHARE)} • {_formatNumberWithString(this.state.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
-                            <View style={{flex:1}}>
-                                <Text name={'price'} style={[styles.textSmall, {alignSelf:'flex-end'}]}>{this.state.observation.currency} {this.state.observation.price}</Text>
-                            </View>
                         </View>
                     </View>
                 </View>

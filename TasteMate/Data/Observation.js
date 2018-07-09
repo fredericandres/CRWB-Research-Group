@@ -14,8 +14,9 @@ export default class Observation {
     timestamp;
     googleMapsId;
     address;
+    homemade;
 
-    constructor(userid, observationid, dishname, mypoc, mypoccorrector, location, description, image, price, currency, rating, vocabulary, timestamp) {
+    constructor(userid, observationid, dishname, mypoc, mypoccorrector, location, description, image, price, currency, rating, vocabulary, timestamp, homemade, dietaryRestriction) {
         this.userid = userid;
         this.observationid = observationid;
         this.dishname = dishname;
@@ -26,9 +27,11 @@ export default class Observation {
         this.image = image;
         this.price = price;
         // TODO [FEATURE]: Set currency according to location
-        this.currency = currency ? currency : 'USD';
+        this.currency = currency || 'USD';
         this.rating = rating ? rating : 5;
         this.vocabulary = vocabulary ? vocabulary : {};
         this.timestamp = timestamp;
+        this.homemade = homemade;
+        this.dietaryRestriction = dietaryRestriction || 'none';
     }
 }

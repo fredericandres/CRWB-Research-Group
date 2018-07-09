@@ -15,7 +15,7 @@ export class UserImageThumbnailComponent extends React.Component {
                 imageUrl = currentUserInformation.imageUrl;
             }
         }
-        const defaultSource = require('../nouser.jpg');
+        const defaultSource = require('../Images/nouser.jpg');
         const source = imageUrl ? {uri: imageUrl} : defaultSource;
 
         return (

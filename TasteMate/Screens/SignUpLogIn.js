@@ -208,7 +208,7 @@ export class SignUpLogInScreen extends React.Component {
 
     render() {
         return (
-            <ImageBackground source={require('../background.jpg')} resizeMode={'cover'}  style={{flex: 1}}>
+            <ImageBackground source={require('../Images/background.jpg')} resizeMode={'cover'}  style={{flex: 1}}>
                 <View style={[styles.containerOpacityMain, {position:'absolute', left: 0, right: 0, top: 0, bottom: 0}]}/>
                 <SafeAreaView style={{flex:1}}>
                     <ScrollView style={{flex:1}} contentContainerStyle={{justifyContent:'space-between', flexGrow: 1}}>
@@ -232,6 +232,7 @@ export class SignUpLogInScreen extends React.Component {
                         </View>
                         <View name={'inputWrapper'} style={[styles.containerPadding, {flex: 2}]}>
                             <TextInputComponent
+                                fontawesome={true}
                                 ref={ input => {this.inputs['email'] = input;}}
                                 placeholder={strings.emailAddress}
                                 value={this.state.email}
@@ -242,6 +243,7 @@ export class SignUpLogInScreen extends React.Component {
                                 onSubmitEditing={() => {this._focusNextField('password');}}
                             />
                             <TextInputComponent
+                                fontawesome={true}
                                 ref={ input => {this.inputs['password'] = input;}}
                                 placeholder={strings.password}
                                 icon={'lock'}
@@ -255,6 +257,7 @@ export class SignUpLogInScreen extends React.Component {
                                 }}
                             />
                             <TextInputComponent
+                                fontawesome={true}
                                 hidden={!this.state.signUpActive}
                                 ref={ input => {this.inputs['username'] = input;}}
                                 placeholder={strings.username}
@@ -267,6 +270,7 @@ export class SignUpLogInScreen extends React.Component {
                                 maxLength={maxUsernameLength}
                             />
                             <TextInputComponent
+                                fontawesome={true}
                                 hidden={!this.state.signUpActive}
                                 ref={ input => {this.inputs['location'] = input;}}
                                 placeholder={strings.location}

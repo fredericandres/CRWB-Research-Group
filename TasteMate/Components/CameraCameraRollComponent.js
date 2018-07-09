@@ -100,16 +100,16 @@ export class CameraCameraRollComponent extends React.Component {
     async takePicture() {
         if (this.camera) {
             this.setState({loading: true});
-            const options = { quality: 1, base64: true, fixOrientation: false, mirrorImage: this.state.cameraFront, skipProcessing: true};
+            const options = { quality: 1, base64: true, fixOrientation: false, mirrorImage: this.state.cameraFront};
             const data = await this.camera.takePictureAsync(options);
             // TODO [FEATURE]: sound/image effects
-            this.setState({loading: false});
-            this.props.onImageSelectedAction(data.uri);
 
             console.log('Adding picture to camera roll');
             CameraRoll.saveToCameraRoll(data.uri)
                 .then((uri) => {
                     console.log('Successfully added picture to camera roll');
+                    this.setState({loading: false});
+                    this.props.onImageSelectedAction(uri);
                 }).catch((err) => {
                 console.log("Error while adding picture to camera roll");
                 console.log(err);

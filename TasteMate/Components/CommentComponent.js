@@ -6,6 +6,8 @@ import TimeAgo from "react-native-timeago";
 import firebase from 'react-native-firebase';
 import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
 
+// TODO [FEATURE]: Delete comment
+
 export class CommentComponent extends React.Component {
     constructor(props) {
         super(props);

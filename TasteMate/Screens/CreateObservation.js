@@ -5,7 +5,6 @@ import {
     FlatList,
     Image,
     Linking,
-    Picker,
     SafeAreaView,
     ScrollView,
     Text,
@@ -15,24 +14,23 @@ import {
 import {NavBarCloseButton} from "../Components/NavBarButton";
 import Observation from "../Data/Observation";
 import strings from "../strings";
-import styles from "../styles";
+import styles, {smallFontSize, standardFontSize} from "../styles";
 import {
     _addPictureToStorage,
     brandAccent,
     brandBackground,
     brandContrast,
+    brandLight,
     brandMain,
     EmojiEnum,
     iconSizeStandard,
-    pathObservations,
-    VocabEnum
+    pathObservations
 } from "../constants/Constants";
-import {googleApiKey, mapboxApiKey} from "../constants/GoogleApiKey";
+import {mapboxApiKey} from "../constants/GoogleApiKey";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import {allCurrencies} from "../constants/Currencies";
 import {SearchBar} from "../Components/SearchBar";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {SettingsSwitchComponent} from "../Components/SettingsSwitchComponent";
 import {allVocabulary} from "../constants/Vocabulary";
 import RNFetchBlob from 'react-native-fetch-blob';
@@ -42,6 +40,9 @@ import {currentUser} from "../App";
 import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
 import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
 import {EmptyComponent} from "../Components/EmptyComponent";
+import {Dropdown} from 'react-native-material-dropdown';
+import {allDietaryRestrictions} from "../constants/DietaryRestrictions";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 // let allVocabs = null;
@@ -56,23 +57,14 @@ export class CreateObservationScreen extends React.Component {
     });
 
     // TODO [FEATURE]: Disable orientation change when camera open
+    // TODO [FEATURE]: Crop/add filters to picture
 
     constructor(props) {
         super(props);
         this._onPressNext = this._onPressNext.bind(this);
         this._onPressPrevious = this._onPressPrevious.bind(this);
 
-        this._onUpdateDescription = this._onUpdateDescription.bind(this);
-        this._onPressSmiley = this._onPressSmiley.bind(this);
-        this._onUpdateDishname = this._onUpdateDishname.bind(this);
-        this._onUpdateLocation = this._onUpdateLocation.bind(this);
-        this._onUpdateMypoc = this._onUpdateMypoc.bind(this);
-        this._onUpdatePrice = this._onUpdatePrice.bind(this);
-        this._onUpdateCurrency = this._onUpdateCurrency.bind(this);
-
-        this._onCheckBoxChanged = this._onCheckBoxChanged.bind(this);
         this._onSubmitSearch = this._onSubmitSearch.bind(this);
-
         this._sendToMyPoC = this._sendToMyPoC.bind(this);
         this._onImageSelected = this._onImageSelected.bind(this);
 
@@ -84,7 +76,6 @@ export class CreateObservationScreen extends React.Component {
         this.isEditing = this.props.navigation.getParam('edit');
         this.inputs = {};
         const obs = this.props.navigation.getParam('observation');
-
 
         allVocabSorted = allVocabulary.slice();
         allVocabSorted.sort(function (a, b) {
@@ -148,25 +139,25 @@ export class CreateObservationScreen extends React.Component {
             // Check if all mandatory fields have content
             let missing = [];
             if (!this.state.observation.image && !this.state.observation.imageUrl) {
-                missing.push(strings.picture);
+                missing.push(strings.picture.toLowerCase());
             }
             if (!this.state.observation.description) {
-                missing.push(strings.description);
+                missing.push(strings.description.toLowerCase());
             }
             if (!this.state.observation.dishname) {
-                missing.push(strings.dishname);
+                missing.push(strings.dishname.toLowerCase());
             }
             if (!this.state.observation.price) {
-                missing.push(strings.price);
+                missing.push(strings.price.toLowerCase());
             }
             if (!this.state.observation.currency) {
-                missing.push(strings.currency);
+                missing.push(strings.currency.toLowerCase());
             }
             if (!this.state.observation.vocabulary || Object.keys(this.state.observation.vocabulary).length < 1) {
                 missing.push(strings.tasteTerms);
             }
             if (!this.state.observation.mypoc || this.state.observation.mypoc === '') {
-                missing.push(strings.myPoc);
+                missing.push(strings.myPoc.toLowerCase());
             }
 
             if (missing.length > 0) {
@@ -180,6 +171,8 @@ export class CreateObservationScreen extends React.Component {
                     // Remove location property if no actual location was connected to it
                     delete observation.location;
                 }
+
+                // TODO: Remove leading zeros of price (e.g. 0010 -> 10 but 0.99 -> 0.99)
 
                 if (this.isEditing) {
                     firebase.database().ref(pathObservations).child(currentUser.uid).child(this.state.observation.observationid).update(observation)
@@ -340,21 +333,16 @@ export class CreateObservationScreen extends React.Component {
     }
 
     _onSubmitSearch() {
-        let googleUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' + encodeURI(this.state.locationText) + '&key=' + googleApiKey;
         const query = this.state.locationText;
-
-        console.log('asdads');
         let mapboxUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURIComponent(query) + '.json?access_token=' + mapboxApiKey;
-        console.log(mapboxUrl);
         RNFetchBlob.fetch('GET', mapboxUrl)
             .then((response) => {
-                console.log(response);
                 const data = JSON.parse(response.data);
-                console.log(data);
                 this.setState({locationResults: data && data.features});
             }).catch((error) => {
                 console.log(error);
-            });
+            }
+        );
     }
 
     _onPressLocationResult(location) {
@@ -385,9 +373,21 @@ export class CreateObservationScreen extends React.Component {
         this._updateObservationState(obs);
     }
 
-    _onUpdateCurrency(currency) {
+    _onUpdateCurrency(currency, index) {
         let obs = this.state.observation;
         obs.currency = currency;
+        this._updateObservationState(obs);
+    }
+
+    _onUpdateDietaryRestrictions(dietaryRestriction, index) {
+        let obs = this.state.observation;
+        obs.dietaryRestriction = dietaryRestriction;
+        this._updateObservationState(obs);
+    }
+
+    _onPressHomemade(bool) {
+        let obs = this.state.observation;
+        obs.homemade = bool;
         this._updateObservationState(obs);
     }
 
@@ -497,7 +497,7 @@ export class CreateObservationScreen extends React.Component {
                                     <ObservationExploreComponent disabled={true} source={{uri: this.state.observation.image || this.state.observation.imageUrl}} style={{flexShrink:1, flex: 1}}/>
                                 </View>
                                 <View style={{flex: 2}}>
-                                    <TextInputComponent style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />
+                                    <TextInputComponent fontawesome={true} style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />
                                 </View>
                             </View>
                             <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
@@ -513,6 +513,7 @@ export class CreateObservationScreen extends React.Component {
                                 </View>
                             </View>
                             <TextInputComponent
+                                fontawesome={true}
                                 placeholder={strings.dishname}
                                 value={this.state.observation.dishname}
                                 onChangeText={(text) => this._onUpdateDishname(text)}
@@ -522,12 +523,13 @@ export class CreateObservationScreen extends React.Component {
                                 onSubmitEditing={() => {this._focusNextField('mypoc');}}
                             />
                             <TextInputComponent
+                                fontawesome={true}
                                 ref={ input => {this.inputs['mypoc'] = input;}}
                                 info={true}
                                 infoTitle={strings.mypocExplanationTitle}
                                 infoText={strings.mypocExplanationText}
                                 infoButtons={myPocAlertButtons}
-                                placeholder={this.state.observation.mypoc || 'prediction loading...'}
+                                placeholder={this.state.observation.mypoc || strings.predictionLoading}
                                 value={this.state.myPocEdited ? this.state.observation.mypoccorrector : this.state.observation.mypoc}
                                 onChangeText={(text) => this._onUpdateMypoc(text)}
                                 icon={'question'}
@@ -536,6 +538,7 @@ export class CreateObservationScreen extends React.Component {
                                 onSubmitEditing={() => {this._focusNextField('location');}}
                             />
                             <TextInputComponent
+                                fontawesome={true}
                                 ref={ input => {this.inputs['location'] = input;}}
                                 placeholder={strings.location}
                                 value={this.state.locationText}
@@ -564,32 +567,65 @@ export class CreateObservationScreen extends React.Component {
                                 </View>
                             }
                             <TextInputComponent
-                                placeholder={strings.price}
-                                value={this.state.observation.price}
-                                onChangeText={(text) => this._onUpdatePrice(text)}
-                                icon={'money'}
-                                keyboardType={'numeric'}
+                                materialcommunityicons={true}
+                                icon={'food-off'}
                                 style={{flex:1}}
-                                returnKeyType={'next'}
+                                firstItem={
+                                    <Dropdown
+                                        style={{flex:1, paddingBottom:0}}
+                                        fontSize={standardFontSize}
+                                        textColor={brandContrast}
+                                        baseColor={brandLight}
+                                        labelFontSize={smallFontSize}
+                                        label={strings.dietaryInfo}
+                                        labelHeight={15}
+                                        data={Object.values(allDietaryRestrictions)}
+                                        labelExtractor={(item, index) => item.value.name}
+                                        valueExtractor={(item, index) => item.key}
+                                        onChangeText={this._onUpdateDietaryRestrictions.bind(this)}
+                                        value={allDietaryRestrictions[this.state.observation.dietaryRestriction].value.name}
+                                        inputContainerStyle={{borderBottomColor: 'transparent', borderWidth:0}}
+                                    />
+                                }
                             />
                             <View style={{flexDirection: 'row', flex: 1}}>
                                 <View style={[styles.containerPadding, styles.leftRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>
-                                    <FontAwesome name={'dollar'} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
+                                    <MaterialIcons name={'room-service'} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
                                 </View>
-                                <View style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 6, backgroundColor: brandBackground}]}>
-                                    <Picker
-                                        style={{flex:1}}
-                                        prompt={strings.selectCurrency}
-                                        selectedValue={this.state.observation.currency}
-                                        onValueChange={(itemValue, itemIndex) => this._onUpdateCurrency(itemValue)}>
-                                        {
-                                            Object.keys(allCurrencies).map(currency => (
-                                                <Picker.Item key={currency} label={currency + ' - ' + allCurrencies[currency].name} value={currency} />
-                                            ))
-                                        }
-                                    </Picker>
-                                </View>
+                                <TouchableOpacity onPress={() => this._onPressHomemade(false)} style={[styles.containerPadding, {flex: 3, backgroundColor: this.state.observation.homemade ? brandBackground : brandMain, alignItems:'center', justifyContent:'center'}]}>
+                                    <Text style={styles.textStandardDark}>{strings.eatingOut}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this._onPressHomemade(true)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 3, backgroundColor: this.state.observation.homemade ? brandMain : brandBackground, alignItems:'center', justifyContent:'center'}]}>
+                                    <Text style={styles.textStandardDark}>{strings.homemade}</Text>
+                                </TouchableOpacity>
                             </View>
+                            <TextInputComponent
+                                entypo={true}
+                                placeholder={strings.price}
+                                value={this.state.observation.price}
+                                onChangeText={(text) => this._onUpdatePrice(text)}
+                                icon={'price-tag'}
+                                keyboardType={'numeric'}
+                                style={{flex:1}}
+                                returnKeyType={'next'}
+                                secondItem={
+                                    <Dropdown
+                                        style={{flex:1}}
+                                        fontSize={standardFontSize}
+                                        textColor={brandContrast}
+                                        baseColor={brandLight}
+                                        labelFontSize={smallFontSize}
+                                        label={strings.currency}
+                                        labelHeight={15}
+                                        data={Object.values(allCurrencies)}
+                                        labelExtractor={(item, index) => item.symbol + ' - ' + item.name}
+                                        valueExtractor={(item, index) => item.code}
+                                        onChangeText={this._onUpdateCurrency}
+                                        value={this.state.observation.currency || ' '}
+                                        inputContainerStyle={{borderBottomColor: 'transparent', borderWidth:0}}
+                                    />
+                                }
+                            />
                         </ScrollView>
                     }
                     {

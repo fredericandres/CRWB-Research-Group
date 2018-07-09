@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
     },
 });
 
-// TODO: Use something other than Google Maps!
 // TODO: Firebase other DB
 // TODO: Parse strings to remove empty spaces/lines before/after when uploading to DB
 MapboxGL.setAccessToken(mapboxApiKey);

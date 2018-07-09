@@ -10,8 +10,8 @@ const opacity = '99';
 export const smileySuperLargeFontSize = 50;
 const extraLargeFontSize = 36;
 const largeFontSize = 18;
-const standardFontSize = 14;
-const smallFontSize = 10;
+export const standardFontSize = 14;
+export const smallFontSize = 10;
 
 const largeThumbnailSize = ((Dimensions.get('window').height - Header.HEIGHT - Header.HEIGHT - (Platform.OS === 'android' ? StatusBar.currentHeight : 0)) * 2 / 7) * 3 / 5;
 const standardThumbnailSize = 40;
@@ -87,6 +87,10 @@ export default StyleSheet.create({
     textTitle: {
         fontSize: largeFontSize,
         color: brandContrast,
+    },
+    textTitleLight: {
+        fontSize: largeFontSize,
+        color: brandBackground,
     },
     textStandardDark: {
         fontSize: standardFontSize,

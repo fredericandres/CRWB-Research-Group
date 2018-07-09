@@ -23,15 +23,15 @@ export const maxUsernameLength = 15;
 
 // TODO [FEATURE]: Custom icons based on logo
 export const EmojiEnum = Object.freeze({
-    1:require('../Images/emojienum_1.png'),
-    2:require('../Images/emojienum_2.png'),
-    3:require('../Images/emojienum_3.png'),
-    4:require('../Images/emojienum_4.png'),
-    5:require('../Images/emojienum_5.png'),
-    6:require('../Images/emojienum_6.png'),
-    7:require('../Images/emojienum_7.png'),
-    8:require('../Images/emojienum_8.png'),
-    9:require('../Images/emojienum_9.png')
+    1:require('../Images/Emoji/emojienum_1.png'),
+    2:require('../Images/Emoji/emojienum_2.png'),
+    3:require('../Images/Emoji/emojienum_3.png'),
+    4:require('../Images/Emoji/emojienum_4.png'),
+    5:require('../Images/Emoji/emojienum_5.png'),
+    6:require('../Images/Emoji/emojienum_6.png'),
+    7:require('../Images/Emoji/emojienum_7.png'),
+    8:require('../Images/Emoji/emojienum_8.png'),
+    9:require('../Images/Emoji/emojienum_9.png')
 });
 export const VocabEnum = Object.freeze({TASTE:1, TEXTURE:2, ODOR:3});
 export const ActivityEnum = Object.freeze({LIKE:'LIKE', SHARE:'SHARE', CUTLERY:'CUTLERY', FOLLOW:'FOLLOW', COMMENT:'COMMENT'});
