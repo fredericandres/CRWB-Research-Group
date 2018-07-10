@@ -49,6 +49,7 @@ export class SettingsScreen extends React.Component {
         this._clearImageCacheAndClose = this._clearImageCacheAndClose.bind(this);
 
         // TODO [FEATURE]: Let user change his password
+        // TODO [FEATURE]: Action on notification preferences set
         this.state = {
             email: currentUser ? currentUser.email : '',
             username: currentUserInformation.username,
@@ -201,7 +202,7 @@ export class SettingsScreen extends React.Component {
                     currentUserInformation.username = userInfo.username;
                 }
                 if (userInfo.location) {
-                    currentUserInformation.location = userInfo.location;
+                    currentUserInformation.location = userInfo.location.trim();
                 }
 
                 this._uploadNewPicture();
@@ -272,7 +273,8 @@ export class SettingsScreen extends React.Component {
                                 icon={'location-arrow'}
                                 keyboardType={'default'}
                             />
-                            {/*<TextInputComponent fontawesome={true}*/}
+                            {/*<TextInputComponent
+                            fontawesome={true}*/}
                             {/*placeholder={strings.oldPassword}*/}
                             {/*icon={'lock'}*/}
                             {/*onChangeText={(text) => this.setState({oldPassword: text})}*/}

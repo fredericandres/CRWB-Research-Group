@@ -36,6 +36,8 @@ import {allCurrencies} from "../constants/Currencies";
 import {allDietaryRestrictions} from "../constants/DietaryRestrictions";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
+// TODO: Hide rest of description if longer than 1 line
+
 export class ObservationComponent extends React.Component {
     constructor(props) {
         super(props);

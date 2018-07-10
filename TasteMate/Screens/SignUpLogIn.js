@@ -109,7 +109,7 @@ export class SignUpLogInScreen extends React.Component {
                                     _setActivityIndicatorText(strings.savingUserInformation);
                                     firebase.database().ref(pathUsers).child(credentials.user.uid).set({
                                         username: this.state.username,
-                                        location: this.state.location,
+                                        location: this.state.location.trim(),
                                         userid: credentials.user.uid
                                     }, (error) => {
                                         if (error) {
@@ -262,7 +262,7 @@ export class SignUpLogInScreen extends React.Component {
                                 ref={ input => {this.inputs['username'] = input;}}
                                 placeholder={strings.username}
                                 value={this.state.username}
-                                onChangeText={(text) => this.setState({username: _formatUsername(text.toLowerCase())})}
+                                onChangeText={(text) => this.setState({username: _formatUsername(text)})}
                                 icon={'user'}
                                 keyboardType={'default'}
                                 returnKeyType={'next'}

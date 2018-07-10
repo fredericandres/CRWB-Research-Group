@@ -166,7 +166,7 @@ export function _handleAuthError(error, action) {
 }
 
 export function _formatUsername(username) {
-    return username.toLowerCase().replace(/[^0-9a-z]/g, '');
+    return username.replace(/[^0-9A-Za-z]/g, '');
 }
 
 export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setActivityIndicatorText, stopActivityIndicator) {

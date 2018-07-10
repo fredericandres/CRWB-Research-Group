@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
         backgroundColor: brandMain
     },
     navHeaderTitleStyle: {
-        //fontWeight: 'bold',
         fontFamily: tastemateFont,
         fontWeight:'200',
         fontSize: Platform.OS === 'ios' ? 20 : 30,
@@ -34,7 +33,6 @@ const styles = StyleSheet.create({
 });
 
 // TODO: Firebase other DB
-// TODO: Parse strings to remove empty spaces/lines before/after when uploading to DB
 // TODO: Fix image upload going wrong when no network connection/done later
 MapboxGL.setAccessToken(mapboxApiKey);
 

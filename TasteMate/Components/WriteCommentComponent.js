@@ -24,7 +24,7 @@ export class WriteCommentComponent extends React.Component {
         if (this.state.newComment.length > 0) {
             let comment = {};
             comment.senderid = currentUser.uid;
-            comment.message = this.state.newComment;
+            comment.message = this.state.newComment.trim();
             comment.timestamp = firebase.database().getServerTime();
             const ref = firebase.database().ref(pathComments).child(this.observation.userid).child(this.observation.observationid);
             const id = ref.push().key;

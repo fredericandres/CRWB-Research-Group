@@ -67,6 +67,7 @@ export class CreateObservationScreen extends React.Component {
         this._onSubmitSearch = this._onSubmitSearch.bind(this);
         this._sendToMyPoC = this._sendToMyPoC.bind(this);
         this._onImageSelected = this._onImageSelected.bind(this);
+        this._onUpdateMypoc = this._onUpdateMypoc.bind(this);
 
         this._startActivityIndicator = this._startActivityIndicator.bind(this);
         this._stopActivityIndicator = this._stopActivityIndicator.bind(this);
@@ -156,7 +157,7 @@ export class CreateObservationScreen extends React.Component {
             if (!this.state.observation.vocabulary || Object.keys(this.state.observation.vocabulary).length < 1) {
                 missing.push(strings.tasteTerms);
             }
-            if (!this.state.observation.mypoc || this.state.observation.mypoc === '') {
+            if ((!this.state.observation.mypoc || this.state.observation.mypoc === '') && !this.state.observation.mypoccorrector) {
                 missing.push(strings.myPoc.toLowerCase());
             }
 
@@ -172,7 +173,14 @@ export class CreateObservationScreen extends React.Component {
                     delete observation.location;
                 }
 
-                // TODO: Remove leading zeros of price (e.g. 0010 -> 10 but 0.99 -> 0.99)
+                // Clean up text input: Remove spaces etc in front of/after; pare price as float
+                observation.description = observation.description.trim();
+                observation.dishname = observation.dishname.trim();
+                if (observation.mypoccorrector) {
+                    observation.mypoccorrector = observation.mypoccorrector.toLowerCase().trim();
+                }
+                const priceNumber = parseFloat(observation.price);
+                observation.price = priceNumber ? priceNumber.toFixed(2).toString() : '0';
 
                 if (this.isEditing) {
                     firebase.database().ref(pathObservations).child(currentUser.uid).child(this.state.observation.observationid).update(observation)
@@ -273,7 +281,7 @@ export class CreateObservationScreen extends React.Component {
                                         // Parse xml text into object and look for 'text' element --> MyPoC prediction of image
                                         const xml = new XMLParser().parseFromString(xmlText);
                                         const mypoc = xml.getElementsByTagName("text")[0].value;
-                                        action(mypoc);
+                                        action(mypoc, true);
                                     }).catch((error) => {
                                     console.log(error);
                                 });
@@ -311,13 +319,13 @@ export class CreateObservationScreen extends React.Component {
         this._updateObservationState(obs);
     }
 
-    _onUpdateMypoc(mypoc) {
+    _onUpdateMypoc(mypoc, fromServer) {
         let obs = this.state.observation;
-        if (!this.state.observation.mypoc ) {
+        if (!this.state.observation.mypoc && fromServer) {
             obs.mypoc = mypoc;
         } else {
             this.setState({myPocEdited:true});
-            obs.mypoccorrector = mypoc.toLowerCase();
+            obs.mypoccorrector = mypoc;
             // TODO [FEATURE]: Send corrected info to mypoc server
         }
         this._updateObservationState(obs);
@@ -369,7 +377,8 @@ export class CreateObservationScreen extends React.Component {
 
     _onUpdatePrice(price) {
         let obs = this.state.observation;
-        obs.price = price + '';
+        price = price.replace(/[^0-9.]/g, '');
+        obs.price = price;
         this._updateObservationState(obs);
     }
 
@@ -538,35 +547,6 @@ export class CreateObservationScreen extends React.Component {
                                 onSubmitEditing={() => {this._focusNextField('location');}}
                             />
                             <TextInputComponent
-                                fontawesome={true}
-                                ref={ input => {this.inputs['location'] = input;}}
-                                placeholder={strings.location}
-                                value={this.state.locationText}
-                                onEndEditing={this._onSubmitSearch}
-                                onChangeText={(text) => this._onUpdateLocation(text)}
-                                icon={'location-arrow'}
-                                keyboardType={'default'}
-                                returnKeyType={'search'}
-                            />
-                            {
-                                this.state.locationResults &&
-                                <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
-                                    <FlatList
-                                        name={'locationresults'}
-                                        removeClippedSubviews={true}
-                                        data={this.state.locationResults}
-                                        keyExtractor={this._locationResultKeyExtractor}
-                                        renderItem={({item}) =>
-                                            <TouchableOpacity style={[styles.containerPadding, {flex:1, flexDirection:'column'}]} onPress={() => this._onPressLocationResult(item)}>
-                                                <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.text}</Text>
-                                                {item.properties && <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.place_name}</Text>}
-                                            </TouchableOpacity>
-                                        }
-                                        ListEmptyComponent={() => <EmptyComponent message={strings.noLocationResults}/>}
-                                    />
-                                </View>
-                            }
-                            <TextInputComponent
                                 materialcommunityicons={true}
                                 icon={'food-off'}
                                 style={{flex:1}}
@@ -626,6 +606,35 @@ export class CreateObservationScreen extends React.Component {
                                     />
                                 }
                             />
+                            <TextInputComponent
+                                fontawesome={true}
+                                ref={ input => {this.inputs['location'] = input;}}
+                                placeholder={strings.location}
+                                value={this.state.locationText}
+                                onEndEditing={this._onSubmitSearch}
+                                onChangeText={(text) => this._onUpdateLocation(text)}
+                                icon={'location-arrow'}
+                                keyboardType={'default'}
+                                returnKeyType={'search'}
+                            />
+                            {
+                                this.state.locationResults &&
+                                <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
+                                    <FlatList
+                                        name={'locationresults'}
+                                        removeClippedSubviews={true}
+                                        data={this.state.locationResults}
+                                        keyExtractor={this._locationResultKeyExtractor}
+                                        renderItem={({item}) =>
+                                            <TouchableOpacity style={[styles.containerPadding, {flex:1, flexDirection:'column'}]} onPress={() => this._onPressLocationResult(item)}>
+                                                <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.text}</Text>
+                                                {item.properties && <Text style={[styles.textStandardDark, styles.containerPadding]}>{item.place_name}</Text>}
+                                            </TouchableOpacity>
+                                        }
+                                        ListEmptyComponent={() => <EmptyComponent message={strings.noLocationResults}/>}
+                                    />
+                                </View>
+                            }
                         </ScrollView>
                     }
                     {
