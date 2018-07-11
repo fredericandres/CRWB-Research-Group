@@ -164,8 +164,9 @@ dependencies {
     compile "com.android.support:appcompat-v7:27.1.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':react-native-firebase')
-    implementation 'com.google.firebase:firebase-core:16.0.0'
-    implementation "com.google.firebase:firebase-auth:16.0.1"
+    implementation "com.google.android.gms:play-services-base:15.0.1"
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation "com.google.firebase:firebase-auth:16.0.2"
     implementation "com.google.firebase:firebase-database:16.0.1"
     implementation "com.google.firebase:firebase-functions:16.0.1"
     implementation "com.google.firebase:firebase-storage:16.0.1"

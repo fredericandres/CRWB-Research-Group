@@ -170,50 +170,47 @@ export function _formatUsername(username) {
 }
 
 export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setActivityIndicatorText, stopActivityIndicator) {
-    // TODO: Fix app crash on iOS picture upload
     setActivityIndicatorText(strings.uploadingPicture);
-    if (Platform.OS === 'android') {
-        console.log('Resizing picture...');
+    console.log('Resizing picture...');
 
-        ImageResizer.createResizedImage(imageUrl, 2000, 2000, 'JPEG', 80, 0)
-            .then(reply => {
-                console.log('Adding picture to storage...');
-                const settableMetadata = {
-                    contentType: 'image/jpeg',
-                    customMetadata: {
-                        userid: currentUser.uid
-                    }
-                };
+    ImageResizer.createResizedImage(imageUrl, 2000, 2000, 'JPEG', 80, 0)
+        .then(reply => {
+            console.log('Adding picture to storage...');
+            const settableMetadata = {
+                contentType: 'image/jpeg',
+                customMetadata: {
+                    userid: currentUser.uid
+                }
+            };
 
-                const imageRef = firebase.storage().ref(path);
-                imageRef.putFile(reply.uri, settableMetadata)
-                    .then((response) => {
-                        console.log('Successfully added picture to storage');
-                        console.log('Saving image url to item...');
-                        const update = {imageUrl: response.downloadURL};
-                        refToUpdate.update(update)
-                            .then(() => {
-                                console.log('Successfully updated item to include image url.');
-                                stopActivityIndicator();
-                                if (callback) {
-                                    callback(response.downloadURL);
-                                }
-                            }).catch((error) => {
-                                console.log('Error during image url transmission.');
-                                stopActivityIndicator();
-                                console.log(error);
-                                // TODO: display error message
+            const imageRef = firebase.storage().ref(path);
+            imageRef.putFile(reply.uri, settableMetadata)
+                .then((response) => {
+                    console.log('Successfully added picture to storage');
+                    console.log('Saving image url to item...');
+                    const update = {imageUrl: response.downloadURL};
+                    refToUpdate.update(update)
+                        .then(() => {
+                            console.log('Successfully updated item to include image url.');
+                            stopActivityIndicator();
+                            if (callback) {
+                                callback(response.downloadURL);
                             }
-                        );
-                    }).catch((error) => {
-                    stopActivityIndicator();
-                    console.log('Error while adding picture to storage');
-                    console.log(error);
-                });
-            }).catch((error) => {
-            stopActivityIndicator();
-            console.log('Error while resizing picture');
-            console.log(error);
-        });
-    }
+                        }).catch((error) => {
+                            console.log('Error during image url transmission.');
+                            stopActivityIndicator();
+                            console.log(error);
+                            // TODO: display error message
+                        }
+                    );
+                }).catch((error) => {
+                stopActivityIndicator();
+                console.log('Error while adding picture to storage');
+                console.log(error);
+            });
+        }).catch((error) => {
+        stopActivityIndicator();
+        console.log('Error while resizing picture');
+        console.log(error);
+    });
 }
