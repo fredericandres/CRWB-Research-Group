@@ -10,6 +10,9 @@ import {
     brandAccent,
     brandBackground,
     brandContrast,
+    iconEmail,
+    iconLocation,
+    iconUser,
     maxUsernameLength,
     pathUsers
 } from "../constants/Constants";
@@ -253,7 +256,7 @@ export class SettingsScreen extends React.Component {
                                 placeholder={strings.emailAddress}
                                 value={this.state.email}
                                 onChangeText={(text) => this.setState({email: text})}
-                                icon={'envelope'}
+                                icon={iconEmail}
                                 keyboardType={'email-address'}
                             />
                             <TextInputComponent
@@ -261,7 +264,7 @@ export class SettingsScreen extends React.Component {
                                 placeholder={strings.username}
                                 value={this.state.username}
                                 onChangeText={(text) => this.setState({username: _formatUsername(text)})}
-                                icon={'user'}
+                                icon={iconUser}
                                 keyboardType={'default'}
                                 maxLength={maxUsernameLength}
                             />
@@ -270,27 +273,27 @@ export class SettingsScreen extends React.Component {
                                 placeholder={strings.location}
                                 value={this.state.location}
                                 onChangeText={(text) => this.setState({location: text})}
-                                icon={'location-arrow'}
+                                icon={iconLocation}
                                 keyboardType={'default'}
                             />
                             {/*<TextInputComponent
                             fontawesome={true}*/}
                             {/*placeholder={strings.oldPassword}*/}
-                            {/*icon={'lock'}*/}
+                            {/*icon={iconLock}*/}
                             {/*onChangeText={(text) => this.setState({oldPassword: text})}*/}
                             {/*keyboardType={'default'}*/}
                             {/*secureTextEntry={true}*/}
                             {/*/>*/}
                             {/*<TextInputComponent fontawesome={true}*/}
                             {/*placeholder={strings.newPassword}*/}
-                            {/*icon={'lock'}*/}
+                            {/*icon={iconLock}*/}
                             {/*onChangeText={(text) => this.setState({newPassword: text})}*/}
                             {/*keyboardType={'default'}*/}
                             {/*secureTextEntry={true}*/}
                             {/*/>*/}
                             {/*<TextInputComponent fontawesome={true}*/}
                             {/*placeholder={strings.newPasswordRepeat}*/}
-                            {/*icon={'lock'}*/}
+                            {/*icon={iconLock}*/}
                             {/*onChangeText={(text) => this.setState({newPasswordRepeat: text})}*/}
                             {/*keyboardType={'default'}*/}
                             {/*secureTextEntry={true}*/}

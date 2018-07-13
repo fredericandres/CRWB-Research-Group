@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {_navigateToScreen, brandContrast, iconSizeNavBar} from "../constants/Constants";
+import {_navigateToScreen, brandContrast, iconNew, iconSignOut, iconSizeNavBar, iconUser} from "../constants/Constants";
 import styles from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import strings from "../strings";
@@ -49,7 +49,7 @@ export class NavBarButton extends React.Component {
 export class NavBarProfileButton extends React.Component {
     render() {
         return (
-            <NavBarButton icon={'user-o'} {...this.props}/>
+            <NavBarButton icon={iconUser} {...this.props}/>
         );
     }
 }
@@ -57,7 +57,7 @@ export class NavBarProfileButton extends React.Component {
 export class NavBarCreateObsButton extends React.Component {
     render() {
         return (
-            <NavBarButton icon={'plus'} {...this.props}/>
+            <NavBarButton icon={iconNew} {...this.props}/>
         );
     }
 }
@@ -75,7 +75,7 @@ export class NavBarLogoutButton extends React.Component {
     render() {
         const nav = this.props.nav;
         return (
-            <NavBarButton nav={nav} icon={'sign-out'} action={() => {nav.dismiss(); firebase.auth().signOut();}}/>
+            <NavBarButton nav={nav} icon={iconSignOut} action={() => {nav.dismiss(); firebase.auth().signOut();}}/>
         );
     }
 }

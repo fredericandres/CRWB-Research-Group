@@ -11,6 +11,11 @@ import {
     brandLight,
     brandMain,
     EmojiEnum,
+    iconCutlery,
+    iconEatingOut,
+    iconLike,
+    iconMenu,
+    iconShare,
     iconSizeSmall,
     iconSizeStandard,
     pathActions,
@@ -348,7 +353,7 @@ export class ObservationComponent extends React.Component {
                             }
                             {
                                 !this.state.observation.homemade &&
-                                <MaterialIcons name={'room-service'} size={iconSizeSmall} color={brandLight}/>
+                                <MaterialIcons name={iconEatingOut} size={iconSizeSmall} color={brandLight}/>
                             }
                             <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this.state.observation.location && this._onPressLocationText}> {this.state.observation.location ? this.state.observation.location.name : (this.state.observation.homemade ? strings.homemade : strings.unknownLocation)}</Text>
                         </View>
@@ -356,7 +361,7 @@ export class ObservationComponent extends React.Component {
                     {
                         currentUser && this.state.observation.userid === currentUser.uid &&
                         <TouchableOpacity name={'menubutton'} onPress={this._onPressMenuButton}>
-                            <FontAwesome name={'ellipsis-v'} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding}/>
+                            <FontAwesome name={iconMenu} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding}/>
                         </TouchableOpacity>
                     }
                 </View>
@@ -380,13 +385,13 @@ export class ObservationComponent extends React.Component {
                     </View>
                     <View style={[styles.containerOpacityDark, {padding: 6, position: 'absolute', bottom: 0, right: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
-                            <FontAwesome name={'thumbs-o-up'} size={iconSizeStandard} color={this.state.liked ? brandMain : brandBackground}/>
+                            <FontAwesome name={iconLike} size={iconSizeStandard} color={this.state.liked ? brandMain : brandBackground}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressCutleryButton}>
-                            <FontAwesome name={'cutlery'} size={iconSizeStandard} color={this.state.cutleried ? brandMain : brandBackground}/>
+                            <FontAwesome name={iconCutlery} size={iconSizeStandard} color={this.state.cutleried ? brandMain : brandBackground}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressShareButton}>
-                            <FontAwesome name={'share'} size={iconSizeStandard} color={this.state.shared ? brandMain : brandBackground}/>
+                            <FontAwesome name={iconShare} size={iconSizeStandard} color={this.state.shared ? brandMain : brandBackground}/>
                         </TouchableOpacity>
                     </View>
                     {

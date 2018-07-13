@@ -2,7 +2,18 @@ import React from "react";
 import {Alert, CameraRoll, FlatList, Image, Platform, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
 import styles from "../styles";
 import strings from "../strings";
-import {brandContrast, brandMain, iconSizeLarge, iconSizeStandard} from "../constants/Constants";
+import {
+    brandContrast,
+    brandMain,
+    iconCamera,
+    iconCameraBack,
+    iconCameraFront,
+    iconCameraRoll,
+    iconFlashOff,
+    iconFlashOn,
+    iconSizeLarge,
+    iconSizeStandard
+} from "../constants/Constants";
 import Permissions from 'react-native-permissions'
 import {RNCamera} from 'react-native-camera';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -186,16 +197,16 @@ export class CameraCameraRollComponent extends React.Component {
                     <View style={{flex:1}}>
                         <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center', backgroundColor: brandMain}}>
                             {!this.state.cameraActive && <TouchableOpacity name={'camerabutton'} onPress={this._onPressCameraButton.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
-                                <FontAwesome name={'camera-retro'} size={iconSizeStandard} color={brandContrast}/>
+                                <FontAwesome name={iconCamera} size={iconSizeStandard} color={brandContrast}/>
                             </TouchableOpacity>}
                             {this.state.cameraActive && <TouchableOpacity name={'flashbutton'} onPress={this._onPressFlash.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
-                                <Ionicons name={this.state.cameraFlash ? 'ios-flash' : 'ios-flash-outline'} size={iconSizeStandard} color={brandContrast}/>
+                                <Ionicons name={this.state.cameraFlash ? iconFlashOn : iconFlashOff} size={iconSizeStandard} color={brandContrast}/>
                             </TouchableOpacity>}
                             {this.state.cameraActive && <TouchableOpacity name={'photobutton'} onPress={this._onPressPhotoButton.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
-                                <Ionicons name={'md-photos'} size={iconSizeStandard} color={brandContrast}/>
+                                <Ionicons name={iconCameraRoll} size={iconSizeStandard} color={brandContrast}/>
                             </TouchableOpacity>}
                             {this.state.cameraActive && <TouchableOpacity name={'switchbutton'} onPress={this._onPressCameraSwitch.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
-                                <MaterialCommunityIcons name={this.state.cameraFront ? 'camera-front-variant' : 'camera-rear-variant'} size={iconSizeStandard} color={brandContrast}/>
+                                <MaterialCommunityIcons name={this.state.cameraFront ? iconCameraFront : iconCameraBack} size={iconSizeStandard} color={brandContrast}/>
                             </TouchableOpacity>}
                         </View>
                         {
@@ -248,7 +259,7 @@ export class CameraCameraRollComponent extends React.Component {
                 }
                 {
                     this.state.loading &&
-                        <View style={[styles.containerOpacityDark, {position: 'absolute', start:0, end:0, top:0, bottom:0}]}/>
+                    <View style={[styles.containerOpacityDark, {position: 'absolute', start:0, end:0, top:0, bottom:0}]}/>
                 }
             </SafeAreaView>
         );

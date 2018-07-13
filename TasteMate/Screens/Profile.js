@@ -1,7 +1,16 @@
 import React from 'react';
 import {FlatList, SafeAreaView, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
-import {_formatNumber, _sortArrayByTimestamp, brandMain, pathFollow, pathUsers} from "../constants/Constants";
+import {
+    _formatNumber,
+    _sortArrayByTimestamp,
+    brandMain,
+    iconCog,
+    iconFollow,
+    iconUnfollow,
+    pathFollow,
+    pathUsers
+} from "../constants/Constants";
 import styles from "../styles";
 import {UserComponent} from "../Components/UserComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
@@ -68,15 +77,15 @@ export class ProfileScreen extends React.Component {
             ),
             headerRight: (
                 params.myProfile ?
-                    <NavBarButton nav={navigation} icon={'cog'} screen={'Settings'} myProfile={true} onDataChangedAction={() => params.onDataChangedAction()}/>
+                    <NavBarButton nav={navigation} icon={iconCog} screen={'Settings'} myProfile={true} onDataChangedAction={() => params.onDataChangedAction()}/>
                     :
                     currentUser && !(params.user === currentUser.uid) && !(params.user && params.user.userid === currentUser.uid) ?
                         <View>
                             {params.isFollowing &&
-                            <NavBarFollowUnFollowButton icon={'user-following'}
+                            <NavBarFollowUnFollowButton icon={iconUnfollow}
                                                         action={() => _toggleFollowUnfollow(navigation)}/>}
                             {!params.isFollowing &&
-                            <NavBarFollowUnFollowButton icon={'user-follow'}
+                            <NavBarFollowUnFollowButton icon={iconFollow}
                                                         action={() => _toggleFollowUnfollow(navigation)}/>}
                         </View>
                         : <View/>

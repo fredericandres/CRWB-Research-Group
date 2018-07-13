@@ -1,7 +1,14 @@
 import React from "react";
 import styles from "../styles";
 import {Text, TouchableOpacity, View} from "react-native";
-import {_navigateToScreen, brandContrast, iconSizeSmall, pathComments, pathUsers} from "../constants/Constants";
+import {
+    _navigateToScreen,
+    brandContrast,
+    iconClose,
+    iconSizeSmall,
+    pathComments,
+    pathUsers
+} from "../constants/Constants";
 import TimeAgo from "react-native-timeago";
 import firebase from 'react-native-firebase';
 import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
@@ -70,7 +77,7 @@ export class CommentComponent extends React.Component {
                 {
                     currentUser && this.comment.senderid === currentUser.uid &&
                     <TouchableOpacity onPress={this._onPressDeleteButton}>
-                        <FontAwesome name={'close'} size={iconSizeSmall} color={brandContrast} style={styles.containerPadding}/>
+                        <FontAwesome name={iconClose} size={iconSizeSmall} color={brandContrast} style={styles.containerPadding}/>
                     </TouchableOpacity>
                 }
             </View>

@@ -8,7 +8,18 @@ import {NotificationsScreen} from "./Screens/Notifications";
 import {ProfileScreen} from "./Screens/Profile";
 import {EatingOutListScreen} from "./Screens/EatingOutList";
 import {CreateObservationScreen} from "./Screens/CreateObservation";
-import {brandContrast, brandLight, brandMain, iconSizeStandard, pathUsers, tastemateFont} from './constants/Constants';
+import {
+    brandContrast,
+    brandLight,
+    brandMain,
+    iconCutlery,
+    iconHome,
+    iconNotifications,
+    iconSearch,
+    iconSizeStandard,
+    pathUsers,
+    tastemateFont
+} from './constants/Constants';
 import {Platform, StatusBar, StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
@@ -180,13 +191,13 @@ const TabBar = createBottomTabNavigator(
                 const { routeName } = navigation.state;
                 let iconName;
                 if (routeName === 'Home') {
-                    iconName = `home`;
+                    iconName = iconHome;
                 } else if (routeName === 'Explore') {
-                    iconName = `search`;
+                    iconName = iconSearch;
                 } else if (routeName === 'Notifications') {
-                    iconName = `heart`;
+                    iconName = iconNotifications;
                 } else if (routeName === 'EatingOutList') {
-                    iconName = `cutlery`;
+                    iconName = iconCutlery;
                 }
                 return <FontAwesome name={iconName} size={iconSizeStandard} color={tintColor} />;
             },

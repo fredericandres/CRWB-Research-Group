@@ -9,7 +9,7 @@ import {
     _navigateToScreen,
     _sortArrayByTimestamp,
     brandAccent,
-    brandBackground,
+    brandBackground, iconList, iconMap,
     iconSizeStandard,
     pathActions,
     pathObservations
@@ -304,7 +304,7 @@ export class EatingOutListScreen extends React.Component {
                             </View>
                         }
                         <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={{width: 60, height: 60, borderRadius: 30, backgroundColor: brandAccent, position: 'absolute', top: 10, left: 10, alignItems:'center', justifyContent:'center'}}>
-                            <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? 'list' : 'map'}  size={iconSizeStandard} color={brandBackground} />
+                            <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? iconList : iconMap}  size={iconSizeStandard} color={brandBackground} />
                         </TouchableOpacity>
                     </View>
                 }

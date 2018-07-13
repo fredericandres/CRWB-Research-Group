@@ -1,7 +1,7 @@
 import React from "react";
 import {TextInput, TouchableOpacity, View} from "react-native";
 import styles from "../styles";
-import {brandBackground, brandContrast, brandLight, brandMain, iconSizeSmall} from "../constants/Constants";
+import {brandBackground, brandContrast, brandLight, brandMain, iconSearch, iconSizeSmall} from "../constants/Constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export class SearchBar extends React.Component {
@@ -27,7 +27,7 @@ export class SearchBar extends React.Component {
                         onChangeText={this.props.onChangeText}
                     />
                     <TouchableOpacity onPress={this.props.onPressSearch} style={styles.containerPadding}>
-                        <FontAwesome name={'search'} size={iconSizeSmall} color={brandContrast}/>
+                        <FontAwesome name={iconSearch} size={iconSizeSmall} color={brandContrast}/>
                     </TouchableOpacity>
                 </View>
             </View>

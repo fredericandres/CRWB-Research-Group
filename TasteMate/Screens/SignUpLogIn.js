@@ -6,6 +6,10 @@ import {
     _formatUsername,
     _handleAuthError,
     brandAccent,
+    iconEmail,
+    iconLocation,
+    iconPassword,
+    iconUser,
     maxUsernameLength,
     pathUsers,
     tastemateFont
@@ -237,7 +241,7 @@ export class SignUpLogInScreen extends React.Component {
                                 placeholder={strings.emailAddress}
                                 value={this.state.email}
                                 onChangeText={(text) => this.setState({email: text})}
-                                icon={'envelope'}
+                                icon={iconEmail}
                                 keyboardType={'email-address'}
                                 returnKeyType={'next'}
                                 onSubmitEditing={() => {this._focusNextField('password');}}
@@ -246,7 +250,7 @@ export class SignUpLogInScreen extends React.Component {
                                 fontawesome={true}
                                 ref={ input => {this.inputs['password'] = input;}}
                                 placeholder={strings.password}
-                                icon={'lock'}
+                                icon={iconPassword}
                                 onChangeText={(text) => this.setState({password: text})}
                                 keyboardType={'default'}
                                 secureTextEntry={true}
@@ -263,7 +267,7 @@ export class SignUpLogInScreen extends React.Component {
                                 placeholder={strings.username}
                                 value={this.state.username}
                                 onChangeText={(text) => this.setState({username: _formatUsername(text)})}
-                                icon={'user'}
+                                icon={iconUser}
                                 keyboardType={'default'}
                                 returnKeyType={'next'}
                                 onSubmitEditing={() => {this._focusNextField('location');}}
@@ -276,7 +280,7 @@ export class SignUpLogInScreen extends React.Component {
                                 placeholder={strings.location}
                                 value={this.state.location}
                                 onChangeText={(text) => this.setState({location: text})}
-                                icon={'location-arrow'}
+                                icon={iconLocation}
                                 keyboardType={'default'}
                                 returnKeyType={'join'}
                                 returnKeyLabel={strings.signUp}

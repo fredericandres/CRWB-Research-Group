@@ -23,6 +23,14 @@ import {
     brandLight,
     brandMain,
     EmojiEnum,
+    iconCutlery,
+    iconDescription,
+    iconDietaryInfo,
+    iconDishName,
+    iconEatingOut,
+    iconLocation,
+    iconMyPoc,
+    iconPrice,
     iconSizeSmall,
     iconSizeStandard,
     pathObservations
@@ -509,7 +517,7 @@ export class CreateObservationScreen extends React.Component {
                                     <ObservationExploreComponent disabled={true} source={{uri: this.state.observation.image || this.state.observation.imageUrl}} style={{flexShrink:1, flex: 1}}/>
                                 </View>
                                 <View style={{flex: 2}}>
-                                    <TextInputComponent fontawesome={true} style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={'file-text'} keyboardType={'default'} multiline={true} />
+                                    <TextInputComponent fontawesome={true} style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={iconDescription} keyboardType={'default'} multiline={true} />
                                 </View>
                             </View>
                             <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
@@ -529,7 +537,7 @@ export class CreateObservationScreen extends React.Component {
                                 placeholder={strings.dishname}
                                 value={this.state.observation.dishname}
                                 onChangeText={(text) => this._onUpdateDishname(text)}
-                                icon={'food-apple'}
+                                icon={iconDishName}
                                 keyboardType={'default'}
                                 returnKeyType={'next'}
                                 onSubmitEditing={() => {this._focusNextField('mypoc');}}
@@ -544,14 +552,14 @@ export class CreateObservationScreen extends React.Component {
                                 placeholder={this.state.observation.mypoc ? strings.formatString(strings.mypocPrediction, this.state.observation.mypoc) : strings.predictionLoading}
                                 value={this.state.myPocEdited ? this.state.observation.mypoccorrector : this.state.observation.mypoc}
                                 onChangeText={(text) => this._onUpdateMypoc(text)}
-                                icon={'question'}
+                                icon={iconMyPoc}
                                 keyboardType={'default'}
                                 returnKeyType={'next'}
                                 onSubmitEditing={() => {this._focusNextField('location');}}
                             />
                             <TextInputComponent
                                 materialcommunityicons={true}
-                                icon={'food-off'}
+                                icon={iconDietaryInfo}
                                 style={{flex:1}}
                                 firstItem={
                                     <Dropdown
@@ -574,10 +582,10 @@ export class CreateObservationScreen extends React.Component {
                             />
                             <View style={{flexDirection: 'row', flex: 1}}>
                                 <View style={[styles.containerPadding, styles.leftRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>
-                                    <FontAwesome name={'cutlery'} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
+                                    <FontAwesome name={iconCutlery} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
                                 </View>
                                 <TouchableOpacity onPress={() => this._onPressHomemade(false)} style={[styles.containerPadding, {flex: 3, flexDirection:'row', backgroundColor: this.state.observation.homemade ? brandBackground : brandMain, alignItems:'center', justifyContent:'center'}]}>
-                                    <MaterialIcons name={'room-service'} size={iconSizeSmall} color={brandContrast} style={styles.containerPadding}/>
+                                    <MaterialIcons name={iconEatingOut} size={iconSizeSmall} color={brandContrast} style={styles.containerPadding}/>
                                     <Text style={styles.textStandardDark}>{strings.eatingOut}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this._onPressHomemade(true)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 3, flexDirection:'row', backgroundColor: this.state.observation.homemade ? brandMain : brandBackground, alignItems:'center', justifyContent:'center'}]}>
@@ -590,7 +598,7 @@ export class CreateObservationScreen extends React.Component {
                                 placeholder={strings.price}
                                 value={this.state.observation.price}
                                 onChangeText={(text) => this._onUpdatePrice(text)}
-                                icon={'price-tag'}
+                                icon={iconPrice}
                                 keyboardType={'numeric'}
                                 style={{flex:1}}
                                 returnKeyType={'next'}
@@ -620,7 +628,7 @@ export class CreateObservationScreen extends React.Component {
                                 value={this.state.locationText}
                                 onEndEditing={this._onSubmitSearch}
                                 onChangeText={(text) => this._onUpdateLocation(text)}
-                                icon={'location-arrow'}
+                                icon={iconLocation}
                                 keyboardType={'default'}
                                 returnKeyType={'search'}
                             />
