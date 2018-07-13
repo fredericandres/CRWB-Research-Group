@@ -33,10 +33,10 @@ target 'TasteMate' do
   pod 'Folly', :podspec => "#{rn_path}/third-party-podspecs/Folly.podspec"
 
   # react-native-maps dependencies
-  pod 'react-native-maps', path: rn_maps_path
-  pod 'react-native-google-maps', path: rn_maps_path  # Remove this line if you don't want to support GoogleMaps on iOS
-  pod 'GoogleMaps'  # Remove this line if you don't want to support GoogleMaps on iOS
-  pod 'Google-Maps-iOS-Utils' # Remove this line if you don't want to support GoogleMaps on iOS
+  # pod 'react-native-maps', path: rn_maps_path
+  # pod 'react-native-google-maps', path: rn_maps_path  # Remove this line if you don't want to support GoogleMaps on iOS
+  # pod 'GoogleMaps'  # Remove this line if you don't want to support GoogleMaps on iOS
+  # pod 'Google-Maps-iOS-Utils' # Remove this line if you don't want to support GoogleMaps on iOS
   # pod 'RNShare', :path => '../node_modules/react-native-share'
 
   # Required by RNFirebase
@@ -50,6 +50,8 @@ target 'TasteMate' do
 
   # Mapbox
   pod 'react-native-mapbox-gl', :path => '../node_modules/@mapbox/react-native-mapbox-gl'
+
+  pod 'react-native-camera', path: '../node_modules/react-native-camera'
 
 end
 
