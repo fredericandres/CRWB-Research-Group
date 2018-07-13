@@ -23,6 +23,7 @@ import {
     brandLight,
     brandMain,
     EmojiEnum,
+    iconSizeSmall,
     iconSizeStandard,
     pathObservations
 } from "../constants/Constants";
@@ -43,6 +44,7 @@ import {EmptyComponent} from "../Components/EmptyComponent";
 import {Dropdown} from 'react-native-material-dropdown';
 import {allDietaryRestrictions} from "../constants/DietaryRestrictions";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 // let allVocabs = null;
@@ -68,6 +70,7 @@ export class CreateObservationScreen extends React.Component {
         this._sendToMyPoC = this._sendToMyPoC.bind(this);
         this._onImageSelected = this._onImageSelected.bind(this);
         this._onUpdateMypoc = this._onUpdateMypoc.bind(this);
+        this._onUpdateCurrency = this._onUpdateCurrency.bind(this);
 
         this._startActivityIndicator = this._startActivityIndicator.bind(this);
         this._stopActivityIndicator = this._stopActivityIndicator.bind(this);
@@ -522,11 +525,11 @@ export class CreateObservationScreen extends React.Component {
                                 </View>
                             </View>
                             <TextInputComponent
-                                fontawesome={true}
+                                materialcommunityicons={true}
                                 placeholder={strings.dishname}
                                 value={this.state.observation.dishname}
                                 onChangeText={(text) => this._onUpdateDishname(text)}
-                                icon={'cutlery'}
+                                icon={'food-apple'}
                                 keyboardType={'default'}
                                 returnKeyType={'next'}
                                 onSubmitEditing={() => {this._focusNextField('mypoc');}}
@@ -538,7 +541,7 @@ export class CreateObservationScreen extends React.Component {
                                 infoTitle={strings.mypocExplanationTitle}
                                 infoText={strings.mypocExplanationText}
                                 infoButtons={myPocAlertButtons}
-                                placeholder={this.state.observation.mypoc || strings.predictionLoading}
+                                placeholder={this.state.observation.mypoc ? strings.formatString(strings.mypocPrediction, this.state.observation.mypoc) : strings.predictionLoading}
                                 value={this.state.myPocEdited ? this.state.observation.mypoccorrector : this.state.observation.mypoc}
                                 onChangeText={(text) => this._onUpdateMypoc(text)}
                                 icon={'question'}
@@ -552,7 +555,7 @@ export class CreateObservationScreen extends React.Component {
                                 style={{flex:1}}
                                 firstItem={
                                     <Dropdown
-                                        style={{flex:1, paddingBottom:0}}
+                                        style={{flex:1}}
                                         fontSize={standardFontSize}
                                         textColor={brandContrast}
                                         baseColor={brandLight}
@@ -565,17 +568,20 @@ export class CreateObservationScreen extends React.Component {
                                         onChangeText={this._onUpdateDietaryRestrictions.bind(this)}
                                         value={allDietaryRestrictions[this.state.observation.dietaryRestriction].value.name}
                                         inputContainerStyle={{borderBottomColor: 'transparent', borderWidth:0}}
+                                        inputContainerPadding={0}
                                     />
                                 }
                             />
                             <View style={{flexDirection: 'row', flex: 1}}>
                                 <View style={[styles.containerPadding, styles.leftRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>
-                                    <MaterialIcons name={'room-service'} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
+                                    <FontAwesome name={'cutlery'} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
                                 </View>
-                                <TouchableOpacity onPress={() => this._onPressHomemade(false)} style={[styles.containerPadding, {flex: 3, backgroundColor: this.state.observation.homemade ? brandBackground : brandMain, alignItems:'center', justifyContent:'center'}]}>
+                                <TouchableOpacity onPress={() => this._onPressHomemade(false)} style={[styles.containerPadding, {flex: 3, flexDirection:'row', backgroundColor: this.state.observation.homemade ? brandBackground : brandMain, alignItems:'center', justifyContent:'center'}]}>
+                                    <MaterialIcons name={'room-service'} size={iconSizeSmall} color={brandContrast} style={styles.containerPadding}/>
                                     <Text style={styles.textStandardDark}>{strings.eatingOut}</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this._onPressHomemade(true)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 3, backgroundColor: this.state.observation.homemade ? brandMain : brandBackground, alignItems:'center', justifyContent:'center'}]}>
+                                <TouchableOpacity onPress={() => this._onPressHomemade(true)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 3, flexDirection:'row', backgroundColor: this.state.observation.homemade ? brandMain : brandBackground, alignItems:'center', justifyContent:'center'}]}>
+                                    <Image source={require('../Images/Homemade/homemade.png')} resizeMode={'cover'} style={[styles.containerPadding, {width: iconSizeSmall, height:iconSizeSmall, opacity: 0.7}]}/>
                                     <Text style={styles.textStandardDark}>{strings.homemade}</Text>
                                 </TouchableOpacity>
                             </View>
@@ -603,6 +609,7 @@ export class CreateObservationScreen extends React.Component {
                                         onChangeText={this._onUpdateCurrency}
                                         value={this.state.observation.currency || ' '}
                                         inputContainerStyle={{borderBottomColor: 'transparent', borderWidth:0}}
+                                        inputContainerPadding={0}
                                     />
                                 }
                             />

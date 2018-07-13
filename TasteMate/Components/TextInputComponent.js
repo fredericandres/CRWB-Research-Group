@@ -35,7 +35,7 @@ export class TextInputComponent extends React.Component {
                 <View style={[styles.containerPadding, !this.props.info && !this.props.secondItem && styles.rightRoundedEdges, {flex: this.props.info ? 5 : (this.props.secondItem ? 2 : 6), backgroundColor: brandBackground}, this.props.firstItem && {paddingBottom: 0}]}>
                     {
                         this.props.firstItem &&
-                        <View style={[styles.containerPadding, {flex:1, paddingBottom: 0}]}>
+                        <View style={[styles.containerPadding, {flex:1}]}>
                             {this.props.firstItem}
                         </View>
                     }
@@ -73,7 +73,7 @@ export class TextInputComponent extends React.Component {
                 {
                     this.props.secondItem &&
                     <View style={[styles.containerPadding, styles.rightRoundedEdges, styles.containerPadding, {paddingBottom:0, flex: 4, backgroundColor: brandBackground}]}>
-                        <View style={[styles.containerPadding, {flex:1, paddingBottom: 0}]}>
+                        <View style={[styles.containerPadding, {flex:1}]}>
                             {this.props.secondItem}
                         </View>
                     </View>

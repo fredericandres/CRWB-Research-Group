@@ -188,7 +188,8 @@ export default strings = new LocalizedStrings({
         eatingOut: 'Eating out',
         viewAttributions: 'View Attributions',
         attributions: 'Attributions',
-        predictionLoading: 'Prediction loading...',
+        predictionLoading: 'MyPoC prediction loading...',
+        mypocPrediction: 'MyPoC prediction: {0}',
     },
     fr: {
         explorer: 'Explorer',

@@ -366,9 +366,12 @@ export class ObservationComponent extends React.Component {
                     </TouchableOpacity>
                     <View style={[{padding: 6, position: 'absolute', bottom: 0, left: 0, flexDirection:'row'}]}>
                         <View style={{flexDirection: 'row'}}>
-                            <View name={'dietaryinfo'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor: brandMain, flexDirection: 'column', justifyContent: 'center'}]}>
-                                <Image source={(dietaryRestriction && dietaryRestriction.source) || require('../Images/DietaryRestrictions/none.png')} resizeMode={'cover'} style={{width: iconSizeStandard, height:iconSizeStandard, opacity: 0.7}}/>
-                            </View>
+                            {
+                                this.state.observation.dietaryRestriction && this.state.observation.dietaryRestriction !== 'none' &&
+                                <View name={'dietaryinfo'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor: brandMain, flexDirection: 'column', justifyContent: 'center'}]}>
+                                    <Image source={(dietaryRestriction && dietaryRestriction.source) || require('../Images/DietaryRestrictions/none.png')} resizeMode={'cover'} style={{width: iconSizeStandard, height:iconSizeStandard, opacity: 0.7}}/>
+                                </View>
+                            }
                             <View name={'price'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor:brandMain, flexDirection:'column', justifyContent:'center'}]}>
                                 {/*TODO [FEATURE]: Calculate price in currency of location or language*/}
                                 <Text style={[styles.textStandardDark]}>{allCurrencies[this.state.observation.currency].symbol}{this.state.observation.price}</Text>
