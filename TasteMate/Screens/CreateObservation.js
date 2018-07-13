@@ -180,7 +180,7 @@ export class CreateObservationScreen extends React.Component {
                     observation.mypoccorrector = observation.mypoccorrector.toLowerCase().trim();
                 }
                 const priceNumber = parseFloat(observation.price);
-                observation.price = priceNumber ? priceNumber.toFixed(2).toString() : '0';
+                observation.price = priceNumber ? (parseInt(priceNumber) !== priceNumber ? priceNumber.toFixed(2) : priceNumber).toString() : '0';
 
                 if (this.isEditing) {
                     firebase.database().ref(pathObservations).child(currentUser.uid).child(this.state.observation.observationid).update(observation)
