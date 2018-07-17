@@ -161,20 +161,28 @@ export class ObservationComponent extends React.Component {
     }
 
     _onPressLikeButton() {
-        if (this.state.liked) {
-            this._removeAction(pathLikes);
+        if (!currentUser || currentUser.isAnonymous) {
+            // Do nothing
         } else {
-            console.log('Sending like...');
-            this._sendAction(pathLikes);
+            if (this.state.liked) {
+                this._removeAction(pathLikes);
+            } else {
+                console.log('Sending like...');
+                this._sendAction(pathLikes);
+            }
         }
     }
 
     _onPressCutleryButton() {
-        if (this.state.cutleried) {
-            this._removeAction(pathCutleries);
+        if (!currentUser || currentUser.isAnonymous) {
+            // Do nothing
         } else {
-            console.log('Sending cutlery...');
-            this._sendAction(pathCutleries);
+            if (this.state.cutleried) {
+                this._removeAction(pathCutleries);
+            } else {
+                console.log('Sending cutlery...');
+                this._sendAction(pathCutleries);
+            }
         }
     }
 
@@ -287,7 +295,11 @@ export class ObservationComponent extends React.Component {
     }
 
     async _onPressShareButton() {
-        this._sendAction(pathShares);
+        if (!currentUser || currentUser.isAnonymous) {
+            // Do nothing
+        } else {
+            this._sendAction(pathShares);
+        }
 
         // TODO: What is being shared? Link?
         Share.open({
@@ -334,6 +346,7 @@ export class ObservationComponent extends React.Component {
 
     render() {
         const dietaryRestriction = this.state.observation.dietaryRestriction ? allDietaryRestrictions[this.state.observation.dietaryRestriction] : undefined;
+        const notLoggedIn = !currentUser || currentUser.isAnonymous;
 
         return (
             <View name={'wrapper'} style={{flex:1}} >
@@ -384,14 +397,14 @@ export class ObservationComponent extends React.Component {
                         </View>
                     </View>
                     <View style={[styles.containerOpacityDark, {padding: 6, position: 'absolute', bottom: 0, right: 0, flexDirection:'row'}]}>
-                        <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton}>
-                            <FontAwesome name={iconLike} size={iconSizeStandard} color={this.state.liked ? brandMain : brandBackground}/>
+                        <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton} disabled={notLoggedIn}>
+                            <FontAwesome name={iconLike} size={iconSizeStandard} color={notLoggedIn ? brandLight : (this.state.liked ? brandMain : brandBackground)}/>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.containerPadding} onPress={this._onPressCutleryButton}>
-                            <FontAwesome name={iconCutlery} size={iconSizeStandard} color={this.state.cutleried ? brandMain : brandBackground}/>
+                        <TouchableOpacity style={styles.containerPadding} onPress={this._onPressCutleryButton} disabled={notLoggedIn}>
+                            <FontAwesome name={iconCutlery} size={iconSizeStandard} color={notLoggedIn ? brandLight : (this.state.cutleried ? brandMain : brandBackground)}/>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.containerPadding} onPress={this._onPressShareButton}>
-                            <FontAwesome name={iconShare} size={iconSizeStandard} color={this.state.shared ? brandMain : brandBackground}/>
+                        <TouchableOpacity style={styles.containerPadding} onPress={this._onPressShareButton} disabled={notLoggedIn}>
+                            <FontAwesome name={iconShare} size={iconSizeStandard} color={notLoggedIn ? brandLight : (this.state.shared ? brandMain : brandBackground)}/>
                         </TouchableOpacity>
                     </View>
                     {
