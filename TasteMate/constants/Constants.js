@@ -18,6 +18,7 @@ export const iconSizeLarge = 50;
 export const iconSizeNavBar = (Platform.OS !== 'ios' ? 54/2 : 64/3);
 export const iconSizeStandard = 25;
 export const iconSizeSmall = 15;
+export const iconSizeTiny = 12;
 
 export const maxUsernameLength = 15;
 

@@ -6,6 +6,7 @@ import {LogInMessage} from "../Components/LogInMessage";
 import {
     _navigateToScreen,
     _sortArrayByTimestamp,
+    ActivityEnum,
     pathNotifications,
     pathObservations,
     pathUsers
@@ -14,15 +15,19 @@ import firebase from 'react-native-firebase';
 import strings from "../strings";
 import {EmptyComponent} from "../Components/EmptyComponent";
 
-const NTF_LOAD_DEPTH = 10;
+const NTF_LOAD_DEPTH = 15;
 const initialState = {
     user: null,
     notifications: [],
-    users: [],
-    observations: [],
+    notificationsAll: [],
+    users: {},
+    observations: {},
     isRefreshing: false,
     emptyListMessage: strings.loading
 };
+
+// TODO [FEATURE]: push notifications
+// TODO [FEATURE]: Group multiple notifications of same type together if no other type in between
 
 export class NotificationsScreen extends React.Component {
     static navigationOptions = ({navigation})=> {
@@ -52,7 +57,10 @@ export class NotificationsScreen extends React.Component {
 
         this.unsubscriber = null;
         this.state = initialState;
+        this.isLoadingNotifications = false;
     }
+
+    //TODO: Fix onEndReached loading and loading until all notifications have been loaded
 
     componentDidMount() {
         this.props.navigation.setParams({
@@ -94,8 +102,17 @@ export class NotificationsScreen extends React.Component {
     }
 
     _loadNotifications(userid, onStartup, isRefreshing) {
-        const ntfSize = this.state.notifications.length;
-        if (ntfSize === 0 || ntfSize % NTF_LOAD_DEPTH === 0 || isRefreshing) {
+        const ntfSize = this.state.notificationsAll.length;
+        if (!this.isLoadingNotifications && (ntfSize === 0 || ntfSize % NTF_LOAD_DEPTH === 0 || isRefreshing)) {
+            if (isRefreshing) {
+                this.setState({
+                    notifications: [],
+                    emptyListMessage: strings.loading
+                });
+            }
+
+            this.isLoadingObservations = true;
+
             const _addUserAction = this._addUserToState;
             const _addObservationAction = this._addObservationToState;
             const _handleError = this._handleError;
@@ -159,9 +176,11 @@ export class NotificationsScreen extends React.Component {
                             );
                         }
                     });
+                    this.isLoadingObservations = false;
                 }).catch((error) => {
                     console.log('Error while retrieving notifications');
                     _handleError(error);
+                    this.isLoadingObservations = false;
                 }
             );
         }
@@ -177,26 +196,55 @@ export class NotificationsScreen extends React.Component {
     }
 
     _addToNotificationState(notifications) {
+        let newNotifs = [];
         if (notifications && notifications.length > 0) {
             _sortArrayByTimestamp(notifications);
+
+            let currentGroup = {};
+            for (let i = 0; i < notifications.length; i++) {
+                const notification = notifications[i];
+
+                const follow = notification.type === ActivityEnum.FOLLOW;
+                const other = !follow && notification.observationid === currentGroup.observationid;
+
+                if (Object.keys(currentGroup).length === 0) {
+                    currentGroup = notification;
+                    currentGroup.users = [notification.userid];
+                    //delete currentGroup.userid;
+                } else if (currentGroup.type === notification.type && (follow || other)) {
+                    if (!currentGroup.users.includes(notification.userid)) {
+                        currentGroup.users.push(notification.userid);
+                    }
+                } else {
+                    newNotifs.push(currentGroup);
+                    currentGroup = {};
+                    i -= 1;
+                }
+            }
+            newNotifs.push(currentGroup);
         }
         this.setState({
             isRefreshing: false,
-            notifications: notifications,
+            notifications: newNotifs,
+            notificationsAll: notifications
         });
         this._setEmptyMessage(strings.noNotifications);
     }
 
     _addUserToState(user, userid) {
-        let users = this.state.users;
-        users[userid] = user;
-        this.setState({users: users});
+        if (user) {
+            let users = this.state.users;
+            users[user.userid || userid] = user;
+            this.setState({users: users});
+        }
     }
 
     _addObservationToState(observation, observationid) {
-        let observations = this.state.observations;
-        observations[observationid] = observation;
-        this.setState({observations: observations});
+        if (observation) {
+            let observations = this.state.observations;
+            observations[observation.observationid || observationid] = observation;
+            this.setState({observations: observations});
+        }
     }
 
     _onRefresh() {
@@ -219,16 +267,18 @@ export class NotificationsScreen extends React.Component {
                     this.state.user && !this.state.user.isAnonymous &&
                     <View style={{flex:1}}>
                         {
-                            this.state.users.length === 0 && <EmptyComponent message={this.state.emptyListMessage}/>
+                            this.state.notifications.length === 0 && <EmptyComponent message={this.state.emptyListMessage}/>
                         }
                         {
-                            this.state.users.length > 0 &&
+                            this.state.notifications.length > 0 &&
                             <FlatList
-                                removeClippedSubviews={true}
                                 data={this.state.notifications}
-                                renderItem={({item}) => <NotificationComponent notification={item}
-                                                                               user={this.state.users[item.userid]}
-                                                                               observation={this.state.observations[item.observationid]} {...this.props}/>}
+                                extraData={this.state}
+                                renderItem={({item}) =>
+                                    <NotificationComponent notification={item}
+                                                           users={this.state.users}
+                                                           observation={this.state.observations[item.observationid]} {...this.props}/>
+                                }
                                 refreshing={this.state.isRefreshing}
                                 onRefresh={this._onRefresh}
                                 keyExtractor={this._keyExtractor}

@@ -29,6 +29,7 @@ import firebase from 'react-native-firebase';
 import {CommentsScreen} from "./Screens/Comments";
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
 import {mapboxApiKey} from "./constants/GoogleApiKey";
+import {UsersScreen} from "./Screens/Users";
 
 StatusBar.setHidden(false);
 
@@ -107,6 +108,7 @@ const NotificationsStack = createStackNavigator({
         Profile: { screen: ProfileScreen },
         Map: { screen: MapScreen },
         Comments: { screen: CommentsScreen },
+        Users: { screen: UsersScreen },
     },
     {
         initialRouteName: 'Notifications',
