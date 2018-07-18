@@ -197,7 +197,6 @@ export class SearchExploreScreen extends React.Component {
                             refreshing={this.state.isRefreshing}
                             onRefresh={this._onRefresh}
                             onEndReached={this._onEndReached}
-                            removeClippedSubviews={true}
                         />
                     }
                 </View>
