@@ -83,6 +83,9 @@ export const iconMenu = 'ellipsis-v';
 export const iconList = 'list';
 export const iconMap = 'map';
 export const iconArrowUpLeft = 'arrow-up-left';
+export const iconEdit = 'edit';
+
+export const AsyncStorageKeyObservations = 'OBSERVATIONS';
 
 export function _formatNumberWithString(number, type) {
     let wordString = '';

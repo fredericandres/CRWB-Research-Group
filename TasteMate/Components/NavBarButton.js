@@ -65,8 +65,9 @@ export class NavBarCreateObsButton extends React.Component {
 export class NavBarCloseButton extends React.Component {
     render() {
         const nav = this.props.nav;
+        const action = this.props.action;
         return (
-            <NavBarButton nav={nav} text={strings.close} action={() => nav.goBack(null)}/>
+            <NavBarButton nav={nav} text={strings.close} action={action || (() => nav.goBack(null))}/>
         );
     }
 }

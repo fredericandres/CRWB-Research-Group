@@ -9,6 +9,7 @@ import {
     iconCameraBack,
     iconCameraFront,
     iconCameraRoll,
+    iconEdit,
     iconFlashOff,
     iconFlashOn,
     iconSizeLarge,
@@ -20,6 +21,10 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {EmptyComponent} from "./EmptyComponent";
+import {ObservationExploreComponent} from "./ObservationExploreComponent";
+import Entypo from "react-native-vector-icons/Entypo";
+
+export const SourceEnum = Object.freeze({CAMERA:1, GALLERY:2, DRAFTS:3});
 
 export class CameraCameraRollComponent extends React.Component {
     constructor(props) {
@@ -30,10 +35,10 @@ export class CameraCameraRollComponent extends React.Component {
         this._onAuthorizedPhoto = this._onAuthorizedPhoto.bind(this);
 
         this.state = {
-            cameraActive: true,
+            activeItem: SourceEnum.CAMERA,
             cameraFront: false,
             cameraFlash: false,
-            loading: false
+            loading: false,
         }
     }
 
@@ -96,7 +101,7 @@ export class CameraCameraRollComponent extends React.Component {
         if (this.state.cameraPermission !== 'authorized') {
             this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.enableCamera, () => this._requestPermission('camera'));
         }
-        this.setState({cameraActive: true});
+        this.setState({activeItem: SourceEnum.CAMERA});
     }
 
     _onPressPermissionNeeded() {
@@ -144,7 +149,7 @@ export class CameraCameraRollComponent extends React.Component {
         } else {
             this._onAuthorizedPhoto(true);
         }
-        this.setState({ cameraActive: false });
+        this.setState({ activeItem: SourceEnum.GALLERY });
     }
 
     _onAuthorizedPhoto(reload) {
@@ -188,6 +193,16 @@ export class CameraCameraRollComponent extends React.Component {
         this.props.onImageSelectedAction(uri);
     }
 
+    /************* DRAFTS *************/
+
+    _draftsKeyExtractor = (item, index) => item.observationid;
+
+    async _onPressDraftsButton(){
+        this.setState({ activeItem: SourceEnum.DRAFTS });
+    }
+
+    /************* RENDER *************/
+
     render() {
         const cameraAuthorized = this.state.cameraPermission === 'authorized' && this.state.photoPermission === 'authorized';
         return (
@@ -196,43 +211,53 @@ export class CameraCameraRollComponent extends React.Component {
                     cameraAuthorized &&
                     <View style={{flex:1}}>
                         <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center', backgroundColor: brandMain}}>
-                            {!this.state.cameraActive && <TouchableOpacity name={'camerabutton'} onPress={this._onPressCameraButton.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
+                            {this.state.activeItem !== SourceEnum.CAMERA && <TouchableOpacity name={'camerabutton'} onPress={this._onPressCameraButton.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
                                 <FontAwesome name={iconCamera} size={iconSizeStandard} color={brandContrast}/>
                             </TouchableOpacity>}
-                            {this.state.cameraActive && <TouchableOpacity name={'flashbutton'} onPress={this._onPressFlash.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
+                            {this.state.activeItem === SourceEnum.CAMERA && <TouchableOpacity name={'flashbutton'} onPress={this._onPressFlash.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
                                 <Ionicons name={this.state.cameraFlash ? iconFlashOn : iconFlashOff} size={iconSizeStandard} color={brandContrast}/>
                             </TouchableOpacity>}
-                            {this.state.cameraActive && <TouchableOpacity name={'photobutton'} onPress={this._onPressPhotoButton.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
+                            {this.state.activeItem !== SourceEnum.GALLERY && <TouchableOpacity name={'photobutton'} onPress={this._onPressPhotoButton.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
                                 <Ionicons name={iconCameraRoll} size={iconSizeStandard} color={brandContrast}/>
                             </TouchableOpacity>}
-                            {this.state.cameraActive && <TouchableOpacity name={'switchbutton'} onPress={this._onPressCameraSwitch.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
+                            {this.state.activeItem !== SourceEnum.DRAFTS && this.props.drafts && this.props.drafts.length > 0 && <TouchableOpacity name={'draftsbutton'} onPress={this._onPressDraftsButton.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
+                                <Entypo name={iconEdit} size={iconSizeStandard} color={brandContrast}/>
+                            </TouchableOpacity>}
+                            {this.state.activeItem === SourceEnum.CAMERA && <TouchableOpacity name={'switchbutton'} onPress={this._onPressCameraSwitch.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
                                 <MaterialCommunityIcons name={this.state.cameraFront ? iconCameraFront : iconCameraBack} size={iconSizeStandard} color={brandContrast}/>
                             </TouchableOpacity>}
                         </View>
                         {
-                            this.state.cameraActive &&
-                            <RNCamera
-                                ref={ref => {
-                                    this.camera = ref;
-                                }}
-                                permissionDialogTitle={strings.accessCameraQuestion}
-                                permissionDialogMessage={strings.accessCameraExplanation}
-                                style = {{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
-                                type={this.state.cameraFront ? RNCamera.Constants.Type.front : RNCamera.Constants.Type.back}
-                                flashMode={this.state.cameraFlash ? RNCamera.Constants.FlashMode.on : RNCamera.Constants.FlashMode.off}
-                                autoFocus={RNCamera.Constants.AutoFocus.on}
-                            />
+                            this.state.activeItem === SourceEnum.CAMERA &&
+                            <View style={{flex:1}}>
+                                <RNCamera
+                                    ref={ref => {
+                                        this.camera = ref;
+                                    }}
+                                    permissionDialogTitle={strings.accessCameraQuestion}
+                                    permissionDialogMessage={strings.accessCameraExplanation}
+                                    style = {{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
+                                    type={this.state.cameraFront ? RNCamera.Constants.Type.front : RNCamera.Constants.Type.back}
+                                    flashMode={this.state.cameraFlash ? RNCamera.Constants.FlashMode.on : RNCamera.Constants.FlashMode.off}
+                                    autoFocus={RNCamera.Constants.AutoFocus.on}
+                                />
+                                <View style={[{flexDirection: 'row', justifyContent: 'center'}]}>
+                                    <TouchableOpacity name={'takepicturebutton'} onPress={this.takePicture.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
+                                        <FontAwesome name={'circle'} size={iconSizeLarge} color={brandContrast}/>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         }
                         {
-                            !this.state.cameraActive && this.state.photos &&
+                            this.state.activeItem === SourceEnum.GALLERY && this.state.photos &&
                             <FlatList
                                 name={'camerarollimages'}
-                                style={[{flex: 1, flexDirection:'column'}]}
+                                style={[{flex: 1, flexDirection:'column'}, styles.explorePadding]}
                                 data={this.state.photos}
                                 numColumns={3}
                                 keyExtractor={this._cameraRollKeyExtractor}
                                 renderItem={({item}) =>
-                                    <TouchableOpacity onPress={() => this._onSelectImageFromCameraRoll(item)} style={{flex:1}}>
+                                    <TouchableOpacity onPress={() => this._onSelectImageFromCameraRoll(item)} style={[styles.explorePadding, {flex:1}]}>
                                         <Image style={{flex: 1, aspectRatio: 1}} resizeMode={'cover'} source={{uri: item.node.image.uri}}/>
                                     </TouchableOpacity>
                                 }
@@ -242,19 +267,26 @@ export class CameraCameraRollComponent extends React.Component {
                             />
                         }
                         {
-                            this.state.cameraActive &&
-                            <View style={[{flexDirection: 'row', justifyContent: 'center'}]}>
-                                <TouchableOpacity name={'takepicturebutton'} onPress={this.takePicture.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
-                                    <FontAwesome name={'circle'} size={iconSizeLarge} color={brandContrast}/>
-                                </TouchableOpacity>
-                            </View>
+                            this.state.activeItem === SourceEnum.DRAFTS && this.props.onDraftSelected && this.props.drafts && this.props.drafts.length > 0 &&
+                            <FlatList
+                                style={styles.explorePadding}
+                                keyExtractor={this._draftsKeyExtractor}
+                                data={this.props.drafts}
+                                renderItem={({item}) => <ObservationExploreComponent observation={item} onLongPress={this.props.onLongPress} onPress={() => this.props.onDraftSelected(item)} source={item.image ? {uri: item.image} : null} {...this.props}/>}
+                                numColumns={3}
+                                removeClippedSubviews={true}
+                            />
+                        }
+                        {
+                            this.state.activeItem === SourceEnum.DRAFTS && this.props.onDraftSelected && (!this.props.drafts || this.props.drafts.length === 0) &&
+                            <EmptyComponent message={strings.noDrafts}/>
                         }
                     </View>
                 }
                 {
                     !cameraAuthorized &&
                     <TouchableOpacity onPress={this._onPressPermissionNeeded.bind(this)} style={{flex:1, alignItems:'center', justifyContent:'center'}}>
-                        <Text style={[styles.containerPadding, styles.textStandardDark, {textAlign:'center'}]}>{strings.enableCameraAndPhoto}</Text>
+                        <EmptyComponent message={strings.enableCameraAndPhoto}/>
                     </TouchableOpacity>
                 }
                 {

@@ -1,6 +1,8 @@
 import React from 'react';
 import {
     Alert,
+    AsyncStorage,
+    BackHandler,
     Dimensions,
     FlatList,
     Image,
@@ -17,6 +19,7 @@ import strings from "../strings";
 import styles, {smallFontSize, standardFontSize} from "../styles";
 import {
     _addPictureToStorage,
+    AsyncStorageKeyObservations,
     brandAccent,
     brandBackground,
     brandContrast,
@@ -59,12 +62,15 @@ const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 let allVocabSorted = null;
 
 export class CreateObservationScreen extends React.Component {
-    static navigationOptions =({navigation})=> ({
-        title: (navigation.getParam('edit') ? strings.editObservation : strings.createObservation) + ' ',
-        headerLeft: (
-            <NavBarCloseButton nav={navigation}/>
-        ),
-    });
+    static navigationOptions =({navigation})=> {
+        const {params = {}} = navigation.state;
+        return {
+            title: (navigation.getParam('edit') ? strings.editObservation : strings.createObservation) + ' ',
+            headerLeft: (
+                <NavBarCloseButton nav={navigation} action={navigation.getParam('edit') ? null : () => params.onClose()}/>
+            ),
+        }
+    };
 
     // TODO [FEATURE]: Disable orientation change when camera open
     // TODO [FEATURE]: Crop/add filters to picture
@@ -73,11 +79,16 @@ export class CreateObservationScreen extends React.Component {
         super(props);
         this._onPressNext = this._onPressNext.bind(this);
         this._onPressPrevious = this._onPressPrevious.bind(this);
+        this._onPressSaveDraftButton = this._onPressSaveDraftButton.bind(this);
+        this._onDraftSelected = this._onDraftSelected.bind(this);
+        this._removeDraft = this._removeDraft.bind(this);
+        this._loadDrafts = this._loadDrafts.bind(this);
+        this._showDraftDeleteAlert = this._showDraftDeleteAlert.bind(this);
 
         this._onSubmitSearch = this._onSubmitSearch.bind(this);
         this._sendToMyPoC = this._sendToMyPoC.bind(this);
         this._onImageSelected = this._onImageSelected.bind(this);
-        this._onUpdateMypoc = this._onUpdateMypoc.bind(this);
+        this._onUpdateMyPoC = this._onUpdateMyPoC.bind(this);
         this._onUpdateCurrency = this._onUpdateCurrency.bind(this);
 
         this._startActivityIndicator = this._startActivityIndicator.bind(this);
@@ -107,12 +118,33 @@ export class CreateObservationScreen extends React.Component {
             searchText: '',
             smallEmojiSize: 0,
             selectedEmojiSize: 0,
-            searchedVocabSorted: allVocabSorted
+            searchedVocabSorted: allVocabSorted,
+            drafts: {},
         };
+
+        this.mypocRequest = null;
     }
 
     componentDidMount() {
+        this.props.navigation.setParams({
+            onClose: (() => this._openExitAlert()),
+        });
+
         this._onPressSearchButton(null);
+
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            this._openExitAlert();
+            return true;
+        });
+
+        this._loadDrafts();
+    }
+
+    componentWillUnmount() {
+        this.backHandler.remove();
+        if (this.mypocRequest) {
+            this.mypocRequest.onreadystatechange = null;
+        }
     }
 
     /************* NAVIGATION *************/
@@ -128,11 +160,7 @@ export class CreateObservationScreen extends React.Component {
             message = strings.formatString(strings.missingValuesTextPl, this._getItemizedMessage(missing), lastElement);
         }
 
-        Alert.alert(strings.missingValuesTitle, message,
-            [
-                {text: strings.ok},
-            ]
-        );
+        Alert.alert(strings.missingValuesTitle, message, [{text: strings.ok},]);
     }
 
     _getItemizedMessage(missing) {
@@ -210,7 +238,7 @@ export class CreateObservationScreen extends React.Component {
                     let ref = firebase.database().ref(pathObservations).child(currentUser.uid);
                     observation.userid = currentUser.uid;
                     observation.timestamp = firebase.database().getServerTime();
-                    observation.observationid = ref.push().key;
+                    observation.observationid = observation.observationid || ref.push().key;
 
                     // Remove image property but save for image upload
                     const imageUrl = observation.image;
@@ -241,21 +269,115 @@ export class CreateObservationScreen extends React.Component {
             if (this.props.navigation.getParam('onUpdate')) {
                 this.props.navigation.getParam('onUpdate')(observation);
             }
+            this.props.navigation.dismiss();
         } else {
-            observation.imageUrl = url;
-            if (this.props.navigation.getParam('onCreate')) {
-                this.props.navigation.getParam('onCreate')(observation);
-            }
+            this._removeDraft(observation.observationid).then(() => {
+                    observation.imageUrl = url;
+                    if (this.props.navigation.getParam('onCreate')) {
+                        this.props.navigation.getParam('onCreate')(observation);
+                    }
+                    this.props.navigation.dismiss();
+                }
+            );
         }
-        this.props.navigation.dismiss();
     }
 
     _onPressPrevious() {
         if ((this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE) {
-            this.props.navigation.dismiss();
+            this._openExitAlert();
         } else {
             this.setState({activePageIndex: this.state.activePageIndex - 1});
         }
+    }
+
+    /************* DRAFTS *************/
+
+    _openExitAlert() {
+        if (this.state.observation.observationid && this.state.drafts[this.state.observation.observationid]) {
+            this._onPressSaveDraftButton();
+        } else if (this.state.observation.image || this.state.observation.imageURL) {
+            Alert.alert(strings.exitCreateAlertTitle, strings.exitCreateAlertMessage,
+                [
+                    {text: strings.discard, onPress: () => this.props.navigation.dismiss(), style: 'cancel'},
+                    {text: strings.saveDraft, onPress: this._onPressSaveDraftButton},
+                ]
+            );
+        } else {
+            this.props.navigation.dismiss();
+        }
+    }
+
+    async _loadDrafts() {
+        try {
+            const observationsJSON = await AsyncStorage.getItem('OBSERVATIONS');
+            const observations = JSON.parse(observationsJSON);
+            this.setState({drafts: observations});
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async _onPressSaveDraftButton() {
+        try {
+            const observationsJSON = await AsyncStorage.getItem(AsyncStorageKeyObservations);
+            let observations = {};
+
+            if (observationsJSON !== null) {
+                observations = JSON.parse(observationsJSON);
+            }
+
+            let obs = this.state.observation;
+            if (!obs.observationid) {
+                obs.observationid = firebase.database().ref(pathObservations).child(currentUser.uid).push().key;
+            }
+
+            observations[obs.observationid] = obs;
+            await AsyncStorage.setItem(AsyncStorageKeyObservations, JSON.stringify(observations));
+        } catch (error) {
+            // Error retrieving data
+            console.log(error);
+        }
+        this.props.navigation.dismiss();
+    }
+
+    _onDraftSelected(item) {
+        console.log(item);
+        this.setState({observation: item}, (() => {
+            this._onPressNext();
+            if (!item.mypoc) {
+                this._sendToMyPoC(item.image).then(() => {
+                    console.log('MyPoC request sent');
+                });
+            }
+            if (item.location) {
+                this._setLocationText();
+            }
+        }));
+    }
+
+    async _removeDraft(observationid) {
+        console.log(observationid);
+        try {
+            let drafts = this.state.drafts;
+            console.log(drafts);
+            if (drafts[observationid]) {
+                delete drafts[observationid];
+                await AsyncStorage.setItem(AsyncStorageKeyObservations, JSON.stringify(drafts));
+                this.setState({drafts: drafts});
+            }
+        } catch (error) {
+            // Error retrieving data
+            console.log(error);
+        }
+    }
+
+    _showDraftDeleteAlert(item) {
+        Alert.alert(strings.deleteDraftAlertTitle, strings.deleteDraftAlertMessage,
+            [
+                {text: strings.cancel, style: 'cancel'},
+                {text: strings.deleteDraft, onPress: () => this._removeDraft(item.observationid), style: 'destructive'},
+            ]
+        );
     }
 
     /************* CAMERA ROLL *************/
@@ -265,18 +387,23 @@ export class CreateObservationScreen extends React.Component {
         obs.image = uri;
         this._updateObservationState(obs);
 
-        this._sendToMyPoC(uri, this._onUpdateMypoc).then(() => {
+        this._sendToMyPoC(uri).then(() => {
             console.log('MyPoC request sent');
         });
         this._onPressNext();
     }
 
-    async _sendToMyPoC(uri, action) {
+    async _sendToMyPoC(uri) {
+        const updateMyPoC = this._onUpdateMyPoC;
         // Create blob from base64
         RNFetchBlob.fs.readFile(uri, 'base64')
             .then((data) => {
                 const Blob = RNFetchBlob.polyfill.Blob;
                 Blob.build(data, { type : 'image/jpg;BASE64' }).then((blob) => {
+                    if (this.mypocRequest) {
+                        this.mypocRequest.onreadystatechange = null;
+                    }
+
                     // Send blob as octet-stream POST request to MyPoC server
                     let xhr = new RNFetchBlob.polyfill.XMLHttpRequest();
                     xhr.open('POST', 'http://odbenchmark.isima.fr/CRWB-Erina-web/resource/observation');
@@ -292,7 +419,7 @@ export class CreateObservationScreen extends React.Component {
                                         // Parse xml text into object and look for 'text' element --> MyPoC prediction of image
                                         const xml = new XMLParser().parseFromString(xmlText);
                                         const mypoc = xml.getElementsByTagName("text")[0].value;
-                                        action(mypoc, true);
+                                        updateMyPoC(mypoc, true);
                                     }).catch((error) => {
                                     console.log(error);
                                 });
@@ -303,6 +430,7 @@ export class CreateObservationScreen extends React.Component {
                         }
                     };
                     xhr.send(blob);
+                    this.mypocRequest = xhr;
                 });
             }).catch((error) => {
             console.log('An error occurred while converting image to base64');
@@ -330,7 +458,7 @@ export class CreateObservationScreen extends React.Component {
         this._updateObservationState(obs);
     }
 
-    _onUpdateMypoc(mypoc, fromServer) {
+    _onUpdateMyPoC(mypoc, fromServer) {
         let obs = this.state.observation;
         if (!this.state.observation.mypoc && fromServer) {
             obs.mypoc = mypoc;
@@ -507,7 +635,7 @@ export class CreateObservationScreen extends React.Component {
             <SafeAreaView style={{ flex: 1 }} onLayout={this.onLayout.bind(this)}>
                 <View name={'content'} style={{flex: 1}}>
                     {
-                        this.state.activePageIndex === PagesEnum.SELECTIMAGE && <CameraCameraRollComponent onImageSelectedAction={this._onImageSelected}/>
+                        this.state.activePageIndex === PagesEnum.SELECTIMAGE && <CameraCameraRollComponent drafts={Object.values(this.state.drafts)} onLongPress={this._showDraftDeleteAlert} onDraftSelected={this._onDraftSelected} onImageSelectedAction={this._onImageSelected} style={{flex:7, flexGrow:1}}/>
                     }
                     {
                         this.state.activePageIndex === PagesEnum.DETAILS &&
@@ -550,8 +678,8 @@ export class CreateObservationScreen extends React.Component {
                                 infoText={strings.mypocExplanationText}
                                 infoButtons={myPocAlertButtons}
                                 placeholder={this.state.observation.mypoc ? strings.formatString(strings.mypocPrediction, this.state.observation.mypoc) : strings.predictionLoading}
-                                value={this.state.myPocEdited ? this.state.observation.mypoccorrector : this.state.observation.mypoc}
-                                onChangeText={(text) => this._onUpdateMypoc(text)}
+                                value={this.state.observation.mypoccorrector || this.state.observation.mypoc}
+                                onChangeText={(text) => this._onUpdateMyPoC(text)}
                                 icon={iconMyPoc}
                                 keyboardType={'default'}
                                 returnKeyType={'next'}
