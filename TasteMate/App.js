@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
 
 // TODO: Firebase other DB
 // TODO: Fix image upload going wrong when no network connection/done later
+// TODO: Push notifications
 MapboxGL.setAccessToken(mapboxApiKey);
 
 export let currentUser = null;

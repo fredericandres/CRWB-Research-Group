@@ -40,7 +40,7 @@ export class SignUpLogInScreen extends React.Component {
             email: undefined,
             location: undefined,
             password: undefined,
-            signUpActive: false,
+            signUpActive: true,
             error: null,
             user: null,
             loadingIndicatorVisible: false,
