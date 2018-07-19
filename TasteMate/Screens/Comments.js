@@ -4,7 +4,7 @@ import strings from "../strings";
 import styles from "../styles";
 import {CommentComponent} from "../Components/CommentComponent";
 import {WriteCommentComponent} from "../Components/WriteCommentComponent";
-import {_sortArrayByTimestamp, brandBackground, pathComments} from "../constants/Constants";
+import {_sortArrayByTimestamp, colorBackground, pathComments} from "../constants/Constants";
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
 
@@ -156,7 +156,7 @@ export class CommentsScreen extends React.Component {
                 </View>
                 {
                     (currentUser && !currentUser.isAnonymous) &&
-                    <View style={{position:'absolute', bottom:0, left:0, right:0, backgroundColor: brandBackground}}>
+                    <View style={{position:'absolute', bottom:0, left:0, right:0, backgroundColor: colorBackground}}>
                         <View style={[styles.containerPadding, {flex:1}]}>
                             <WriteCommentComponent observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
                             <Animated.View style={{height: this.keyboardHeight}}/>

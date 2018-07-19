@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {_navigateToScreen, brandContrast, iconNew, iconSignOut, iconSizeNavBar, iconUser} from "../constants/Constants";
+import {_navigateToScreen, colorContrast, iconNew, iconSignOut, iconSizeNavBar, iconUser} from "../constants/Constants";
 import styles from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import strings from "../strings";
@@ -27,12 +27,12 @@ export class NavBarButton extends React.Component {
         const action = this.props.action || (() => this._openScreen(screen, onDataChangedAction));
 
         // Content
-        let content = <Text style={[styles.textTitle, styles.containerPadding, {color: brandContrast}]}>{text}</Text>;
+        let content = <Text style={[styles.textTitle, styles.containerPadding, {color: colorContrast}]}>{text}</Text>;
         if (icon != null) {
             if (iconType === 'SimpleLineIcons') {
-                content = <SimpleLineIcons name={icon} size={iconSizeNavBar} color={brandContrast} style={styles.containerPadding}/>;
+                content = <SimpleLineIcons name={icon} size={iconSizeNavBar} color={colorContrast} style={styles.containerPadding}/>;
             } else {
-                content = <FontAwesome name={icon} size={iconSizeNavBar} color={brandContrast} style={styles.containerPadding}/>;
+                content = <FontAwesome name={icon} size={iconSizeNavBar} color={colorContrast} style={styles.containerPadding}/>;
             }
         } else if (image != null) {
             content = <Image/>;

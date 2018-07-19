@@ -4,7 +4,7 @@ import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Co
 import {
     _formatNumber,
     _sortArrayByTimestamp,
-    brandMain,
+    colorMain,
     iconCog,
     iconFollow,
     iconUnfollow,
@@ -92,11 +92,11 @@ export class ProfileScreen extends React.Component {
             ),
             headerStyle: {
                 borderBottomWidth: 0,
-                backgroundColor: brandMain,
+                backgroundColor: colorMain,
                 elevation: 0,
             },
             headerTitleStyle: {
-                color: brandMain
+                color: colorMain
             },
         }
     };
@@ -283,7 +283,7 @@ export class ProfileScreen extends React.Component {
     render() {
         return (
             <SafeAreaView style={{flex: 1,}}>
-                <View name={'header'} style={{flex: 2, backgroundColor: brandMain}}>
+                <View name={'header'} style={{flex: 2, backgroundColor: colorMain}}>
                     <UserImageThumbnailComponent size={styles.roundProfileLarge} user={this.state.user}/>
                     <View name={'username'} style={{flex: 1, alignItems: 'flex-end', flexDirection: 'row'}}>
                         <Text name={'username'}
@@ -296,7 +296,7 @@ export class ProfileScreen extends React.Component {
                     <View name={'segmentedcontrolwrapper'}>
                         <View name={'weirdbackground'}
                               style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
-                            <View style={{flex: 1, backgroundColor: brandMain}}/>
+                            <View style={{flex: 1, backgroundColor: colorMain}}/>
                             <View style={{flex: 1}}/>
                         </View>
                         <View name={'segmentedcontrolwrapper'}

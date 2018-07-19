@@ -1,6 +1,6 @@
 import React from "react";
 import styles, {standardFontSize} from "../styles";
-import {brandBackground, brandContrast, brandLight, brandMain, iconSizeStandard} from "../constants/Constants";
+import {colorBackground, colorContrast, colorLight, colorMain, iconSizeStandard} from "../constants/Constants";
 import {Alert, TextInput, TouchableOpacity, View} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -18,21 +18,21 @@ export class TextInputComponent extends React.Component {
     render() {
         return (
             <View style={{flexDirection: 'row', flex: 1, opacity: this.props.hidden ? 0 : 100}}>
-                <View style={[styles.containerPadding, styles.leftRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>
+                <View style={[styles.containerPadding, styles.leftRoundedEdges, {flex: 1, backgroundColor: colorBackground, alignItems: 'center', justifyContent:'center'}]}>
                     {
                         this.props.fontawesome &&
-                        <FontAwesome name={this.props.icon} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
+                        <FontAwesome name={this.props.icon} size={iconSizeStandard} color={colorContrast} style={[styles.containerPadding]}/>
                     }
                     {
                         this.props.materialcommunityicons &&
-                        <MaterialCommunityIcons name={this.props.icon} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
+                        <MaterialCommunityIcons name={this.props.icon} size={iconSizeStandard} color={colorContrast} style={[styles.containerPadding]}/>
                     }
                     {
                         this.props.entypo &&
-                        <Entypo name={this.props.icon} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
+                        <Entypo name={this.props.icon} size={iconSizeStandard} color={colorContrast} style={[styles.containerPadding]}/>
                     }
                 </View>
-                <View style={[styles.containerPadding, !this.props.info && !this.props.secondItem && styles.rightRoundedEdges, {flex: this.props.info ? 5 : (this.props.secondItem ? 2 : 6), backgroundColor: brandBackground}, this.props.firstItem && {paddingBottom: 0}]}>
+                <View style={[styles.containerPadding, !this.props.info && !this.props.secondItem && styles.rightRoundedEdges, {flex: this.props.info ? 5 : (this.props.secondItem ? 2 : 6), backgroundColor: colorBackground}, this.props.firstItem && {paddingBottom: 0}]}>
                     {
                         this.props.firstItem &&
                         <View style={[styles.containerPadding, {flex:1}]}>
@@ -44,9 +44,9 @@ export class TextInputComponent extends React.Component {
                         <TextInput
                             ref={input => this.textInput = input}
                             style={[styles.textStandardDark, styles.containerPadding, {backgroundColor: 'transparent', flex: 1}]}
-                            placeholderTextColor={brandLight}
-                            underlineColorAndroid={brandBackground}
-                            selectionColor={brandMain}
+                            placeholderTextColor={colorLight}
+                            underlineColorAndroid={colorBackground}
+                            selectionColor={colorMain}
                             fontSize={standardFontSize}
                             clearButtonMode={'while-editing'}
                             placeholder={this.props.placeholder}
@@ -66,13 +66,13 @@ export class TextInputComponent extends React.Component {
                 </View>
                 {
                     this.props.info &&
-                    <TouchableOpacity onPress={() => Alert.alert(this.props.infoTitle, this.props.infoText, this.props.infoButtons)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>
-                        <FontAwesome name={'info'} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
+                    <TouchableOpacity onPress={() => Alert.alert(this.props.infoTitle, this.props.infoText, this.props.infoButtons)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 1, backgroundColor: colorBackground, alignItems: 'center', justifyContent:'center'}]}>
+                        <FontAwesome name={'info'} size={iconSizeStandard} color={colorContrast} style={[styles.containerPadding]}/>
                     </TouchableOpacity>
                 }
                 {
                     this.props.secondItem &&
-                    <View style={[styles.containerPadding, styles.rightRoundedEdges, styles.containerPadding, {paddingBottom:0, flex: 4, backgroundColor: brandBackground}]}>
+                    <View style={[styles.containerPadding, styles.rightRoundedEdges, styles.containerPadding, {paddingBottom:0, flex: 4, backgroundColor: colorBackground}]}>
                         <View style={[styles.containerPadding, {flex:1}]}>
                             {this.props.secondItem}
                         </View>

@@ -5,7 +5,7 @@ import styles from "../styles";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import strings from "../strings";
 import {SearchBar} from "../Components/SearchBar";
-import {_navigateToScreen, brandMain} from "../constants/Constants";
+import {_navigateToScreen, colorMain} from "../constants/Constants";
 import firebase from 'react-native-firebase';
 import {EmptyComponent} from "../Components/EmptyComponent";
 
@@ -33,7 +33,7 @@ export class SearchExploreScreen extends React.Component {
             ),
             headerStyle: {
                 borderBottomWidth: 0,
-                backgroundColor: brandMain,
+                backgroundColor: colorMain,
                 elevation: 0,
             },
         }

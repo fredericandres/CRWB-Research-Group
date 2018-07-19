@@ -20,11 +20,11 @@ import styles, {smallFontSize, standardFontSize} from "../styles";
 import {
     _addPictureToStorage,
     AsyncStorageKeyObservations,
-    brandAccent,
-    brandBackground,
-    brandContrast,
-    brandLight,
-    brandMain,
+    colorAccent,
+    colorBackground,
+    colorContrast,
+    colorLight,
+    colorMain,
     EmojiEnum,
     iconCutlery,
     iconDescription,
@@ -648,7 +648,7 @@ export class CreateObservationScreen extends React.Component {
                                     <TextInputComponent fontawesome={true} style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={iconDescription} keyboardType={'default'} multiline={true} />
                                 </View>
                             </View>
-                            <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
+                            <View style={[{flex:1, backgroundColor: colorBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
                                 <Text style={[styles.textStandardDark, styles.containerPadding]}>{strings.rateExperience}</Text>
                                 <View style={[{flexDirection: 'row', flex: 1, flexWrap: 'wrap', justifyContent: 'center'}]}>
                                     {
@@ -693,8 +693,8 @@ export class CreateObservationScreen extends React.Component {
                                     <Dropdown
                                         style={{flex:1}}
                                         fontSize={standardFontSize}
-                                        textColor={brandContrast}
-                                        baseColor={brandLight}
+                                        textColor={colorContrast}
+                                        baseColor={colorLight}
                                         labelFontSize={smallFontSize}
                                         label={strings.dietaryInfo}
                                         labelHeight={15}
@@ -709,14 +709,14 @@ export class CreateObservationScreen extends React.Component {
                                 }
                             />
                             <View style={{flexDirection: 'row', flex: 1}}>
-                                <View style={[styles.containerPadding, styles.leftRoundedEdges, {flex: 1, backgroundColor: brandBackground, alignItems: 'center', justifyContent:'center'}]}>
-                                    <FontAwesome name={iconCutlery} size={iconSizeStandard} color={brandContrast} style={[styles.containerPadding]}/>
+                                <View style={[styles.containerPadding, styles.leftRoundedEdges, {flex: 1, backgroundColor: colorBackground, alignItems: 'center', justifyContent:'center'}]}>
+                                    <FontAwesome name={iconCutlery} size={iconSizeStandard} color={colorContrast} style={[styles.containerPadding]}/>
                                 </View>
-                                <TouchableOpacity onPress={() => this._onPressHomemade(false)} style={[styles.containerPadding, {flex: 3, flexDirection:'row', backgroundColor: this.state.observation.homemade ? brandBackground : brandMain, alignItems:'center', justifyContent:'center'}]}>
-                                    <MaterialIcons name={iconEatingOut} size={iconSizeSmall} color={brandContrast} style={styles.containerPadding}/>
+                                <TouchableOpacity onPress={() => this._onPressHomemade(false)} style={[styles.containerPadding, {flex: 3, flexDirection:'row', backgroundColor: this.state.observation.homemade ? colorBackground : colorMain, alignItems:'center', justifyContent:'center'}]}>
+                                    <MaterialIcons name={iconEatingOut} size={iconSizeSmall} color={colorContrast} style={styles.containerPadding}/>
                                     <Text style={styles.textStandardDark}>{strings.eatingOut}</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this._onPressHomemade(true)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 3, flexDirection:'row', backgroundColor: this.state.observation.homemade ? brandMain : brandBackground, alignItems:'center', justifyContent:'center'}]}>
+                                <TouchableOpacity onPress={() => this._onPressHomemade(true)} style={[styles.containerPadding, styles.rightRoundedEdges, {flex: 3, flexDirection:'row', backgroundColor: this.state.observation.homemade ? colorMain : colorBackground, alignItems:'center', justifyContent:'center'}]}>
                                     <Image source={require('../Images/Homemade/homemade.png')} resizeMode={'cover'} style={[styles.containerPadding, {width: iconSizeSmall, height:iconSizeSmall, opacity: 0.7}]}/>
                                     <Text style={styles.textStandardDark}>{strings.homemade}</Text>
                                 </TouchableOpacity>
@@ -734,8 +734,8 @@ export class CreateObservationScreen extends React.Component {
                                     <Dropdown
                                         style={{flex:1}}
                                         fontSize={standardFontSize}
-                                        textColor={brandContrast}
-                                        baseColor={brandLight}
+                                        textColor={colorContrast}
+                                        baseColor={colorLight}
                                         labelFontSize={smallFontSize}
                                         label={strings.currency}
                                         labelHeight={15}
@@ -762,7 +762,7 @@ export class CreateObservationScreen extends React.Component {
                             />
                             {
                                 this.state.locationResults &&
-                                <View style={[{flex:1, backgroundColor: brandBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
+                                <View style={[{flex:1, backgroundColor: colorBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
                                     <FlatList
                                         name={'locationresults'}
                                         removeClippedSubviews={true}
@@ -799,7 +799,7 @@ export class CreateObservationScreen extends React.Component {
                                     <TouchableOpacity
                                         style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {
                                             flex: 1,
-                                            backgroundColor: brandMain
+                                            backgroundColor: colorMain
                                         }]} onPress={() => this._onCheckBoxChanged(item)}>
                                         <SettingsSwitchComponent
                                             selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item]}
@@ -822,7 +822,7 @@ export class CreateObservationScreen extends React.Component {
                                     <TouchableOpacity
                                         style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {
                                             flex: 1,
-                                            backgroundColor: (this.state.observation.vocabulary && this.state.observation.vocabulary[item.key] ? brandMain : brandBackground)
+                                            backgroundColor: (this.state.observation.vocabulary && this.state.observation.vocabulary[item.key] ? colorMain : colorBackground)
                                         }]} onPress={() => this._onCheckBoxChanged(item.key)}>
                                         <SettingsSwitchComponent
                                             selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item.key]}
@@ -835,12 +835,12 @@ export class CreateObservationScreen extends React.Component {
                 </View>
                 {(this.state.observation.image || this.state.observation.imageUrl) && <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
                     <View name={'previousButtonWrapper'} style={ {flex: 1}}>
-                        <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:brandBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
+                        <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:colorBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
                             <Text style={[styles.textTitleDark, styles.containerPadding]}>{(this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>
                         </TouchableOpacity>
                     </View>
                     <View name={'nextButtonWrapper'} style={{flex: 1}}>
-                        <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor: brandAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
+                        <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor: colorAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
                             <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? (this.isEditing ? strings.save : strings.publish): strings.next}</Text>
                         </TouchableOpacity>
                     </View>

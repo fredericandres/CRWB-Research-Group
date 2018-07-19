@@ -5,12 +5,13 @@ import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
 import ImageResizer from 'react-native-image-resizer';
 
-export const brandMain = '#ffc658';
-export const brandContrast = '#333333';
-export const brandLight = '#999999';
-export const brandBackground = '#f2f2f2';
-export const brandMainDark ='#fab150';
-export const brandAccent = '#578fff';
+export const colorMain = '#ffc658';
+export const colorContrast = '#333333';
+export const colorLight = '#999999';
+export const colorBackground = '#f2f2f2';
+export const colorMainDark ='#fab150';
+export const colorAccent = '#578fff';
+export const colorStandardBackground = '#E9E9EF';
 
 export const tastemateFont = 'TastemateRegular';
 

@@ -9,9 +9,9 @@ import {ProfileScreen} from "./Screens/Profile";
 import {EatingOutListScreen} from "./Screens/EatingOutList";
 import {CreateObservationScreen} from "./Screens/CreateObservation";
 import {
-    brandContrast,
-    brandLight,
-    brandMain,
+    colorContrast,
+    colorLight,
+    colorMain,
     iconCutlery,
     iconHome,
     iconNotifications,
@@ -35,7 +35,7 @@ StatusBar.setHidden(false);
 
 const styles = StyleSheet.create({
     navHeaderStyle: {
-        backgroundColor: brandMain
+        backgroundColor: colorMain
     },
     navHeaderTitleStyle: {
         fontFamily: tastemateFont,
@@ -80,7 +80,7 @@ const HomeStack = createStackNavigator({
         initialRouteName: 'Home',
         navigationOptions: {
             headerStyle: styles.navHeaderStyle,
-            headerTintColor: brandContrast,
+            headerTintColor: colorContrast,
             headerTitleStyle: styles.navHeaderTitleStyle,
         }
     }
@@ -97,7 +97,7 @@ const ExploreSearchStack = createStackNavigator({
         initialRouteName: 'Explore',
         navigationOptions: {
             headerStyle: styles.navHeaderStyle,
-            headerTintColor: brandContrast,
+            headerTintColor: colorContrast,
             headerTitleStyle: styles.navHeaderTitleStyle,
         }
     }
@@ -115,7 +115,7 @@ const NotificationsStack = createStackNavigator({
         initialRouteName: 'Notifications',
         navigationOptions: {
             headerStyle: styles.navHeaderStyle,
-            headerTintColor: brandContrast,
+            headerTintColor: colorContrast,
             headerTitleStyle: styles.navHeaderTitleStyle,
         }
     }
@@ -132,7 +132,7 @@ const EatingOutListStack = createStackNavigator({
         initialRouteName: 'EatingOutList',
         navigationOptions: {
             headerStyle: styles.navHeaderStyle,
-            headerTintColor: brandContrast,
+            headerTintColor: colorContrast,
             headerTitleStyle: styles.navHeaderTitleStyle,
         }
     }
@@ -149,7 +149,7 @@ const ProfileStack = createStackNavigator({
         initialRouteName: 'Profile',
         navigationOptions: {
             headerStyle: styles.navHeaderStyle,
-            headerTintColor: brandContrast,
+            headerTintColor: colorContrast,
             headerTitleStyle: styles.navHeaderTitleStyle,
         }
     }
@@ -162,7 +162,7 @@ const SignUpLogInStack = createStackNavigator({
         initialRouteName: 'SignUpLogIn',
         navigationOptions: {
             headerStyle: styles.navHeaderStyle,
-            headerTintColor: brandContrast,
+            headerTintColor: colorContrast,
             headerTitleStyle: styles.navHeaderTitleStyle,
         }
     }
@@ -175,7 +175,7 @@ const CreateObservationStack = createStackNavigator({
         initialRouteName: 'CreateObservation',
         navigationOptions: {
             headerStyle: styles.navHeaderStyle,
-            headerTintColor: brandContrast,
+            headerTintColor: colorContrast,
             headerTitleStyle: styles.navHeaderTitleStyle,
         }
     }
@@ -206,10 +206,10 @@ const TabBar = createBottomTabNavigator(
             },
         }),
         tabBarOptions: {
-            activeTintColor: brandMain,
-            inactiveTintColor: brandLight,
+            activeTintColor: colorMain,
+            inactiveTintColor: colorLight,
             style: {
-                backgroundColor: brandContrast,
+                backgroundColor: colorContrast,
             },
         },
         animationEnabled: true,

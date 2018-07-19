@@ -5,12 +5,12 @@ import TimeAgo from 'react-native-timeago'
 import {
     _navigateToScreen,
     ActivityEnum,
-    brandAccent,
-    brandBackground,
-    brandContrast,
-    brandLight,
-    brandMain,
-    brandMainDark,
+    colorAccent,
+    colorBackground,
+    colorContrast,
+    colorLight,
+    colorMain,
+    colorMainDark,
     iconComment,
     iconCutlery,
     iconFollow,
@@ -82,32 +82,32 @@ export class NotificationComponent extends React.Component {
             case ActivityEnum.LIKE:
                 action = strings.likedPicture;
                 iconName = iconLike;
-                backgroundColor = brandAccent;
-                iconColor = brandBackground;
+                backgroundColor = colorAccent;
+                iconColor = colorBackground;
                 break;
             case ActivityEnum.CUTLERY:
                 action = strings.addedToEatingOutPicture;
                 iconName = iconCutlery;
-                backgroundColor = brandMain;
-                iconColor = brandContrast;
+                backgroundColor = colorMain;
+                iconColor = colorContrast;
                 break;
             case ActivityEnum.SHARE:
                 action = strings.sharedPicture;
                 iconName = iconShare;
-                backgroundColor = brandMainDark;
-                iconColor = brandContrast;
+                backgroundColor = colorMainDark;
+                iconColor = colorContrast;
                 break;
             case ActivityEnum.FOLLOW:
                 action = strings.startedFollowing;
                 iconName = iconFollow;
-                backgroundColor = brandContrast;
-                iconColor = brandBackground;
+                backgroundColor = colorContrast;
+                iconColor = colorBackground;
                 break;
             case ActivityEnum.COMMENT:
                 action = strings.commentedPicture;
                 iconName = iconComment;
-                backgroundColor = brandLight;
-                iconColor = brandBackground;
+                backgroundColor = colorLight;
+                iconColor = colorBackground;
                 break;
         }
 
@@ -126,8 +126,8 @@ export class NotificationComponent extends React.Component {
 
         return (
             <View style={{flex:1}}>
-                <TouchableOpacity onPress={this.notification.type === ActivityEnum.FOLLOW ? this._onPressProfile : this._onPressObservation} style={[{flexDirection:'row', backgroundColor:brandBackground}]}>
-                    {!this.notification.read && <Animated.View name={'fadingbackground'} style={{position: 'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:brandMain, opacity: this.state.fadeAnim}}/>}
+                <TouchableOpacity onPress={this.notification.type === ActivityEnum.FOLLOW ? this._onPressProfile : this._onPressObservation} style={[{flexDirection:'row', backgroundColor:colorBackground}]}>
+                    {!this.notification.read && <Animated.View name={'fadingbackground'} style={{position: 'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:colorMain, opacity: this.state.fadeAnim}}/>}
                     <View style={{flexDirection:'column', justifyContent:'center'}}>
                         <UserImageThumbnailComponent size={styles.roundProfile} user={this.users && this.users[this.notification.users[0]]} onPress={this._onPressProfile/*this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles*/} />
                         <View style={[styles.containerPadding, styles.roundProfileSmall, {backgroundColor:backgroundColor, position:'absolute', bottom:0, right:0, justifyContent:'center', alignItems:'center'}]}>

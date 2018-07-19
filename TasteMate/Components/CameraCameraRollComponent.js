@@ -3,8 +3,8 @@ import {Alert, CameraRoll, FlatList, Image, Platform, SafeAreaView, Text, Toucha
 import styles from "../styles";
 import strings from "../strings";
 import {
-    brandContrast,
-    brandMain,
+    colorContrast,
+    colorMain,
     iconCamera,
     iconCameraBack,
     iconCameraFront,
@@ -210,21 +210,21 @@ export class CameraCameraRollComponent extends React.Component {
                 {
                     cameraAuthorized &&
                     <View style={{flex:1}}>
-                        <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center', backgroundColor: brandMain}}>
+                        <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center', backgroundColor: colorMain}}>
                             {this.state.activeItem !== SourceEnum.CAMERA && <TouchableOpacity name={'camerabutton'} onPress={this._onPressCameraButton.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
-                                <FontAwesome name={iconCamera} size={iconSizeStandard} color={brandContrast}/>
+                                <FontAwesome name={iconCamera} size={iconSizeStandard} color={colorContrast}/>
                             </TouchableOpacity>}
                             {this.state.activeItem === SourceEnum.CAMERA && <TouchableOpacity name={'flashbutton'} onPress={this._onPressFlash.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
-                                <Ionicons name={this.state.cameraFlash ? iconFlashOn : iconFlashOff} size={iconSizeStandard} color={brandContrast}/>
+                                <Ionicons name={this.state.cameraFlash ? iconFlashOn : iconFlashOff} size={iconSizeStandard} color={colorContrast}/>
                             </TouchableOpacity>}
                             {this.state.activeItem !== SourceEnum.GALLERY && <TouchableOpacity name={'photobutton'} onPress={this._onPressPhotoButton.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
-                                <Ionicons name={iconCameraRoll} size={iconSizeStandard} color={brandContrast}/>
+                                <Ionicons name={iconCameraRoll} size={iconSizeStandard} color={colorContrast}/>
                             </TouchableOpacity>}
                             {this.state.activeItem !== SourceEnum.DRAFTS && this.props.drafts && this.props.drafts.length > 0 && <TouchableOpacity name={'draftsbutton'} onPress={this._onPressDraftsButton.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
-                                <Entypo name={iconEdit} size={iconSizeStandard} color={brandContrast}/>
+                                <Entypo name={iconEdit} size={iconSizeStandard} color={colorContrast}/>
                             </TouchableOpacity>}
                             {this.state.activeItem === SourceEnum.CAMERA && <TouchableOpacity name={'switchbutton'} onPress={this._onPressCameraSwitch.bind(this)} style={[{flex:1, alignItems:'center'}, styles.containerPadding]}>
-                                <MaterialCommunityIcons name={this.state.cameraFront ? iconCameraFront : iconCameraBack} size={iconSizeStandard} color={brandContrast}/>
+                                <MaterialCommunityIcons name={this.state.cameraFront ? iconCameraFront : iconCameraBack} size={iconSizeStandard} color={colorContrast}/>
                             </TouchableOpacity>}
                         </View>
                         {
@@ -243,7 +243,7 @@ export class CameraCameraRollComponent extends React.Component {
                                 />
                                 <View style={[{flexDirection: 'row', justifyContent: 'center'}]}>
                                     <TouchableOpacity name={'takepicturebutton'} onPress={this.takePicture.bind(this)} style={[{flex: 1, alignItems:'center'}, styles.containerPadding]}>
-                                        <FontAwesome name={'circle'} size={iconSizeLarge} color={brandContrast}/>
+                                        <FontAwesome name={'circle'} size={iconSizeLarge} color={colorContrast}/>
                                     </TouchableOpacity>
                                 </View>
                             </View>

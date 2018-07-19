@@ -1,5 +1,5 @@
 import {Dimensions, Platform, StatusBar, StyleSheet} from 'react-native';
-import {brandBackground, brandContrast, brandLight, brandMain} from "./constants/Constants";
+import {colorBackground, colorContrast, colorLight, colorMain} from "./constants/Constants";
 import {Header} from 'react-navigation';
 
 const bold = 'bold';
@@ -39,23 +39,23 @@ export default StyleSheet.create({
     },
 
     baseContainer: {
-        backgroundColor: brandBackground
+        backgroundColor: colorBackground
     },
 
     containerOpacity: {
-        backgroundColor: brandBackground + opacity
+        backgroundColor: colorBackground + opacity
     },
     containerOpacityDark: {
-        backgroundColor: brandContrast + opacity
+        backgroundColor: colorContrast + opacity
     },
     containerOpacityMain: {
-        backgroundColor: brandMain + opacity
+        backgroundColor: colorMain + opacity
     },
 
     textTitleBoldDark: {
         fontSize: largeFontSize,
         fontWeight: bold,
-        color: brandContrast,
+        color: colorContrast,
     },
     textTitleBold: {
         fontSize: largeFontSize,
@@ -64,21 +64,21 @@ export default StyleSheet.create({
     textTitleBoldLight: {
         fontSize: largeFontSize,
         fontWeight: bold,
-        color: brandBackground,
+        color: colorBackground,
     },
     textLargeBoldLight: {
         fontSize: extraLargeFontSize,
         fontWeight: bold,
-        color: brandBackground,
+        color: colorBackground,
     },
     textLargeBoldDark: {
         fontSize: extraLargeFontSize,
         fontWeight: bold,
-        color: brandContrast,
+        color: colorContrast,
     },
     textLargeDark: {
         fontSize: extraLargeFontSize,
-        color: brandContrast,
+        color: colorContrast,
     },
     textLargeBold: {
         fontSize: extraLargeFontSize,
@@ -86,31 +86,31 @@ export default StyleSheet.create({
     },
     textTitle: {
         fontSize: largeFontSize,
-        color: brandContrast,
+        color: colorContrast,
     },
     textTitleLight: {
         fontSize: largeFontSize,
-        color: brandBackground,
+        color: colorBackground,
     },
     textStandardDark: {
         fontSize: standardFontSize,
-        color: brandContrast
+        color: colorContrast
     },
     textStandardLight: {
         fontSize: standardFontSize,
-        color: brandBackground
+        color: colorBackground
     },
     textStandard: {
         fontSize: standardFontSize,
     },
     textStandardBold: {
         fontSize: standardFontSize,
-        color: brandContrast,
+        color: colorContrast,
         fontWeight: bold,
     },
     textSmall: {
         fontSize: smallFontSize,
-        color: brandLight,
+        color: colorLight,
     },
 
     roundProfile: {
@@ -138,7 +138,7 @@ export default StyleSheet.create({
     },
 
     bottomLine: {
-        borderBottomColor: brandContrast,
+        borderBottomColor: colorContrast,
         borderBottomWidth: 0.2,
     },
 
@@ -147,16 +147,16 @@ export default StyleSheet.create({
         justifyContent: 'space-around'
     },
     itemSelected :{
-        backgroundColor: brandContrast,
+        backgroundColor: colorContrast,
     },
     textSelected: {
-        color: brandMain,
+        color: colorMain,
     },
     itemNotSelected: {
-        backgroundColor: brandBackground,
+        backgroundColor: colorBackground,
     },
     textNotSelected: {
-        color: brandContrast,
+        color: colorContrast,
     },
     leftRoundedEdges: {
         borderBottomLeftRadius: roundedEdges,

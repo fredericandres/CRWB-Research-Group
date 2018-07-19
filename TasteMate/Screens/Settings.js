@@ -7,9 +7,9 @@ import {
     _addPictureToStorage,
     _formatUsername,
     _handleAuthError,
-    brandAccent,
-    brandBackground,
-    brandContrast,
+    colorAccent,
+    colorBackground,
+    colorContrast,
     iconEmail,
     iconLocation,
     iconUser,
@@ -300,7 +300,7 @@ export class SettingsScreen extends React.Component {
                             {/*/>*/}
                         </View>
                         <View name={'switchWrapper'} style={styles.containerPadding}>
-                            <View style={[{flex: 1, backgroundColor:brandBackground}, styles.rightRoundedEdges, styles.leftRoundedEdges]}>
+                            <View style={[{flex: 1, backgroundColor:colorBackground}, styles.rightRoundedEdges, styles.leftRoundedEdges]}>
                                 <View style={styles.containerPadding}>
                                     <Text name={'notificationsTitle'} style={[styles.textTitle]}>{strings.notifyMe}</Text>
                                 </View>
@@ -311,10 +311,10 @@ export class SettingsScreen extends React.Component {
                             </View>
                         </View>
                         <View name={'saveButtonWrapper'} style={[styles.containerPadding, {flex: 1}]}>
-                            <Button name={'saveChangesButton'} onPress={this._onPressSave} title={strings.saveChanges} color={brandAccent}/>
+                            <Button name={'saveChangesButton'} onPress={this._onPressSave} title={strings.saveChanges} color={colorAccent}/>
                         </View>
                         <View name={'viewAttributions'} style={[styles.containerPadding, {flex: 1}]}>
-                            <Button name={'saveChangesButton'} onPress={this._onPressViewAttributions} title={strings.viewAttributions} color={brandContrast}/>
+                            <Button name={'saveChangesButton'} onPress={this._onPressViewAttributions} title={strings.viewAttributions} color={colorContrast}/>
                         </View>
                     </ScrollView>
                 }

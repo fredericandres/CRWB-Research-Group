@@ -6,10 +6,10 @@ import {
     _navigateToScreen,
     _sortArrayByTimestamp,
     ActivityEnum,
-    brandBackground,
-    brandContrast,
-    brandLight,
-    brandMain,
+    colorBackground,
+    colorContrast,
+    colorLight,
+    colorMain,
     EmojiEnum,
     iconCutlery,
     iconEatingOut,
@@ -366,7 +366,7 @@ export class ObservationComponent extends React.Component {
                             }
                             {
                                 !this.state.observation.homemade &&
-                                <MaterialIcons name={iconEatingOut} size={iconSizeSmall} color={brandLight}/>
+                                <MaterialIcons name={iconEatingOut} size={iconSizeSmall} color={colorLight}/>
                             }
                             <Text name={'location'} style={[styles.textSmall, {flex: 1}]} onPress={this.state.observation.location && this._onPressLocationText}> {this.state.observation.location ? this.state.observation.location.name : (this.state.observation.homemade ? strings.homemade : strings.unknownLocation)}</Text>
                         </View>
@@ -374,7 +374,7 @@ export class ObservationComponent extends React.Component {
                     {
                         currentUser && this.state.observation.userid === currentUser.uid &&
                         <TouchableOpacity name={'menubutton'} onPress={this._onPressMenuButton}>
-                            <FontAwesome name={iconMenu} size={iconSizeStandard} color={brandContrast} style={styles.containerPadding}/>
+                            <FontAwesome name={iconMenu} size={iconSizeStandard} color={colorContrast} style={styles.containerPadding}/>
                         </TouchableOpacity>
                     }
                 </View>
@@ -386,11 +386,11 @@ export class ObservationComponent extends React.Component {
                         <View style={{flexDirection: 'row'}}>
                             {
                                 this.state.observation.dietaryRestriction && this.state.observation.dietaryRestriction !== 'none' &&
-                                <View name={'dietaryinfo'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor: brandMain, flexDirection: 'column', justifyContent: 'center'}]}>
+                                <View name={'dietaryinfo'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor: colorMain, flexDirection: 'column', justifyContent: 'center'}]}>
                                     <Image source={(dietaryRestriction && dietaryRestriction.source) || require('../Images/DietaryRestrictions/none.png')} resizeMode={'cover'} style={{width: iconSizeStandard, height:iconSizeStandard, opacity: 0.7}}/>
                                 </View>
                             }
-                            <View name={'price'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor:brandMain, flexDirection:'column', justifyContent:'center'}]}>
+                            <View name={'price'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor:colorMain, flexDirection:'column', justifyContent:'center'}]}>
                                 {/*TODO [FEATURE]: Calculate price in currency of location or language*/}
                                 <Text style={[styles.textStandardDark]}>{allCurrencies[this.state.observation.currency].symbol}{this.state.observation.price}</Text>
                             </View>
@@ -398,13 +398,13 @@ export class ObservationComponent extends React.Component {
                     </View>
                     <View style={[styles.containerOpacityDark, {padding: 6, position: 'absolute', bottom: 0, right: 0, flexDirection:'row'}]}>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressLikeButton} disabled={notLoggedIn}>
-                            <FontAwesome name={iconLike} size={iconSizeStandard} color={notLoggedIn ? brandLight : (this.state.liked ? brandMain : brandBackground)}/>
+                            <FontAwesome name={iconLike} size={iconSizeStandard} color={notLoggedIn ? colorLight : (this.state.liked ? colorMain : colorBackground)}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressCutleryButton} disabled={notLoggedIn}>
-                            <FontAwesome name={iconCutlery} size={iconSizeStandard} color={notLoggedIn ? brandLight : (this.state.cutleried ? brandMain : brandBackground)}/>
+                            <FontAwesome name={iconCutlery} size={iconSizeStandard} color={notLoggedIn ? colorLight : (this.state.cutleried ? colorMain : colorBackground)}/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerPadding} onPress={this._onPressShareButton} disabled={notLoggedIn}>
-                            <FontAwesome name={iconShare} size={iconSizeStandard} color={notLoggedIn ? brandLight : (this.state.shared ? brandMain : brandBackground)}/>
+                            <FontAwesome name={iconShare} size={iconSizeStandard} color={notLoggedIn ? colorLight : (this.state.shared ? colorMain : colorBackground)}/>
                         </TouchableOpacity>
                     </View>
                     {

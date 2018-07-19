@@ -3,7 +3,7 @@ import styles from "../styles";
 import {Text, TouchableOpacity, View} from "react-native";
 import {
     _navigateToScreen,
-    brandContrast,
+    colorContrast,
     iconClose,
     iconSizeSmall,
     pathComments,
@@ -77,7 +77,7 @@ export class CommentComponent extends React.Component {
                 {
                     currentUser && this.comment.senderid === currentUser.uid &&
                     <TouchableOpacity onPress={this._onPressDeleteButton}>
-                        <FontAwesome name={iconClose} size={iconSizeSmall} color={brandContrast} style={styles.containerPadding}/>
+                        <FontAwesome name={iconClose} size={iconSizeSmall} color={colorContrast} style={styles.containerPadding}/>
                     </TouchableOpacity>
                 }
             </View>

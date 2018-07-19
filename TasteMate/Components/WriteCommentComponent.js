@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "../styles";
 import {TextInput, TouchableOpacity, View} from "react-native";
-import {brandContrast, brandLight, brandMain, iconSend, iconSizeSmall, pathComments} from "../constants/Constants";
+import {colorContrast, colorLight, colorMain, iconSend, iconSizeSmall, pathComments} from "../constants/Constants";
 import strings from "../strings";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {currentUser} from "../App";
@@ -51,9 +51,9 @@ export class WriteCommentComponent extends React.Component {
         return (
             <View style={{flex: 1, flexDirection:'row', alignItems: 'center', opacity:this.props.hidden ? 0 : 100}}>
                 <UserImageThumbnailComponent size={styles.roundProfileSmall} user={currentUser}/>
-                <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} value={this.state.newComment} onChangeText={(text) => this.setState({newComment: text})} placeholder={strings.writeComment} placeholderTextColor={brandLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={brandContrast} selectionColor={brandMain} onSubmitEditing={this._onPressSendButton}/>
+                <TextInput style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} value={this.state.newComment} onChangeText={(text) => this.setState({newComment: text})} placeholder={strings.writeComment} placeholderTextColor={colorLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={colorContrast} selectionColor={colorMain} onSubmitEditing={this._onPressSendButton}/>
                 <TouchableOpacity onPress={this._onPressSendButton} style={styles.containerPadding}>
-                    <FontAwesome name={iconSend} size={iconSizeSmall} color={brandContrast}/>
+                    <FontAwesome name={iconSend} size={iconSizeSmall} color={colorContrast}/>
                 </TouchableOpacity>
             </View>
         );

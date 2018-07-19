@@ -5,7 +5,7 @@ import styles from "../styles";
 import {
     _formatUsername,
     _handleAuthError,
-    brandAccent,
+    colorAccent,
     iconEmail,
     iconLocation,
     iconPassword,
@@ -287,14 +287,14 @@ export class SignUpLogInScreen extends React.Component {
                                 onSubmitEditing={() => {this._onPressSubmit()}}
                             />
                             <View style={[this.state.error ? styles.containerOpacityMain : {}, styles.rightRoundedEdges, styles.leftRoundedEdges, {flex: 0, flexDirection:'row', alignItems: 'center', justifyContent:'center'}]}>
-                                <Text style={[styles.textStandard, styles.containerPadding, {textAlign: 'center', color:brandAccent}]}>{this.state.error}</Text>
+                                <Text style={[styles.textStandard, styles.containerPadding, {textAlign: 'center', color:colorAccent}]}>{this.state.error}</Text>
                             </View>
                         </View>
                         <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
                             <View style={{flex: 1}}/>
                             <View style={{flex: 6, alignItems: 'center'}}>
                                 <View name={'submitButtonWrapper'} style={[styles.containerPadding]}>
-                                    <TouchableOpacity name={'saveChangesButton'} onPress={this._onPressSubmit} style={[{backgroundColor:brandAccent}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
+                                    <TouchableOpacity name={'saveChangesButton'} onPress={this._onPressSubmit} style={[{backgroundColor:colorAccent}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
                                         <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.signUpActive ? strings.signUp: strings.logIn}</Text>
                                     </TouchableOpacity>
                                 </View>
