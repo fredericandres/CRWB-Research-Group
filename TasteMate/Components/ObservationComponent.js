@@ -6,10 +6,12 @@ import {
     _navigateToScreen,
     _sortArrayByTimestamp,
     ActivityEnum,
+    colorAccent,
     colorBackground,
     colorContrast,
     colorLight,
     colorMain,
+    colorStandardBackground,
     EmojiEnum,
     iconCutlery,
     iconEatingOut,
@@ -40,8 +42,8 @@ import {allVocabulary} from "../constants/Vocabulary";
 import {allCurrencies} from "../constants/Currencies";
 import {allDietaryRestrictions} from "../constants/DietaryRestrictions";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-
-// TODO: Hide rest of description if longer than 1 line
+import LinearGradient from "react-native-linear-gradient";
+import ReadMore from "./ReadMore";
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -421,7 +423,24 @@ export class ObservationComponent extends React.Component {
                 </View>
                 <View name={'details'} style={[styles.containerPadding, styles.bottomLine, {flexDirection:'row'}]}>
                     <View name={'description'} style={{flexDirection:'column', flex: 5}}>
-                        <Text name={'description'} style={styles.textStandardDark}>{this.state.observation.description}</Text>
+                        <ReadMore
+                            numberOfLines={2}
+                            renderTruncatedFooter={(handlePressReadMore) =>
+                                <View style={{position:'absolute', right:0, bottom:-0.2, flexDirection:'row'}}>
+                                    <LinearGradient start={{x: 0, y: 1}} end={{x: 0.9, y: 1}} colors={[colorStandardBackground + '00', colorStandardBackground]} style={{width:30}}/>
+                                    <Text style={[styles.textStandardDark, {backgroundColor: colorStandardBackground, color: colorAccent}]} onPress={handlePressReadMore}>
+                                        {strings.readMore}
+                                    </Text>
+                                </View>
+                            }
+                            renderRevealedFooter={(handlePressReadLess) =>
+                                <Text style={[styles.textStandardDark, {color: colorAccent}]} onPress={handlePressReadLess}>
+                                    {strings.hide}
+                                </Text>
+                            }
+                        >
+                            <Text name={'description'} style={styles.textStandardDark}>{this.state.observation.description}</Text>
+                        </ReadMore>
                         {/*TODO [FEATURE]: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                         <View name={'information'} style={{flexDirection: 'row'}}>
                             <TimeAgo name={'time'} style={styles.textSmall} time={this.state.observation.timestamp}/>

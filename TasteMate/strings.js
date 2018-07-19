@@ -203,6 +203,8 @@ export default strings = new LocalizedStrings({
         deleteDraftAlertMessage: 'Are you sure you want to delete this draft? This action is irreversible. ',
         deleteDraft: 'Delete Draft',
         noDrafts: 'You have not saved any observations as drafts.',
+        readMore: 'Read More',
+        hide: 'Hide',
     },
     fr: {
         explore: 'Explorer',

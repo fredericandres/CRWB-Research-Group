@@ -52,6 +52,7 @@ target 'TasteMate' do
   pod 'react-native-mapbox-gl', :path => '../node_modules/@mapbox/react-native-mapbox-gl'
 
   pod 'react-native-camera', path: '../node_modules/react-native-camera'
+  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
 end
 

@@ -21,6 +21,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.mapbox.rctmgl.RCTMGLPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +50,8 @@ public class MainApplication extends Application implements ReactApplication, Sh
             new RNFirebaseDatabasePackage(),
             new RNFirebaseFunctionsPackage(),
             new RNFirebaseStoragePackage(),
-            new RCTMGLPackage()
+            new RCTMGLPackage(),
+            new LinearGradientPackage()
       );
     }
 

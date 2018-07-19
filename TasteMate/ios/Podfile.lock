@@ -1,5 +1,7 @@
 PODS:
   - boost-for-react-native (1.63.0)
+  - BVLinearGradient (2.4.0):
+    - React
   - DoubleConversion (1.1.5)
   - Firebase/Auth (5.2.0):
     - Firebase/CoreOnly
@@ -116,6 +118,7 @@ PODS:
   - yoga (0.55.4.React)
 
 DEPENDENCIES:
+  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Firebase/Auth
   - Firebase/Core
@@ -159,6 +162,8 @@ SPEC REPOS:
     - nanopb
 
 EXTERNAL SOURCES:
+  BVLinearGradient:
+    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   Folly:
@@ -178,6 +183,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  BVLinearGradient: 4b3f3bdf1ac1a52a5ef5e65c9585d793a7c3f825
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
   Firebase: 25ed0412036d7d008568d1fb4d2e9d81ea8a0a2c
   FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
@@ -199,6 +205,6 @@ SPEC CHECKSUMS:
   react-native-mapbox-gl: b42480060cdcc515dfa3d8e403fb4dd32466a1b9
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: f21d89291343650adbc2bea3a44de8eec9450a57
+PODFILE CHECKSUM: 438281659a81e20083de2c18eaf2bb6601931c20
 
 COCOAPODS: 1.5.2
