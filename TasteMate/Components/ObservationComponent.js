@@ -189,7 +189,6 @@ export class ObservationComponent extends React.Component {
     }
 
     _sendAction(path) {
-        // TODO: Update like/share/EO count on object!
         let content = {};
         content[currentUser.uid] = true;
 
@@ -222,18 +221,51 @@ export class ObservationComponent extends React.Component {
     }
 
     _updateActionState(path, value) {
+        let obs = this.state.observation;
         if (path === pathLikes) {
-            this.setState({liked: value});
+            if (value) {
+                obs.likesCount += 1;
+            } else {
+                obs.likesCount -= 1;
+            }
+
+            this.setState({
+                liked: value,
+                observation: obs
+            });
         } else if (path === pathShares) {
-            this.setState({shared: value});
+            if (value) {
+                obs.sharesCount += 1;
+            } else {
+                obs.sharesCount -= 1;
+            }
+
+            this.setState({
+                shared: value,
+                observation: obs
+            });
         } else if (path === pathCutleries) {
-            this.setState({cutleried: value});
+            if (value) {
+                obs.cutleriesCount += 1;
+            } else {
+                obs.cutleriesCount -= 1;
+            }
+
+            this.setState({
+                cutleried: value,
+                observation: obs
+            });
         }
     }
 
     _addCommentToState(comment) {
         const commentArray = [comment];
-        this.setState(prevState => ({comments: prevState.comments.concat(commentArray)}));
+        let obs = this.state.observation;
+        obs.commentsCount += 1;
+        this.setState(prevState => ({
+            comments: prevState.comments.concat(commentArray),
+            observation: obs
+        }));
     }
 
     _onPressLocationText() {
@@ -341,7 +373,12 @@ export class ObservationComponent extends React.Component {
         if (index > -1) {
             comments.splice(index, 1);
         }
-        this.setState({comments:comments});
+        let obs = this.state.observation;
+        obs.commentsCount -= 1;
+        this.setState({
+            comments:comments,
+            observation: obs
+        });
     }
 
     _keyExtractor = (item, index) => item.timestamp + item.senderid;
