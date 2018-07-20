@@ -19,6 +19,8 @@ const initialState ={
     emptyListMessage: strings.loading
 };
 
+// TODO [FEATURE]: Scroll to top of list when clicking on tastemate logo
+
 export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation})=> {
         const {params = {}} = navigation.state;

@@ -19,7 +19,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.airbnb.android.react.maps.MapsPackage;
 import com.mapbox.rctmgl.RCTMGLPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 
@@ -44,7 +43,6 @@ public class MainApplication extends Application implements ReactApplication, Sh
             new RNCameraPackage(),
             new ReactNativeLocalizationPackage(),
             new VectorIconsPackage(),
-            new MapsPackage(),
             new RNFirebasePackage(),
             new RNFirebaseAuthPackage(),
             new RNFirebaseDatabasePackage(),

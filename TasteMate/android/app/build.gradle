@@ -151,7 +151,6 @@ android {
 
 dependencies {
     compile project(':react-native-image-resizer')
-    compile project(':react-native-maps')
     compile(project(':react-native-firebase')) {
         transitive = false
     }
