@@ -39,7 +39,7 @@ import {
     iconSizeStandard,
     pathObservations
 } from "../constants/Constants";
-import {mapboxApiKey} from "../constants/GoogleApiKey";
+import {mapboxApiKey} from "../constants/ApiKeys";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import {allCurrencies} from "../constants/Currencies";

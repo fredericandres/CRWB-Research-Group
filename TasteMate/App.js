@@ -28,7 +28,7 @@ import {MapScreen} from "./Screens/Map";
 import firebase from 'react-native-firebase';
 import {CommentsScreen} from "./Screens/Comments";
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
-import {mapboxApiKey} from "./constants/GoogleApiKey";
+import {mapboxApiKey} from "./constants/ApiKeys";
 import {UsersScreen} from "./Screens/Users";
 
 StatusBar.setHidden(false);
