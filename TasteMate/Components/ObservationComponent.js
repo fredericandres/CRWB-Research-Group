@@ -223,6 +223,10 @@ export class ObservationComponent extends React.Component {
     _updateActionState(path, value) {
         let obs = this.state.observation;
         if (path === pathLikes) {
+            if (!obs.likesCount) {
+                obs.likesCount = 0;
+            }
+
             if (value) {
                 obs.likesCount += 1;
             } else {
@@ -234,6 +238,10 @@ export class ObservationComponent extends React.Component {
                 observation: obs
             });
         } else if (path === pathShares) {
+            if (!obs.sharesCount) {
+                obs.sharesCount = 0;
+            }
+
             if (value) {
                 obs.sharesCount += 1;
             } else {
@@ -245,6 +253,10 @@ export class ObservationComponent extends React.Component {
                 observation: obs
             });
         } else if (path === pathCutleries) {
+            if (!obs.cutleriesCount) {
+                obs.cutleriesCount = 0;
+            }
+
             if (value) {
                 obs.cutleriesCount += 1;
             } else {
@@ -261,6 +273,9 @@ export class ObservationComponent extends React.Component {
     _addCommentToState(comment) {
         const commentArray = [comment];
         let obs = this.state.observation;
+        if (!obs.commentsCount) {
+            obs.commentsCount = 0;
+        }
         obs.commentsCount += 1;
         this.setState(prevState => ({
             comments: prevState.comments.concat(commentArray),

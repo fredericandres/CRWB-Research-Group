@@ -164,7 +164,7 @@ export class SignUpLogInScreen extends React.Component {
     }
 
     _onPressSwitch() {
-        this.setState({signUpActive: !this.state.signUpActive});
+        this.setState((prevState) => ({signUpActive: !prevState.signUpActive}));
     }
 
     _onPressSkip() {

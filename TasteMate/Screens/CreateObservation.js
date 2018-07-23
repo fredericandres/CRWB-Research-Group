@@ -19,6 +19,7 @@ import strings from "../strings";
 import styles, {smallFontSize, standardFontSize} from "../styles";
 import {
     _addPictureToStorage,
+    _checkInternetConnection,
     AsyncStorageKeyObservations,
     colorAccent,
     colorBackground,
@@ -84,6 +85,7 @@ export class CreateObservationScreen extends React.Component {
         this._removeDraft = this._removeDraft.bind(this);
         this._loadDrafts = this._loadDrafts.bind(this);
         this._showDraftDeleteAlert = this._showDraftDeleteAlert.bind(this);
+        this._sendObservation = this._sendObservation.bind(this);
 
         this._onSubmitSearch = this._onSubmitSearch.bind(this);
         this._sendToMyPoC = this._sendToMyPoC.bind(this);
@@ -203,64 +205,68 @@ export class CreateObservationScreen extends React.Component {
             if (missing.length > 0) {
                 this._handleMissing(missing);
             } else {
-                this._startActivityIndicator(strings.savingObservation);
-
-                let observation = this.state.observation;
-
-                if (observation.location && !observation.location.name) {
-                    // Remove location property if no actual location was connected to it
-                    delete observation.location;
-                }
-
-                // Clean up text input: Remove spaces etc in front of/after; pare price as float
-                observation.description = observation.description.trim();
-                observation.dishname = observation.dishname.trim();
-                if (observation.mypoccorrector) {
-                    observation.mypoccorrector = observation.mypoccorrector.toLowerCase().trim();
-                }
-                const priceNumber = parseFloat(observation.price);
-                observation.price = priceNumber ? (parseInt(priceNumber) !== priceNumber ? priceNumber.toFixed(2) : priceNumber).toString() : '0';
-
-                if (this.isEditing) {
-                    firebase.database().ref(pathObservations).child(currentUser.uid).child(this.state.observation.observationid).update(observation)
-                        .then(() => {
-                            this._stopActivityIndicator();
-                            console.log('Successfully updated observation at DB.');
-                            this._closeWindow(observation, null);
-                        }).catch((error) => {
-                            console.log('Error during observation update transmission.');
-                            this._stopActivityIndicator();
-                            console.log(error);
-                            // TODO: display error message
-                        }
-                    );
-                } else {
-                    let ref = firebase.database().ref(pathObservations).child(currentUser.uid);
-                    observation.userid = currentUser.uid;
-                    observation.timestamp = firebase.database().getServerTime();
-                    observation.observationid = observation.observationid || ref.push().key;
-
-                    // Remove image property but save for image upload
-                    const imageUrl = observation.image;
-                    delete observation.image;
-
-                    const observationRef = firebase.database().ref(pathObservations).child(currentUser.uid).child(observation.observationid);
-                    observationRef.set(observation)
-                        .then(() => {
-                            console.log('Successfully added observation to DB.');
-                            _addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef, ((url) => this._closeWindow(observation, url)), this._setActivityIndicatorText, this._stopActivityIndicator);
-                        }).catch((error) => {
-                            console.log('Error during observation transmission.');
-                            this._stopActivityIndicator();
-                            console.log(error);
-                            // TODO: display error message
-                        }
-                    );
-                    observation.image = imageUrl;
-                }
+                _checkInternetConnection(this._sendObservation, null);
             }
         } else {
-            this.setState({activePageIndex: this.state.activePageIndex + 1});
+            this.setState((prevState) => ({activePageIndex: prevState.activePageIndex + 1}));
+        }
+    }
+
+    _sendObservation() {
+        this._startActivityIndicator(strings.savingObservation);
+
+        let observation = this.state.observation;
+
+        if (observation.location && !observation.location.name) {
+            // Remove location property if no actual location was connected to it
+            delete observation.location;
+        }
+
+        // Clean up text input: Remove spaces etc in front of/after; pare price as float
+        observation.description = observation.description.trim();
+        observation.dishname = observation.dishname.trim();
+        if (observation.mypoccorrector) {
+            observation.mypoccorrector = observation.mypoccorrector.toLowerCase().trim();
+        }
+        const priceNumber = parseFloat(observation.price);
+        observation.price = priceNumber ? (parseInt(priceNumber) !== priceNumber ? priceNumber.toFixed(2) : priceNumber).toString() : '0';
+
+        if (this.isEditing) {
+            firebase.database().ref(pathObservations).child(currentUser.uid).child(this.state.observation.observationid).update(observation)
+                .then(() => {
+                    this._stopActivityIndicator();
+                    console.log('Successfully updated observation at DB.');
+                    this._closeWindow(observation, null);
+                }).catch((error) => {
+                    console.log('Error during observation update transmission.');
+                    this._stopActivityIndicator();
+                    console.log(error);
+                    // TODO: display error message
+                }
+            );
+        } else {
+            let ref = firebase.database().ref(pathObservations).child(currentUser.uid);
+            observation.userid = currentUser.uid;
+            observation.timestamp = firebase.database().getServerTime();
+            observation.observationid = observation.observationid || ref.push().key;
+
+            // Remove image property but save for image upload
+            const imageUrl = observation.image;
+            delete observation.image;
+
+            const observationRef = firebase.database().ref(pathObservations).child(currentUser.uid).child(observation.observationid);
+            observationRef.set(observation)
+                .then(() => {
+                    console.log('Successfully added observation to DB.');
+                    _addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef, ((url) => this._closeWindow(observation, url)), this._setActivityIndicatorText, this._stopActivityIndicator);
+                }).catch((error) => {
+                    console.log('Error during observation transmission.');
+                    this._stopActivityIndicator();
+                    console.log(error);
+                    // TODO: display error message
+                }
+            );
+            observation.image = imageUrl;
         }
     }
 
@@ -286,7 +292,7 @@ export class CreateObservationScreen extends React.Component {
         if ((this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE) {
             this._openExitAlert();
         } else {
-            this.setState({activePageIndex: this.state.activePageIndex - 1});
+            this.setState((prevState) => ({activePageIndex: prevState.activePageIndex - 1}));
         }
     }
 
@@ -507,7 +513,7 @@ export class CreateObservationScreen extends React.Component {
 
 
     _setLocationText(text) {
-        this.setState({locationText: text ? text : this.state.observation.location.address});
+        this.setState((prevState) => ({locationText: text ? text : prevState.observation.location.address}));
     }
 
     _updateObservationState(obs) {

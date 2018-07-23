@@ -27,7 +27,6 @@ const initialState = {
 };
 
 // TODO [FEATURE]: push notifications
-// TODO [FEATURE]: Group multiple notifications of same type together if no other type in between
 
 export class NotificationsScreen extends React.Component {
     static navigationOptions = ({navigation})=> {

@@ -1,7 +1,15 @@
 import React from "react";
 import styles from "../styles";
 import {TextInput, TouchableOpacity, View} from "react-native";
-import {colorContrast, colorLight, colorMain, iconSend, iconSizeSmall, pathComments} from "../constants/Constants";
+import {
+    _checkInternetConnection,
+    colorContrast,
+    colorLight,
+    colorMain,
+    iconSend,
+    iconSizeSmall,
+    pathComments
+} from "../constants/Constants";
 import strings from "../strings";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {currentUser} from "../App";
@@ -13,6 +21,7 @@ export class WriteCommentComponent extends React.Component {
         super(props);
 
         this._onPressSendButton = this._onPressSendButton.bind(this);
+        this._sendComment = this._sendComment.bind(this);
 
         this.state = {
             newComment: ''
@@ -22,29 +31,33 @@ export class WriteCommentComponent extends React.Component {
 
     _onPressSendButton() {
         if (this.state.newComment.length > 0) {
-            let comment = {};
-            comment.senderid = currentUser.uid;
-            comment.message = this.state.newComment.trim();
-            comment.timestamp = firebase.database().getServerTime();
-            const ref = firebase.database().ref(pathComments).child(this.observation.userid).child(this.observation.observationid);
-            const id = ref.push().key;
-
-            ref.child(id).set(
-                comment,
-                (error) => {
-                    if (error) {
-                        console.error('Error during comment transmission.');
-                        console.error(error);
-                        // TODO: display error message
-                    } else {
-                        console.log('Successfully added comment.');
-                        this.setState({newComment: ''});
-                        comment.id = id;
-                        this.props.onCommentAddedAction(comment);
-                    }
-                }
-            );
+            _checkInternetConnection(this._sendComment, null);
         }
+    }
+
+    _sendComment() {
+        let comment = {};
+        comment.senderid = currentUser.uid;
+        comment.message = this.state.newComment.trim();
+        comment.timestamp = firebase.database().getServerTime();
+        const ref = firebase.database().ref(pathComments).child(this.observation.userid).child(this.observation.observationid);
+        const id = ref.push().key;
+
+        ref.child(id).set(
+            comment,
+            (error) => {
+                if (error) {
+                    console.error('Error during comment transmission.');
+                    console.error(error);
+                    // TODO: display error message
+                } else {
+                    console.log('Successfully added comment.');
+                    this.setState({newComment: ''});
+                    comment.id = id;
+                    this.props.onCommentAddedAction(comment);
+                }
+            }
+        );
     }
 
     render() {

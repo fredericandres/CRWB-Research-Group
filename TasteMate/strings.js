@@ -16,7 +16,7 @@ moment.locale(_getLanguageCode());
 // If you add another language: add the language code (e.g. de) to the locales above and add the translations like below
 
 export default strings = new LocalizedStrings({
-    en:{
+    en: {
         home: 'Home',
         explore: 'Explore',
         notifications: 'Notifications',
@@ -27,17 +27,13 @@ export default strings = new LocalizedStrings({
         createObservation: 'Create Observation',
         signUpLogIn: 'Sign Up Log In',
         mapDetail: 'Map Detail',
-
-
         hiThere: 'Hi there,',
         welcomeToTastemate: 'Welcome to Tastemate!',
         limitedContentExplanation: 'Unfortunately, you\'re not logged in, so we can only show you limited content and functionality. Once you\'re ready to explore more of the app, click the user icon button in the top left corner to log in or create a new account. In the meantime,',
         haveFun: 'Have fun!',
-
-
         emptyFeed: 'Seems like your feed is empty. Why not follow some tastemates?',
         selectAction: 'Select an action',
-        doWithPost: 'What would you like to do with the post \"{0}\" by {1}?',
+        doWithPost: 'What would you like to do with this post?',
         share: 'Share',
         edit: 'Edit',
         delete: 'Delete',
@@ -55,26 +51,18 @@ export default strings = new LocalizedStrings({
         million: '{0}m',
         writeComment: 'Write a comment...',
         close: 'Close',
-
-
         likedPicture: '{0} liked your picture.',
         sharedPicture: '{0} shared your picture.',
         addedToEatingOutPicture: '{0} added your picture to their Eating Out list.',
         startedFollowing: '{0} started following you.',
         userAndUser: '{0} and {1}',
         others: '{0} others',
-
-
         photos: 'Photos',
         followers: 'Followers',
         following: 'Following',
         noPictures: 'This user has not added any pictures.',
         noUsers: 'No users to display.',
-
-
         foodCraving: 'What food are you craving?',
-
-
         username: 'Username',
         emailAddress: 'Email address',
         location: 'Location',
@@ -87,13 +75,9 @@ export default strings = new LocalizedStrings({
         sharesPicture: 'someone shares my picture',
         startsFollowing: 'someone starts following me',
         saveChanges: 'Save Changes',
-
-
         list: 'List',
         map: 'Map',
         noEatingOut: 'Seems like you have not added a dish to your list. Just click the cutlery icon to do so!',
-
-
         welcomeTo: 'Welcome to',
         tastemateDescription: 'the place to share your culinary experiences with others',
         getEating: 'Let\'s get eating!',
@@ -113,8 +97,6 @@ export default strings = new LocalizedStrings({
         errorMessageWrongPassword: 'The password you entered is incorrect.',
         errorMessageWeakPassword: 'The password you entered is too weak.',
         errorMessageEmailAlreadyInUse: 'This email address is already connected to a Tastemate account.',
-
-
         next: 'Next',
         previous: 'Previous',
         publish: 'Publish',
@@ -141,12 +123,9 @@ export default strings = new LocalizedStrings({
         mypocExplanationTitle: 'The MyPoC Text Field',
         mypocExplanationText: 'This field displays a general dish name as predicted by our MyPoC system. Feel free to edit the name if the prediction is incorrect!',
         more: 'More',
-
         accessLocationQuestion: 'May we access your location?',
         accessLocationExplanation: 'We need access so you can see which saved observations are nearby.',
         enableLocation: 'Please enable the location permission in the Tastemate settings of your phone to use this feature.',
-
-
         editObservation: 'Edit Observation',
         save: 'Save',
         errorMessageUsernameAlreadyInUse: 'This username is already connected to a Tastemate account.',
@@ -181,12 +160,9 @@ export default strings = new LocalizedStrings({
         flavor: 'Flavor',
         odor: 'Odor',
         texture: 'Texture',
-
         selected: 'Selected',
         noMatchingTerms: 'There are no terms that match your search.',
         noSelectedTerms: 'Click on one of the terms below to add it to your observation.',
-
-
         myPoc: 'MyPoC prediction',
         all: 'All',
         dietaryInfo: 'Dietary information',
@@ -206,6 +182,8 @@ export default strings = new LocalizedStrings({
         noDrafts: 'You have not saved any observations as drafts.',
         readMore: 'Read More',
         hide: 'Hide',
+        noInternetAlertTitle: 'No Internet Connection',
+        noInternetAlertMessage: 'Please connect your phone to the Internet to proceed.',
     },
     fr: {
         explore: 'Explorer',
@@ -217,17 +195,13 @@ export default strings = new LocalizedStrings({
         createObservation: 'Créer une observation',
         signUpLogIn: 'Inscription Connexion',
         mapDetail: 'Détails de la carte',
-
-
         hiThere: 'Salut',
         welcomeToTastemate: 'Bienvenue à Tastemate!',
         limitedContentExplanation: 'Malheureusement, vous n\'êtes pas connecté, nous ne pouvons vous montrer que du contenu et des fonctionnalités limités. Une fois que vous êtes prêt à explorer plus l\'application, cliquez sur le bouton de l\'icône utilisateur dans le coin supérieur gauche pour vous connecter ou créer un nouveau compte. Pendant ce temps,',
         haveFun: 'Amusez-vous!',
-
-
         emptyFeed: 'Votre flux semble être vide. Pourquoi ne pas suivre quelques dégustations?',
         selectAction: 'Sélectionnez une action',
-        doWithPost: 'Que voudriez-vous faire avec le post \"{0} \" par {1}',
+        doWithPost: 'Que voudriez-vous faire avec ce post?',
         share: 'Partage',
         edit: 'Modifier',
         delete: 'Supprimer',
@@ -245,26 +219,18 @@ export default strings = new LocalizedStrings({
         million: '{0}m',
         writeComment: 'Ecrire un commentaire ...',
         close: 'Fermer',
-
-
         likedPicture: '{0} a aimé votre photo.',
         sharedPicture: '{0} a partagé votre photo..',
         addedToEatingOutPicture: '{0} a ajouté votre image à sa liste Eating Out.',
         startedFollowing: '{0} a commencé à vous suivre.',
         userAndUser: '{0} et {1}',
         others: '{0} autres',
-
-
         photos: 'Photos',
         followers: 'Abonnés',
         following: 'Suivant',
         noPictures: 'Cet utilisateur n\'a ajouté aucune photo.',
         noUsers: 'Aucun utilisateur à afficher.',
-
-
         foodCraving: 'De quelle nourriture avez-vous envie ?',
-
-
         username: 'username',
         emailAddress: 'adresse email',
         location: 'location',
@@ -277,13 +243,9 @@ export default strings = new LocalizedStrings({
         sharesPicture: 'quelqu\'un partage ma photo',
         startsFollowing: 'quelqu\'un commence à me suivre',
         saveChanges: 'Enregistrer les modifications',
-
-
         list: 'Liste',
         map: 'Carte',
         noEatingOut: 'On dirait que vous n\'avez pas ajouté un plat à votre liste. Cliquez simplement sur l\'icône Couteau pour le faire!',
-
-
         welcomeTo: 'Bienvenue à',
         tastemateDescription: 'l\'endroit pour partager vos expériences culinaires avec les autres',
         getEating: 'Allons manger!',
@@ -303,8 +265,6 @@ export default strings = new LocalizedStrings({
         errorMessageWrongPassword: 'Le mot de passe que vous avez entré est incorrect.',
         errorMessageWeakPassword: 'Le mot de passe que vous avez entré est trop faible.',
         errorMessageEmailAlreadyInUse: 'Cette adresse e-mail est déjà connectée à un compte Tastemate.',
-
-
         next: 'Suivant',
         previous: 'Precedent',
         publish: 'Publish',
@@ -331,12 +291,9 @@ export default strings = new LocalizedStrings({
         mypocExplanationTitle: 'Le champ de texte MyPoC',
         mypocExplanationText: 'Ce champ affiche un nom de plat général comme prédit par notre système MyPoC. N\'hésitez pas à modifier le nom si la prédiction est incorrecte!',
         more: 'Plus',
-
         accessLocationQuestion: 'Pouvons-nous accéder à votre position?',
         accessLocationExplanation: 'Nous avons besoin d\'un accès pour voir quelles observations sont à proximité.',
         enableLocation: 'Veuillez activer l\'autorisation de localisation dans les paramètres Tastemate',
-
-
         editObservation: 'Modifier l\'observation',
         save: 'Enregistrer',
         errorMessageUsernameAlreadyInUse: 'Ce nom d\'utilisateur est déjà connecté à un compte Tastemate.',
@@ -371,13 +328,9 @@ export default strings = new LocalizedStrings({
         flavor: 'Saveur',
         odor: 'Odeur',
         texture: 'Texture',
-
         selected: 'Sélectionné',
         noMatchingTerms: 'Aucun terme ne correspond à votre recherche.',
         noSelectedTerms: 'Cliquez sur l\'un des termes ci-dessous pour l\'ajouter à votre observation.',
-
-
-
         all: 'Tout',
     },
     ja: {
@@ -391,17 +344,12 @@ export default strings = new LocalizedStrings({
         createObservation: '観察を作成する',
         signUpLogIn: 'サインアップログイン',
         mapDetail: 'マップ詳細',
-
-
         hiThere: 'こんにちは、みなさん',
         welcomeToTastemate: 'Tastemateにようこそ！',
-        limitedContentExplanation: 'あなたはログインできません。従って、制限された内容と機能のみ使えます。いったんあなたがアプリをダウンロードする時は、ログインするために、左上コーナーのユーザーアイコンボタンをクリックするか、または新規作成してください。,',
+        limitedContentExplanation: 'あなたはログインできません。従って、制限された内容と機能のみ使えます。いったんあなたがアプリをダウンロードする時は、ログインするために、左上コーナーのユーザーアイコンボタンをクリックするか、または新規作成してください。',
         haveFun: '楽しみなさい！',
-
-
         emptyFeed: 'あなたのフィードは空のようです。いくつかのtastematesに従いなさい',
         selectAction: '行動を選びなさい',
-        doWithPost: 'あなたは{1}によって the post \"{0}\"で何をしたいですか',
         share: '共有',
         edit: '編集しなさい',
         delete: '削除しなさい',
@@ -419,26 +367,18 @@ export default strings = new LocalizedStrings({
         million: '{0}m',
         writeComment: 'コメントを書きなさい…',
         close: '閉じる',
-
-
         likedPicture: '{0} はあなたの写真が好き',
         sharedPicture: '{0} はあなたの写真を共有した',
         addedToEatingOutPicture: '{0} はあなたの写真を彼らの食べるリストに追加した',
         startedFollowing: '{0} はあなたをフォローした',
         userAndUser: '{0} および {1}',
         others: '{0} 他のもの',
-
-
         photos: '写真',
         followers: 'フォロワー',
         following: '後続',
         noPictures: 'このユーザーは少しの写真も追加しなかった。.',
         noUsers: '表示するユーザーはいません。',
-
-
         foodCraving: 'あなたはどんな食物を切望しているか？',
-
-
         username: 'ユーザーネーム',
         emailAddress: '電子メールアドレス',
         location: '位置',
@@ -451,13 +391,9 @@ export default strings = new LocalizedStrings({
         sharesPicture: '誰かが私の写真を共有する',
         startsFollowing: '誰かが私をフォローする',
         saveChanges: '変更を保存しなさい',
-
-
         list: 'リスト',
         map: 'マップ',
         noEatingOut: '皿をあなたのリストに追加しなかった 。まさに、そうするために、刃物類アイコンをクリックしなさい！',
-
-
         welcomeTo: 'するために歓迎します',
         tastemateDescription: 'あなたの料理の経験を他と共有する場所',
         getEating: '私達を、食べ始めさせなさい！',
@@ -477,8 +413,6 @@ export default strings = new LocalizedStrings({
         errorMessageWrongPassword: 'あなたが入力したパスワードは不正確である。',
         errorMessageWeakPassword: 'あなたが入力したパスワードは弱すぎる。',
         errorMessageEmailAlreadyInUse: 'この電子メールアドレスはすでにTastemateアカウントに接続している。',
-
-
         next: '次に',
         previous: '前',
         publish: '出版しなさい',
@@ -505,12 +439,9 @@ export default strings = new LocalizedStrings({
         mypocExplanationTitle: 'MyPoCテキストフィールド',
         mypocExplanationText: 'このフィールドは、私達のMyPoCシステムにより予測されるように一般皿名を表示する。もし予測が不正確ならば、名前を編集しなさい！',
         more: 'より多く',
-
         accessLocationQuestion: '私達はあなたの位置にアクセスできるか？',
         accessLocationExplanation: '私達は、あなたが、近くで、保存された観察がであるかをわかることができるようにアクセスする必要がある。',
         enableLocation: 'どうぞ、あなたの電話のTastemate設定において、位置許可がこの機能を使うことを可能にしてください。',
-
-
         editObservation: '観察を編集',
         save: '保存',
         errorMessageUsernameAlreadyInUse: 'このユーザー名は既にTestemateアカウントに接続されています',
@@ -545,13 +476,9 @@ export default strings = new LocalizedStrings({
         flavor: 'フレーバー',
         odor: 'におい',
         texture: 'テクスチャー',
-
         selected: '選択済み',
         noMatchingTerms: 'あなたの検索に該当する用語はありません',
         noSelectedTerms: '下方にある用語の一つをクリックしてあなたの観察に追加しなさい',
-
-
-
         all: 'すべて',
     },
     pt: {
@@ -565,17 +492,12 @@ export default strings = new LocalizedStrings({
         createObservation: 'Criar observação',
         signUpLogIn: 'Cadastre-se Log In',
         mapDetail: 'Detalhe do mapa',
-
-
         hiThere: 'Ol,',
         welcomeToTastemate: 'Bem-vindo ao Tastemate!',
         limitedContentExplanation: 'Infelizmente, você não está logado, então só podemos mostrar conteúdo e funcionalidade limitados. Quando estiver pronto para explorar mais o aplicativo, clique no botão do ícone do usuário no canto superior esquerdo para fazer login ou criar uma nova conta. Enquanto isso,',
         haveFun: 'Divirta-se!',
-
-
         emptyFeed: 'Parece que seu feed está vazio. Por que não seguir alguns Tastemates?',
         selectAction: 'Selecione uma ação',
-        doWithPost: 'O que você gostaria de fazer com a postagem \"{0}\" por {1}',
         share: 'Compartilhe',
         edit: 'Editar',
         delete: 'Excluir',
@@ -593,26 +515,18 @@ export default strings = new LocalizedStrings({
         million: '{0}m',
         writeComment: 'Escrever um comentário ...',
         close: 'Fechar',
-
-
         likedPicture: '{0} gostou da sua foto. // e.g. Lukas liked your picture.',
         sharedPicture: '{0} compartilhou sua foto.',
         addedToEatingOutPicture: '{0} adicionou sua foto à lista Comendo Fora.',
         startedFollowing: '{0} começou a seguir você.',
         userAndUser: '{0} e {1}',
         others: '{0} outros',
-
-
         photos: 'Fotos',
         followers: 'Seguidores',
         following: 'Seguindo',
         noPictures: 'Este usuário não adicionou nenhuma foto.',
         noUsers: 'Nenhum usu·rio para exibir.',
-
-
         foodCraving: 'Que comida você está desejando?',
-
-
         username: 'username',
         emailAddress: 'endereÁo de email',
         location: 'localização',
@@ -625,13 +539,9 @@ export default strings = new LocalizedStrings({
         sharesPicture: 'alguém compartilha minha foto',
         startsFollowing: 'alguém começa a me seguir',
         saveChanges: 'Salvar alterações',
-
-
         list: 'Lista',
         map: 'Mapa',
         noEatingOut: 'Parece que você não adicionou um prato à sua lista. Basta clicar no ícone de talheres para fazer isso!',
-
-
         welcomeTo: 'Bem-vindo ao',
         tastemateDescription: 'o lugar para compartilhar suas experiências culinárias com os outros',
         getEating: 'Vamos comer!',
@@ -651,8 +561,6 @@ export default strings = new LocalizedStrings({
         errorMessageWrongPassword: 'A senha que você digitou está incorreta.',
         errorMessageWeakPassword: 'A senha que você digitou é muito fraca.',
         errorMessageEmailAlreadyInUse: 'Este endereço de e-mail já está conectado a uma conta Tastemate.',
-
-
         next: 'PrÛximo',
         previous: 'Anterior',
         publish: 'Publicar',
@@ -679,7 +587,6 @@ export default strings = new LocalizedStrings({
         mypocExplanationTitle: 'Campo de texto do MyPoC',
         mypocExplanationText: 'Este campo exibe um nome geral do prato conforme previsto pelo nosso sistema MyPoC. Sinta-se à vontade para editar o nome se a previsão estiver incorreta!',
         more: 'Mais',
-
         accessLocationQuestion: 'Podemos acessar sua localização?',
         accessLocationExplanation: 'Precisamos de acesso para que você possa ver as observações salvas próximas.',
         enableLocation: 'Por favor, ative a permissão de localização nas configurações do Tastemate do seu telefone para usar este recurso.',
@@ -695,17 +602,13 @@ export default strings = new LocalizedStrings({
         createObservation: 'Erstelle Posting',
         signUpLogIn: 'Anmelden Einloggen',
         mapDetail: 'Karte',
-
-
         hiThere: 'Hallo,',
         welcomeToTastemate: 'Willkommen bei Tastemate!',
         limitedContentExplanation: 'Leider bist du noch nicht eingeloggt und wir können dir deshalb nur eingeschränkte Inhalte und Funktionalitäten anzeigen. Sobald du bereit bist, mehr von der App zu sehen, kannst du einfach den Benutzer-Button links oben klicken und dich anzumelden oder einzuloggen. Bis dahin,',
         haveFun: 'Viel Spaß!',
-
-
         emptyFeed: 'Sieht so aus, als ob dein Feed leer ist. Warum folgst du nicht einfach einen paar Tastemates?',
         selectAction: 'Wähle eine Aktion',
-        doWithPost: 'Was würdest du gerne mit dem Post \"{0}\" von {1} machen?',
+        doWithPost: 'Was würdest du gerne mit diesem Post machen?',
         share: 'Teilen',
         edit: 'Bearbeiten',
         delete: 'Löschen',
@@ -723,26 +626,18 @@ export default strings = new LocalizedStrings({
         million: '{0}m',
         writeComment: 'Schreibe einen Kommentar...',
         close: 'Schließen',
-
-
         likedPicture: '{0} hat dein Bild geliket.',
         sharedPicture: '{0} hat dein Bild geteilt.',
         addedToEatingOutPicture: '{0} hat dein Bild seiner Essensliste hinzugefügt.',
         startedFollowing: '{0} hat angefangen, dir zu folgen.',
         userAndUser: '{0} und {1}',
         others: '{0} Andere',
-
-
         photos: 'Fotos',
         followers: 'Folgende',
         following: 'Gefolgte',
         noPictures: 'Dieser Benutzer hat noch keine Bilder hochgeladen.',
         noUsers: 'Es gibt keine Benutzer zum Anzeigen.',
-
-
         foodCraving: 'Nach welchem Essen sehnst du dich?',
-
-
         username: 'Nutzername',
         emailAddress: 'E-Mail-Adresse',
         location: 'Ort',
@@ -755,13 +650,9 @@ export default strings = new LocalizedStrings({
         sharesPicture: 'jemand mein Bild teilt',
         startsFollowing: 'jemand anfängt, mir zu folgen.',
         saveChanges: 'Änderungen speichern',
-
-
         list: 'Liste',
         map: 'Karte',
         noEatingOut: 'Sieht so aus, als ob du noch keine Gerichte zu deiner Essensliste hinzugefügt hättest. Klicke einfach auf das Besteck-Icon, um dies zu tun!',
-
-
         welcomeTo: 'Willkommen bei',
         tastemateDescription: 'der Ort, an dem du deine kulinarischen Erlebnisse mit anderen teilen kannst',
         getEating: 'Guten Appetit!',
@@ -781,8 +672,6 @@ export default strings = new LocalizedStrings({
         errorMessageWrongPassword: 'Das Passwort ist ungültig.',
         errorMessageWeakPassword: 'Das Passwort ist zu schwach.',
         errorMessageEmailAlreadyInUse: 'Diese E-Mail-Adresse ist bereits mit einem Tastemate-Benutzerkonto verknüpft.',
-
-
         next: 'Weiter',
         previous: 'Zurück',
         publish: 'Veröffentlichen',
@@ -809,12 +698,9 @@ export default strings = new LocalizedStrings({
         mypocExplanationTitle: 'Das MyPoC-Textfeld',
         mypocExplanationText: 'Diese Feld zeigt einen generellen Namen des Gerichts, erkannt von unserem MyPoC-System. Du kannst diesen generellen Namen jederzeit ändern, wenn er falsch ist!',
         more: 'Mehr',
-
         accessLocationQuestion: 'Dürfen wir Zugriff auf deinen Standplatz haben?',
         accessLocationExplanation: 'Wir brauchen Zugriff, damit du sehen kansst, welche Gerichte auf deiner Essensliste in der Nähe sind.',
         enableLocation: 'Bitte schalte die Standort-Zugriffserlaubnis in den Tastemate-Einstellungen deines Handys ein, um diese Funktionalität verwenden zu können.',
-
-
         editObservation: 'Post bearbeiten',
         save: 'Speichern',
         errorMessageUsernameAlreadyInUse: 'Dieser Nutzername ist bereits mit einem Tastemate-Benutzerkonto verknüpft.',
@@ -849,12 +735,9 @@ export default strings = new LocalizedStrings({
         flavor: 'Geschmack',
         odor: 'Geruch',
         texture: 'Konsistenz',
-
         selected: 'Ausgewählt',
         noMatchingTerms: 'Es gibt keine Geschmacksbegriffe, die deiner Suche entsprechen.',
         noSelectedTerms: 'Klicke auf einen der unten stehenden Begriffe, um ihn zu deinem Post hinzuzufügen.',
-
-
         myPoc: 'MyPoC-Prognose',
         all: 'Alle',
         dietaryInfo: 'Ernährungsinformationen',
@@ -874,5 +757,5 @@ export default strings = new LocalizedStrings({
         noDrafts: 'Du hast noch keine Entwürfe gespeichert.',
         readMore: 'Mehr lesen',
         hide: 'Weniger',
-    }
+    },
 });

@@ -12,9 +12,7 @@ import {EmptyComponent} from "../Components/EmptyComponent";
 const OBS_LOAD_DEPTH = 4;
 const initialState ={
     observations: [],
-    followees: null,
     user: null,
-    noMoreObservations: false,
     isRefreshing: false,
     emptyListMessage: strings.loading
 };
@@ -50,6 +48,7 @@ export class HomeScreen extends React.Component {
 
         this.unsubscriber = null;
         this.state = initialState;
+        this.followees = null;
     }
 
     componentDidMount() {
@@ -97,8 +96,8 @@ export class HomeScreen extends React.Component {
     _loadObservationFeed(userid, onStartup, isRefreshing) {
         const _loadObservations = this._loadObservations;
 
-        if (this.state.followees && !isRefreshing) {
-            this._loadObservations(this.state.followees, onStartup, isRefreshing);
+        if (this.followees && !isRefreshing) {
+            this._loadObservations(onStartup, isRefreshing);
         } else {
             console.log('Loading people the current user follows...');
             const refFollowees = firebase.database().ref(pathFollow).orderByChild('follower').equalTo(userid);
@@ -110,8 +109,8 @@ export class HomeScreen extends React.Component {
                     dataSnapshot.forEach(function (childSnapshot) {
                         followees.push(childSnapshot.toJSON().followee);
                     });
-                    this.setState({followees: followees});
-                    _loadObservations(followees, onStartup, isRefreshing);
+                    this.followees = followees;
+                    _loadObservations(onStartup, isRefreshing);
                 },
                 (error) => {
                     console.log('Error while retrieving followees');
@@ -121,7 +120,7 @@ export class HomeScreen extends React.Component {
         }
     }
 
-    _loadObservations(followees, onStartup, isRefreshing) {
+    _loadObservations(onStartup, isRefreshing) {
         const obsSize = this.state.observations.length;
         if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0 || isRefreshing)) {
             if (isRefreshing) {
@@ -137,7 +136,7 @@ export class HomeScreen extends React.Component {
 
             const httpsCallable = firebase.functions().httpsCallable('getXMostRecentFeedObsForUsers');
             httpsCallable({
-                users: followees,
+                users: this.followees,
                 from: index,
                 to: index + OBS_LOAD_DEPTH
             }).then(({data}) => {

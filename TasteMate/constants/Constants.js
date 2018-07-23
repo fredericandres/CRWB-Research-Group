@@ -1,5 +1,5 @@
 import {StackActions} from "react-navigation";
-import {NativeModules, Platform} from "react-native";
+import {Alert, NativeModules, NetInfo, Platform} from "react-native";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
@@ -254,5 +254,22 @@ export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setA
         stopActivityIndicator();
         console.log('Error while resizing picture');
         console.log(error);
+    });
+}
+
+export function _checkInternetConnection(onSuccess, onError) {
+    NetInfo.getConnectionInfo().then((connectionInfo) => {
+        console.log('Initial, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
+        if (connectionInfo.type === 'wifi' || connectionInfo.type === 'cellular') {
+            if (onSuccess) {
+                onSuccess();
+            }
+        } else {
+            if (onError) {
+                onError();
+            } else {
+                Alert.alert(strings.noInternetAlertTitle, strings.noInternetAlertMessage, [{text: strings.ok}]);
+            }
+        }
     });
 }

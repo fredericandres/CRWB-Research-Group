@@ -72,20 +72,20 @@ export class SettingsScreen extends React.Component {
         };
     }
 
-    _onLikeNotificationChange(){
-        this.setState({likeNotification: !this.state.likeNotification});
+    _onLikeNotificationChange() {
+        this.setState((prevState) => ({likeNotification: !prevState.likeNotification}));
     }
 
-    _onWantToEatNotificationChange(){
-        this.setState({wantToEatNotification: !this.state.wantToEatNotification});
+    _onWantToEatNotificationChange() {
+        this.setState((prevState) => ({wantToEatNotification: !prevState.wantToEatNotification}));
     }
 
-    _onShareNotificationChange(){
-        this.setState({shareNotification: !this.state.shareNotification});
+    _onShareNotificationChange() {
+        this.setState((prevState) => ({shareNotification: !prevState.shareNotification}));
     }
 
-    _onFollowNotificationChange(){
-        this.setState({followNotification: !this.state.followNotification});
+    _onFollowNotificationChange() {
+        this.setState((prevState) => ({followNotification: !prevState.followNotification}));
     }
 
     _startActivityIndicator(text) {
