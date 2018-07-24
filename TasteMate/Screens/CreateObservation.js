@@ -641,7 +641,7 @@ export class CreateObservationScreen extends React.Component {
             <SafeAreaView style={{ flex: 1 }} onLayout={this.onLayout.bind(this)}>
                 <View name={'content'} style={{flex: 1}}>
                     {
-                        this.state.activePageIndex === PagesEnum.SELECTIMAGE && <CameraCameraRollComponent drafts={Object.values(this.state.drafts)} onLongPress={this._showDraftDeleteAlert} onDraftSelected={this._onDraftSelected} onImageSelectedAction={this._onImageSelected} style={{flex:7, flexGrow:1}}/>
+                        this.state.activePageIndex === PagesEnum.SELECTIMAGE && <CameraCameraRollComponent drafts={this.state.drafts && Object.values(this.state.drafts)} onLongPress={this._showDraftDeleteAlert} onDraftSelected={this._onDraftSelected} onImageSelectedAction={this._onImageSelected} style={{flex:7, flexGrow:1}}/>
                     }
                     {
                         this.state.activePageIndex === PagesEnum.DETAILS &&
@@ -704,7 +704,7 @@ export class CreateObservationScreen extends React.Component {
                                         labelFontSize={smallFontSize}
                                         label={strings.dietaryInfo}
                                         labelHeight={15}
-                                        data={Object.values(allDietaryRestrictions)}
+                                        data={allDietaryRestrictions && Object.values(allDietaryRestrictions)}
                                         labelExtractor={(item, index) => item.value.name}
                                         valueExtractor={(item, index) => item.key}
                                         onChangeText={this._onUpdateDietaryRestrictions.bind(this)}
@@ -745,7 +745,7 @@ export class CreateObservationScreen extends React.Component {
                                         labelFontSize={smallFontSize}
                                         label={strings.currency}
                                         labelHeight={15}
-                                        data={Object.values(allCurrencies)}
+                                        data={allCurrencies && Object.values(allCurrencies)}
                                         labelExtractor={(item, index) => item.symbol + ' - ' + item.name}
                                         valueExtractor={(item, index) => item.code}
                                         onChangeText={this._onUpdateCurrency}
