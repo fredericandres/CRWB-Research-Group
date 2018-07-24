@@ -50,8 +50,7 @@ export class CameraCameraRollComponent extends React.Component {
                 // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
                 cameraPermission: response.camera,
                 photoPermission: response.photo,
-            });
-            this._onPressPermissionNeeded();
+            }, this._onPressPermissionNeeded);
         })
     }
 
