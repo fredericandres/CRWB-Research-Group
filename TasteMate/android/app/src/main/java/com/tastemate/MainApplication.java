@@ -3,6 +3,7 @@ package com.tastemate;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactlibrary.RNSafeAreaGetterPackage;
 import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.database.RNFirebaseDatabasePackage;
@@ -37,6 +38,7 @@ public class MainApplication extends Application implements ReactApplication, Sh
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSafeAreaGetterPackage(),
             new ImageResizerPackage(),
             new RNSharePackage(),
             new RNFetchBlobPackage(),

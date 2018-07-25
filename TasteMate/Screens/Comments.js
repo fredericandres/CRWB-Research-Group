@@ -1,12 +1,18 @@
 import React from 'react';
-import {Animated, FlatList, Keyboard, View} from "react-native";
+import {Animated, FlatList, Keyboard, Platform, TouchableWithoutFeedback, View} from "react-native";
 import strings from "../strings";
 import styles from "../styles";
 import {CommentComponent} from "../Components/CommentComponent";
 import {WriteCommentComponent} from "../Components/WriteCommentComponent";
-import {_sortArrayByTimestamp, colorBackground, pathComments} from "../constants/Constants";
+import {
+    _sortArrayByTimestamp,
+    colorBackground,
+    pathComments,
+    ReactNavigationTabBarHeight
+} from "../constants/Constants";
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
+import RNSafeAreaGetter from 'react-native-safe-area-getter';
 
 const CMT_LOAD_DEPTH = 10;
 
@@ -37,8 +43,10 @@ export class CommentsScreen extends React.Component {
     }
 
     componentWillMount() {
-        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
-        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+        if (Platform.OS === 'ios') {
+            this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+            this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+        }
     }
 
     componentWillUnmount() {
@@ -48,17 +56,21 @@ export class CommentsScreen extends React.Component {
         if (this.keyboardDidHideListener) {
             this.keyboardDidHideListener.remove();
         }
-
     }
 
     _keyboardDidShow(e) {
-        // TODO: Bug of height including bottom navigation things and makes it too large
-        Animated.parallel([
-            Animated.timing(this.keyboardHeight, {
-                duration: e.duration,
-                toValue: e.endCoordinates.height,
-            }),
-        ]).start();
+        RNSafeAreaGetter.getBottomPadding((error, bottomPadding) => {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log(bottomPadding);
+                Animated.parallel([
+                    Animated.timing(this.keyboardHeight, {
+                        toValue: (e.endCoordinates.height - ReactNavigationTabBarHeight - bottomPadding),
+                    }),
+                ]).start();
+            }
+        });
     }
 
     _keyboardDidHide(e) {
@@ -150,17 +162,19 @@ export class CommentsScreen extends React.Component {
                         onEndReached={this._onEndReached}
                         onRefresh={this._onRefresh}
                         refreshing={this.state.isRefreshing}
-                        ListFooterComponent={() => <View style={styles.containerPadding}><WriteCommentComponent hidden={true}/></View>}
+                        ListFooterComponent={() => <View style={styles.containerPadding}>{currentUser && !currentUser.isAnonymous &&<WriteCommentComponent hidden={true}/>}</View>}
                         removeClippedSubviews={true}
                     />
                 </View>
                 {
-                    (currentUser && !currentUser.isAnonymous) &&
-                    <View style={{position:'absolute', bottom:0, left:0, right:0, backgroundColor: colorBackground}}>
-                        <View style={[styles.containerPadding, {flex:1}]}>
-                            <WriteCommentComponent observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
-                            <Animated.View style={{height: this.keyboardHeight}}/>
-                        </View>
+                    currentUser && !currentUser.isAnonymous &&
+                    <View style={{position:'absolute', bottom:0, left:0, right:0, backgroundColor: colorBackground}} >
+                        <TouchableWithoutFeedback onPress={() => this.writeCommentField.focus()} >
+                            <View style={[styles.containerPadding, {flex:1}]}>
+                                <WriteCommentComponent ref={ input => {this.writeCommentField = input;}} observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
+                                <Animated.View style={{height: this.keyboardHeight}}/>
+                            </View>
+                        </TouchableWithoutFeedback>
                     </View>
                 }
             </View>

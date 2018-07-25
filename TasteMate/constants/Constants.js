@@ -88,6 +88,8 @@ export const iconEdit = 'edit';
 
 export const AsyncStorageKeyObservations = 'OBSERVATIONS';
 
+export const ReactNavigationTabBarHeight = 49;
+
 export function _formatNumberWithString(number, type) {
     let wordString = '';
     let numberString = '';
