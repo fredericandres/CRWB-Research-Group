@@ -29,7 +29,7 @@ const initialState = {
 // TODO [FEATURE]: push notifications
 
 export class NotificationsScreen extends React.Component {
-    static navigationOptions = ({navigation})=> {
+    static navigationOptions = ({navigation}) => {
         const {params = {}} = navigation.state;
         return {
             title: strings.notifications + ' ',

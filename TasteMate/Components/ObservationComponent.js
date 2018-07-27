@@ -513,7 +513,7 @@ export class ObservationComponent extends React.Component {
                     }
                 />
                 <View>
-                    {(currentUser && !currentUser.isAnonymous) && <WriteCommentComponent observation={this.state.observation} onCommentAddedAction={this._addCommentToState}/>}
+                    {(currentUser && !currentUser.isAnonymous) && <WriteCommentComponent observation={this.state.observation} onCommentAddedAction={this._addCommentToState} onWriteCommentPressed={this.props.onWriteCommentPressed}/>}
                 </View>
             </View>
         );

@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "../styles";
-import {TextInput, TouchableOpacity, View} from "react-native";
+import {Platform, TextInput, TouchableOpacity, View} from "react-native";
 import {
     _checkInternetConnection,
     colorContrast,
@@ -22,6 +22,7 @@ export class WriteCommentComponent extends React.Component {
 
         this._onPressSendButton = this._onPressSendButton.bind(this);
         this._sendComment = this._sendComment.bind(this);
+        this._inputFocused = this._inputFocused.bind(this);
 
         this.state = {
             newComment: ''
@@ -61,14 +62,33 @@ export class WriteCommentComponent extends React.Component {
     }
 
     focus() {
-        this.textInput.focus()
+        this.textInput.focus();
+    }
+
+    _inputFocused() {
+        if (Platform.OS === 'ios' && this.props.onWriteCommentPressed) {
+            this.props.onWriteCommentPressed();
+        }
     }
 
     render() {
         return (
             <View style={{flex: 1, flexDirection:'row', alignItems: 'center', opacity:this.props.hidden ? 0 : 100}}>
                 <UserImageThumbnailComponent size={styles.roundProfileSmall} user={currentUser}/>
-                <TextInput ref={input => this.textInput = input} style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]} value={this.state.newComment} onChangeText={(text) => this.setState({newComment: text})} placeholder={strings.writeComment} placeholderTextColor={colorLight} returnKeyType={'send'} keyboardType={'default'} underlineColorAndroid={colorContrast} selectionColor={colorMain} onSubmitEditing={this._onPressSendButton}/>
+                <TextInput
+                    ref={input => this.textInput = input}
+                    style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]}
+                    value={this.state.newComment}
+                    onChangeText={(text) => this.setState({newComment: text})}
+                    placeholder={strings.writeComment}
+                    placeholderTextColor={colorLight}
+                    returnKeyType={'send'}
+                    keyboardType={'default'}
+                    underlineColorAndroid={colorContrast}
+                    selectionColor={colorMain}
+                    onSubmitEditing={this._onPressSendButton}
+                    onFocus={this._inputFocused}
+                />
                 <TouchableOpacity onPress={this._onPressSendButton} style={styles.containerPadding}>
                     <FontAwesome name={iconSend} size={iconSizeSmall} color={colorContrast}/>
                 </TouchableOpacity>

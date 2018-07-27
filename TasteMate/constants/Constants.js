@@ -166,7 +166,7 @@ export function _getLanguageCode() {
     } else {
         systemLanguage = NativeModules.SettingsManager.settings.AppleLocale;
     }
-    const languageCode = systemLanguage.substring(0, 2);
+    const languageCode = systemLanguage && systemLanguage.substring(0, 2);
     return languageCode;
 }
 

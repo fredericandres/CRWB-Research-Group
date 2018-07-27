@@ -1,26 +1,33 @@
 import React from 'react';
-import {FlatList, View} from 'react-native';
+import {FlatList, Keyboard, Platform, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";
 import strings from "../strings";
 import firebase from 'react-native-firebase';
-import {_navigateToScreen, _sortArrayByTimestamp, pathFollow} from "../constants/Constants";
+import {
+    _navigateToScreen,
+    _sortArrayByTimestamp,
+    pathFollow,
+    ReactNavigationTabBarHeight
+} from "../constants/Constants";
 import {LogInMessage} from "../Components/LogInMessage";
 import {EmptyComponent} from "../Components/EmptyComponent";
+import RNSafeAreaGetter from "../SafeAreaGetter";
 
 const OBS_LOAD_DEPTH = 4;
 const initialState ={
     observations: [],
     user: null,
     isRefreshing: false,
-    emptyListMessage: strings.loading
+    emptyListMessage: strings.loading,
+    keyboardHeight: 0,
 };
 
 // TODO [FEATURE]: Scroll to top of list when clicking on tastemate logo
 
 export class HomeScreen extends React.Component {
-    static navigationOptions = ({navigation})=> {
+    static navigationOptions = ({navigation}) => {
         const {params = {}} = navigation.state;
         return {
             title: 'Tastemate ',
@@ -45,10 +52,16 @@ export class HomeScreen extends React.Component {
         this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
         this._setEmptyMessage = this._setEmptyMessage.bind(this);
         this._handleError = this._handleError.bind(this);
+        this._keyboardDidHide = this._keyboardDidHide.bind(this);
+        this._keyboardDidShow = this._keyboardDidShow.bind(this);
 
         this.unsubscriber = null;
         this.state = initialState;
         this.followees = null;
+        this.flatList = null;
+        this.keyboardDidShowListener = null;
+        this.keyboardDidHideListener = null;
+        this.bottomOfList = false;
     }
 
     componentDidMount() {
@@ -56,6 +69,7 @@ export class HomeScreen extends React.Component {
             onProfilePressed: (() => this._onNavBarButtonPressed(true)),
             onCreateObsPressed: this._onNavBarButtonPressed,
         });
+
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             // Reset page info
             let resetState = initialState;
@@ -69,6 +83,11 @@ export class HomeScreen extends React.Component {
                 }
             });
         });
+
+        if (Platform.OS === 'ios') {
+            this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+            this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+        }
     }
 
     _onNavBarButtonPressed(isProfile) {
@@ -90,6 +109,12 @@ export class HomeScreen extends React.Component {
     componentWillUnmount() {
         if (this.unsubscriber) {
             this.unsubscriber();
+        }
+        if (this.keyboardDidShowListener) {
+            this.keyboardDidShowListener.remove();
+        }
+        if (this.keyboardDidHideListener) {
+            this.keyboardDidHideListener.remove();
         }
     }
 
@@ -199,6 +224,43 @@ export class HomeScreen extends React.Component {
         this.setState((prevState) => ({observations: [newObs].concat(prevState.observations)}));
     }
 
+    _scrollToItem(index) {
+        if (index < this.state.observations.length - 1) {
+            this.flatList.scrollToIndex({
+                animated: true,
+                index: index + 1,
+                viewPosition: 1
+            });
+        } else if (this.bottomOfList) {
+            this.flatList.scrollToIndex({
+                animated: true,
+                index: index,
+                viewPosition: 0
+            });
+        } else {
+            this.bottomOfList = true;
+        }
+    }
+
+    _keyboardDidShow(e) {
+        if (this.bottomOfList) {
+            RNSafeAreaGetter.getBottomPadding((error, bottomPadding) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    this.setState({keyboardHeight: e.endCoordinates.height - bottomPadding - ReactNavigationTabBarHeight}, () => this._scrollToItem(this.state.observations.length - 1));
+                }
+            });
+        }
+    }
+
+    _keyboardDidHide(e) {
+        if (this.bottomOfList) {
+            this.setState({keyboardHeight: 0});
+            this.bottomOfList = false;
+        }
+    }
+
     render() {
         return (
             <View style={{flex:1}}>
@@ -211,15 +273,17 @@ export class HomeScreen extends React.Component {
                         {
                             this.state.observations.length > 0 &&
                             <FlatList
+                                ref={flatList => this.flatList = flatList}
                                 data={this.state.observations}
                                 keyExtractor={this._keyExtractor}
-                                renderItem={({item}) => <ObservationComponent observation={item} {...this.props} onDelete={this._onDelete}/>}
+                                renderItem={({item, index}) => <ObservationComponent observation={item} {...this.props} onDelete={this._onDelete} onWriteCommentPressed={Platform.OS === 'ios' && (() => this._scrollToItem(index))}/>}
                                 ItemSeparatorComponent={() => <View style={styles.containerPadding}/>}
                                 refreshing={this.state.isRefreshing}
                                 onRefresh={this._onRefresh}
                                 onEndReached={this._onEndReached}
                             />
                         }
+                        <View style={{height: this.state.keyboardHeight}}/>
                     </View>
                 }
                 {

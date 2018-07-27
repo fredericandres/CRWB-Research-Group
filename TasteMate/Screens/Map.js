@@ -5,9 +5,9 @@ import {MapMarkerComponent} from "../Components/MapMarkerComponent";
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
 
 export class MapScreen extends React.Component {
-    static navigationOptions = ({navigation})=> ({
+    static navigationOptions = {
         title: strings.mapDetail + ' ',
-    });
+    };
 
     componentDidMount() {
         Permissions.request('location').then(response => {

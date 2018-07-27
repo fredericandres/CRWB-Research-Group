@@ -61,6 +61,7 @@ export class TextInputComponent extends React.Component {
                             onSubmitEditing={this.props.onSubmitEditing}
                             editable={this.props.editable}
                             maxLength={this.props.maxLength}
+                            onFocus={this.props.onFocus}
                         />
                     }
                 </View>

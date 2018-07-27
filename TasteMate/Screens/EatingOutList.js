@@ -36,7 +36,7 @@ const initialState = {
 };
 
 export class EatingOutListScreen extends React.Component {
-    static navigationOptions = ({navigation})=> {
+    static navigationOptions = ({navigation}) => {
         const {params = {}} = navigation.state;
         return {
             title: strings.eatingOutList + ' ',
@@ -305,7 +305,7 @@ export class EatingOutListScreen extends React.Component {
                                 }
                             </View>
                         }
-                        <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={{width: 60, height: 60, borderRadius: 30, backgroundColor: colorAccent, position: 'absolute', top: 10, left: 10, alignItems:'center', justifyContent:'center'}}>
+                        <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={[this.state.selectedIndex === ScreensEnum.MAP ? {top: 10, left: 10} : {top: 10, right: 10}, {width: 60, height: 60, borderRadius: 30, backgroundColor: colorAccent, position: 'absolute', alignItems:'center', justifyContent:'center'}]}>
                             <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? iconList : iconMap}  size={iconSizeStandard} color={colorBackground} />
                         </TouchableOpacity>
                     </View>

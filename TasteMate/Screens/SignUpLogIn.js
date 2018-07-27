@@ -1,5 +1,15 @@
 import React from 'react';
-import {ImageBackground, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {
+    findNodeHandle,
+    ImageBackground,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import strings from "../strings";
 import styles from "../styles";
 import {
@@ -34,6 +44,7 @@ export class SignUpLogInScreen extends React.Component {
         this._startActivityIndicator = this._startActivityIndicator.bind(this);
         this._stopActivityIndicator = this._stopActivityIndicator.bind(this);
         this._setActivityIndicatorText = this._setActivityIndicatorText.bind(this);
+        this._inputFocused = this._inputFocused.bind(this);
 
         this.state = {
             username: undefined,
@@ -44,12 +55,13 @@ export class SignUpLogInScreen extends React.Component {
             error: null,
             user: null,
             loadingIndicatorVisible: false,
-            loadingIndicatorText: ''
+            loadingIndicatorText: '',
         };
 
         this.unsubscriber = null;
         this.skipPressed = false;
         this.inputs = {};
+        this.scrollView = null;
     }
 
     componentDidMount() {
@@ -192,6 +204,19 @@ export class SignUpLogInScreen extends React.Component {
         this.inputs[key].focus();
     }
 
+    _inputFocused(refName) {
+        if (Platform.OS === 'ios') {
+            setTimeout(() => {
+                let scrollResponder = this.scrollView.getScrollResponder();
+                scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
+                    findNodeHandle(this.inputs[refName]),
+                    0,
+                    true
+                );
+            }, 50);
+        }
+    }
+
     _startActivityIndicator(text) {
         if (!this.state.loadingIndicatorVisible) {
             this.setState({loadingIndicatorVisible: true});
@@ -215,7 +240,7 @@ export class SignUpLogInScreen extends React.Component {
             <ImageBackground source={require('../Images/background.jpg')} resizeMode={'cover'}  style={{flex: 1}}>
                 <View style={[styles.containerOpacityMain, {position:'absolute', left: 0, right: 0, top: 0, bottom: 0}]}/>
                 <SafeAreaView style={{flex:1}}>
-                    <ScrollView style={{flex:1}} contentContainerStyle={{justifyContent:'space-between', flexGrow: 1}}>
+                    <ScrollView style={{flex:1}} ref={view => {this.scrollView = view}} contentContainerStyle={{justifyContent:'space-between', flexGrow: 1}}>
                         <View style={{flex: 2, flexDirection: 'row'}}>
                             <View style={{flex: 1}}/>
                             <View style={{flex: 6, alignItems: 'center'}}>
@@ -236,8 +261,9 @@ export class SignUpLogInScreen extends React.Component {
                         </View>
                         <View name={'inputWrapper'} style={[styles.containerPadding, {flex: 2}]}>
                             <TextInputComponent
+                                ref={input => {this.inputs['email'] = input;}}
+                                onFocus={() => this._inputFocused('email')}
                                 fontawesome={true}
-                                ref={ input => {this.inputs['email'] = input;}}
                                 placeholder={strings.emailAddress}
                                 value={this.state.email}
                                 onChangeText={(text) => this.setState({email: text})}
@@ -247,8 +273,9 @@ export class SignUpLogInScreen extends React.Component {
                                 onSubmitEditing={() => {this._focusNextField('password');}}
                             />
                             <TextInputComponent
+                                ref={input => {this.inputs['password'] = input;}}
+                                onFocus={() => this._inputFocused('password')}
                                 fontawesome={true}
-                                ref={ input => {this.inputs['password'] = input;}}
                                 placeholder={strings.password}
                                 icon={iconPassword}
                                 onChangeText={(text) => this.setState({password: text})}
@@ -261,9 +288,10 @@ export class SignUpLogInScreen extends React.Component {
                                 }}
                             />
                             <TextInputComponent
+                                ref={input => {this.inputs['username'] = input;}}
+                                onFocus={() => this._inputFocused('username')}
                                 fontawesome={true}
                                 hidden={!this.state.signUpActive}
-                                ref={ input => {this.inputs['username'] = input;}}
                                 placeholder={strings.username}
                                 value={this.state.username}
                                 onChangeText={(text) => this.setState({username: _formatUsername(text)})}
@@ -274,9 +302,10 @@ export class SignUpLogInScreen extends React.Component {
                                 maxLength={maxUsernameLength}
                             />
                             <TextInputComponent
+                                ref={input => {this.inputs['location'] = input;}}
+                                onFocus={() => this._inputFocused('location')}
                                 fontawesome={true}
                                 hidden={!this.state.signUpActive}
-                                ref={ input => {this.inputs['location'] = input;}}
                                 placeholder={strings.location}
                                 value={this.state.location}
                                 onChangeText={(text) => this.setState({location: text})}

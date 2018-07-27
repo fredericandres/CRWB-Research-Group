@@ -1,7 +1,6 @@
 import React from 'react';
 import {Animated, FlatList, Keyboard, Platform, TouchableWithoutFeedback, View} from "react-native";
 import strings from "../strings";
-import styles from "../styles";
 import {CommentComponent} from "../Components/CommentComponent";
 import {WriteCommentComponent} from "../Components/WriteCommentComponent";
 import {
@@ -17,7 +16,7 @@ import RNSafeAreaGetter from 'react-native-safe-area-getter';
 const CMT_LOAD_DEPTH = 10;
 
 export class CommentsScreen extends React.Component {
-    static navigationOptions = ()=> ({
+    static navigationOptions = () => ({
         title: strings.allComments + ' ',
     });
 
@@ -36,6 +35,7 @@ export class CommentsScreen extends React.Component {
             comments:[],
             users: [],
             isRefreshing: false,
+            keyboardHeight: 0,
         };
         this.keyboardHeight = new Animated.Value(0);
         this.observation = this.props.navigation.getParam('observation');
@@ -63,22 +63,14 @@ export class CommentsScreen extends React.Component {
             if (error) {
                 console.log(error);
             } else {
-                console.log(bottomPadding);
-                Animated.parallel([
-                    Animated.timing(this.keyboardHeight, {
-                        toValue: (e.endCoordinates.height - ReactNavigationTabBarHeight - bottomPadding),
-                    }),
-                ]).start();
+                const keyboardHeight = e.endCoordinates.height - ReactNavigationTabBarHeight - bottomPadding;
+                this.setState({keyboardHeight: keyboardHeight});
             }
         });
     }
 
     _keyboardDidHide(e) {
-        Animated.parallel([
-            Animated.timing(this.keyboardHeight, {
-                toValue: 0,
-            }),
-        ]).start();
+        this.setState({keyboardHeight: 0});
     }
 
     _addCommentToState(comment) {
@@ -162,17 +154,16 @@ export class CommentsScreen extends React.Component {
                         onEndReached={this._onEndReached}
                         onRefresh={this._onRefresh}
                         refreshing={this.state.isRefreshing}
-                        ListFooterComponent={() => <View style={styles.containerPadding}>{currentUser && !currentUser.isAnonymous &&<WriteCommentComponent hidden={true}/>}</View>}
                         removeClippedSubviews={true}
                     />
                 </View>
                 {
                     currentUser && !currentUser.isAnonymous &&
-                    <View style={{position:'absolute', bottom:0, left:0, right:0, backgroundColor: colorBackground}} >
-                        <TouchableWithoutFeedback onPress={() => this.writeCommentField.focus()} >
-                            <View style={[styles.containerPadding, {flex:1}]}>
+                    <View style={[Platform.OS === 'android' ? {position:'absolute', bottom:0, left:0, right:0} : {height:(49 + this.state.keyboardHeight)}, {backgroundColor: colorBackground}]}>
+                        <TouchableWithoutFeedback onPress={() => this.writeCommentField.focus()}>
+                            <View style={[{flex:1, flexDirection:'column'}]}>
                                 <WriteCommentComponent ref={ input => {this.writeCommentField = input;}} observation={this.observation} onCommentAddedAction={this._addCommentToState}/>
-                                <Animated.View style={{height: this.keyboardHeight}}/>
+                                <View style={{height: this.state.keyboardHeight}}/>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>

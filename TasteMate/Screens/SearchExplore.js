@@ -21,7 +21,7 @@ const initialState = {
 };
 
 export class SearchExploreScreen extends React.Component {
-    static navigationOptions = ({navigation})=> {
+    static navigationOptions = ({navigation}) => {
         const {params = {}} = navigation.state;
         return {
             title: strings.explore + ' ',

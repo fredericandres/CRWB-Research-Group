@@ -67,7 +67,7 @@ const OBS_LOAD_DEPTH = 6;
 let userid = null;
 
 export class ProfileScreen extends React.Component {
-    static navigationOptions =({navigation})=> {
+    static navigationOptions = ({navigation}) => {
         const {params = {}} = navigation.state;
         return {
             title: '',

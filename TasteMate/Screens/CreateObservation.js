@@ -4,9 +4,12 @@ import {
     AsyncStorage,
     BackHandler,
     Dimensions,
+    findNodeHandle,
     FlatList,
     Image,
+    Keyboard,
     Linking,
+    Platform,
     SafeAreaView,
     ScrollView,
     Text,
@@ -37,7 +40,7 @@ import {
     iconPrice,
     iconSizeSmall,
     iconSizeStandard,
-    pathObservations
+    pathObservations,
 } from "../constants/Constants";
 import {mapboxApiKey} from "../constants/ApiKeys";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
@@ -57,13 +60,14 @@ import {Dropdown} from 'react-native-material-dropdown';
 import {allDietaryRestrictions} from "../constants/DietaryRestrictions";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import RNSafeAreaGetter from "../SafeAreaGetter";
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 // let allVocabs = null;
 let allVocabSorted = null;
 
 export class CreateObservationScreen extends React.Component {
-    static navigationOptions =({navigation})=> {
+    static navigationOptions = ({navigation}) => {
         const {params = {}} = navigation.state;
         return {
             title: (navigation.getParam('edit') ? strings.editObservation : strings.createObservation) + ' ',
@@ -92,6 +96,9 @@ export class CreateObservationScreen extends React.Component {
         this._onImageSelected = this._onImageSelected.bind(this);
         this._onUpdateMyPoC = this._onUpdateMyPoC.bind(this);
         this._onUpdateCurrency = this._onUpdateCurrency.bind(this);
+        this._keyboardDidHide = this._keyboardDidHide.bind(this);
+        this._keyboardDidShow = this._keyboardDidShow.bind(this);
+        this._inputFocused = this._inputFocused.bind(this);
 
         this._startActivityIndicator = this._startActivityIndicator.bind(this);
         this._stopActivityIndicator = this._stopActivityIndicator.bind(this);
@@ -100,6 +107,7 @@ export class CreateObservationScreen extends React.Component {
 
         this.isEditing = this.props.navigation.getParam('edit');
         this.inputs = {};
+        this.scrollView = null;
         const obs = this.props.navigation.getParam('observation');
 
         allVocabSorted = allVocabulary.slice();
@@ -122,9 +130,11 @@ export class CreateObservationScreen extends React.Component {
             selectedEmojiSize: 0,
             searchedVocabSorted: allVocabSorted,
             drafts: {},
+            keyboardHeight: 0,
         };
-
         this.mypocRequest = null;
+        this.keyboardDidShowListener = null;
+        this.keyboardDidHideListener = null;
     }
 
     componentDidMount() {
@@ -140,12 +150,23 @@ export class CreateObservationScreen extends React.Component {
         });
 
         this._loadDrafts();
+
+        if (Platform.OS === 'ios') {
+            this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+            this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+        }
     }
 
     componentWillUnmount() {
         this.backHandler.remove();
         if (this.mypocRequest) {
             this.mypocRequest.onreadystatechange = null;
+        }
+        if (this.keyboardDidShowListener) {
+            this.keyboardDidShowListener.remove();
+        }
+        if (this.keyboardDidHideListener) {
+            this.keyboardDidHideListener.remove();
         }
     }
 
@@ -549,6 +570,33 @@ export class CreateObservationScreen extends React.Component {
         this.inputs[key].focus();
     }
 
+    _inputFocused(refName) {
+        if (Platform.OS === 'ios') {
+            setTimeout(() => {
+                let scrollResponder = this.scrollView.getScrollResponder();
+                scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
+                    findNodeHandle(this.inputs[refName]),
+                    200, //additionalOffset
+                    true
+                );
+            }, 50);
+        }
+    }
+
+    _keyboardDidShow(e) {
+        RNSafeAreaGetter.getBottomPadding((error, bottomPadding) => {
+            if (error) {
+                console.log(error);
+            } else {
+                this.setState({keyboardHeight: e.endCoordinates.height - bottomPadding});
+            }
+        });
+    }
+
+    _keyboardDidHide(e) {
+        this.setState({keyboardHeight: 0});
+    }
+
     /************* EATING EXPERIENCE *************/
 
     _onPressSearchButton(searchText) {
@@ -638,20 +686,30 @@ export class CreateObservationScreen extends React.Component {
         ];
 
         return (
-            <SafeAreaView style={{ flex: 1 }} onLayout={this.onLayout.bind(this)}>
+            <SafeAreaView style={{flex: 1}} onLayout={this.onLayout.bind(this)}>
                 <View name={'content'} style={{flex: 1}}>
                     {
                         this.state.activePageIndex === PagesEnum.SELECTIMAGE && <CameraCameraRollComponent drafts={this.state.drafts && Object.values(this.state.drafts)} onLongPress={this._showDraftDeleteAlert} onDraftSelected={this._onDraftSelected} onImageSelectedAction={this._onImageSelected} style={{flex:7, flexGrow:1}}/>
                     }
                     {
                         this.state.activePageIndex === PagesEnum.DETAILS &&
-                        <ScrollView name={'detailsscreen'} style={[styles.containerPadding, {flex: 1}]}>
+                        <ScrollView name={'detailsscreen'} ref={view => {this.scrollView = view;}} style={[styles.containerPadding, {flex: 1}]}>
                             <View name={'picanddescription'} style={{flexDirection:'row', flex: 1}}>
                                 <View style={[styles.containerPadding, {flex:1}]}>
                                     <ObservationExploreComponent disabled={true} source={{uri: this.state.observation.image || this.state.observation.imageUrl}} style={{flexShrink:1, flex: 1}}/>
                                 </View>
                                 <View style={{flex: 2}}>
-                                    <TextInputComponent fontawesome={true} style={{flex: 1}} placeholder={strings.description} value={this.state.observation.description} onChangeText={(text) => this._onUpdateDescription(text)} icon={iconDescription} keyboardType={'default'} multiline={true} />
+                                    <TextInputComponent
+                                        ref={input => {this.inputs['description'] = input;}}
+                                        fontawesome={true}
+                                        style={{flex: 1}}
+                                        placeholder={strings.description}
+                                        value={this.state.observation.description}
+                                        onChangeText={(text) => this._onUpdateDescription(text)}
+                                        icon={iconDescription} keyboardType={'default'}
+                                        multiline={true}
+                                        onFocus={() => this._inputFocused('description')}
+                                    />
                                 </View>
                             </View>
                             <View style={[{flex:1, backgroundColor: colorBackground}, styles.containerPadding, styles.leftRoundedEdges, styles.rightRoundedEdges]}>
@@ -667,6 +725,7 @@ export class CreateObservationScreen extends React.Component {
                                 </View>
                             </View>
                             <TextInputComponent
+                                ref={input => {this.inputs['dishname'] = input;}}
                                 materialcommunityicons={true}
                                 placeholder={strings.dishname}
                                 value={this.state.observation.dishname}
@@ -675,10 +734,11 @@ export class CreateObservationScreen extends React.Component {
                                 keyboardType={'default'}
                                 returnKeyType={'next'}
                                 onSubmitEditing={() => {this._focusNextField('mypoc');}}
+                                onFocus={() => this._inputFocused('dishname')}
                             />
                             <TextInputComponent
+                                ref={input => {this.inputs['mypoc'] = input;}}
                                 fontawesome={true}
-                                ref={ input => {this.inputs['mypoc'] = input;}}
                                 info={true}
                                 infoTitle={strings.mypocExplanationTitle}
                                 infoText={strings.mypocExplanationText}
@@ -689,7 +749,8 @@ export class CreateObservationScreen extends React.Component {
                                 icon={iconMyPoc}
                                 keyboardType={'default'}
                                 returnKeyType={'next'}
-                                onSubmitEditing={() => {this._focusNextField('location');}}
+                                onSubmitEditing={() => {this._focusNextField('price');}}
+                                onFocus={() => this._inputFocused('mypoc')}
                             />
                             <TextInputComponent
                                 materialcommunityicons={true}
@@ -728,6 +789,7 @@ export class CreateObservationScreen extends React.Component {
                                 </TouchableOpacity>
                             </View>
                             <TextInputComponent
+                                ref={input => {this.inputs['price'] = input;}}
                                 entypo={true}
                                 placeholder={strings.price}
                                 value={this.state.observation.price}
@@ -736,6 +798,8 @@ export class CreateObservationScreen extends React.Component {
                                 keyboardType={'numeric'}
                                 style={{flex:1}}
                                 returnKeyType={'next'}
+                                onFocus={() => this._inputFocused('price')}
+                                onSubmitEditing={() => {this._focusNextField('location');}}
                                 secondItem={
                                     <Dropdown
                                         style={{flex:1}}
@@ -756,8 +820,8 @@ export class CreateObservationScreen extends React.Component {
                                 }
                             />
                             <TextInputComponent
+                                ref={input => {this.inputs['location'] = input;}}
                                 fontawesome={true}
-                                ref={ input => {this.inputs['location'] = input;}}
                                 placeholder={strings.location}
                                 value={this.state.locationText}
                                 onEndEditing={this._onSubmitSearch}
@@ -765,6 +829,7 @@ export class CreateObservationScreen extends React.Component {
                                 icon={iconLocation}
                                 keyboardType={'default'}
                                 returnKeyType={'search'}
+                                onFocus={() => this._inputFocused('location')}
                             />
                             {
                                 this.state.locationResults &&
@@ -839,18 +904,22 @@ export class CreateObservationScreen extends React.Component {
                         </ScrollView>
                     }
                 </View>
-                {(this.state.observation.image || this.state.observation.imageUrl) && <View name={'interactionButtons'} style={[ {flexDirection: 'row', }]}>
-                    <View name={'previousButtonWrapper'} style={ {flex: 1}}>
-                        <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:colorBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
-                            <Text style={[styles.textTitleDark, styles.containerPadding]}>{(this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>
-                        </TouchableOpacity>
+                {
+                    (this.state.observation.image || this.state.observation.imageUrl) &&
+                    <View name={'interactionButtons'} style={[styles.containerPadding, {flexDirection: 'row'}]}>
+                        <View name={'previousButtonWrapper'} style={ {flex: 1}}>
+                            <TouchableOpacity name={'previousButton'} onPress={this._onPressPrevious} style={[{flex:1, backgroundColor:colorBackground, alignItems:'center', justifyContent:'center'}, styles.containerPadding, styles.leftRoundedEdges]}>
+                                <Text style={[styles.textTitleDark, styles.containerPadding]}>{(this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE ? strings.cancel: strings.previous}</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View name={'nextButtonWrapper'} style={{flex: 1}}>
+                            <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor: colorAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
+                                <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? (this.isEditing ? strings.save : strings.publish): strings.next}</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <View name={'nextButtonWrapper'} style={{flex: 1}}>
-                        <TouchableOpacity name={'nextButton'} onPress={this._onPressNext} style={[{backgroundColor: colorAccent, alignItems:'center'}, styles.containerPadding, styles.rightRoundedEdges]}>
-                            <Text style={[styles.textTitleBoldLight, styles.containerPadding]}>{this.state.activePageIndex === PagesEnum.TASTE ? (this.isEditing ? strings.save : strings.publish): strings.next}</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>}
+                }
+                <View style={{height: this.state.keyboardHeight}}/>
                 {
                     this.state.loadingIndicatorVisible &&
                     <ActivityIndicatorComponent visible={this.state.loadingIndicatorVisible} text={this.state.loadingIndicatorText}/>

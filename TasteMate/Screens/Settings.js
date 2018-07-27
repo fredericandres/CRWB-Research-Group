@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert, Button, SafeAreaView, ScrollView, Text, View} from 'react-native';
+import {Alert, Button, findNodeHandle, Keyboard, Platform, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {NavBarLogoutButton} from "../Components/NavBarButton";
 import strings from "../strings";
 import {TextInputComponent} from "../Components/TextInputComponent";
@@ -25,11 +25,12 @@ import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorCompone
 import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
 import {ImageCacheManager} from 'react-native-cached-image'
 import {icons} from "../Attributions";
+import RNSafeAreaGetter from "../SafeAreaGetter";
 
 const ICM = new ImageCacheManager();
 
 export class SettingsScreen extends React.Component {
-    static navigationOptions =({navigation})=> ({
+    static navigationOptions = ({navigation}) => ({
         title: strings.settings + ' ',
         headerRight: (
             <NavBarLogoutButton nav={navigation}/>
@@ -50,9 +51,17 @@ export class SettingsScreen extends React.Component {
         this._setActivityIndicatorText = this._setActivityIndicatorText.bind(this);
         this._closeSettings = this._closeSettings.bind(this);
         this._clearImageCacheAndClose = this._clearImageCacheAndClose.bind(this);
+        this._keyboardDidHide = this._keyboardDidHide.bind(this);
+        this._keyboardDidShow = this._keyboardDidShow.bind(this);
+        this._inputFocused = this._inputFocused.bind(this);
 
         // TODO [FEATURE]: Let user change his password
         // TODO [FEATURE]: Action on notification preferences set
+        this.inputs = {};
+        this.scrollView = null;
+        this.keyboardDidShowListener = null;
+        this.keyboardDidHideListener = null;
+
         this.state = {
             email: currentUser ? currentUser.email : '',
             username: currentUserInformation.username,
@@ -68,8 +77,25 @@ export class SettingsScreen extends React.Component {
             imageUrl: currentUserInformation.imageUrl,
             newImageUrl: '',
             loadingIndicatorVisible: false,
-            loadingIndicatorText: ''
+            loadingIndicatorText: '',
+            keyboardHeight: 0,
         };
+    }
+
+    componentDidMount() {
+        if (Platform.OS === 'ios') {
+            this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+            this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.keyboardDidShowListener) {
+            this.keyboardDidShowListener.remove();
+        }
+        if (this.keyboardDidHideListener) {
+            this.keyboardDidHideListener.remove();
+        }
     }
 
     _onLikeNotificationChange() {
@@ -242,12 +268,43 @@ export class SettingsScreen extends React.Component {
         );
     }
 
+    _focusNextField(key) {
+        this.inputs[key].focus();
+    }
+
+    _inputFocused(refName) {
+        if (Platform.OS === 'ios') {
+            setTimeout(() => {
+                let scrollResponder = this.scrollView.getScrollResponder();
+                scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
+                    findNodeHandle(this.inputs[refName]),
+                    200, //additionalOffset
+                    true
+                );
+            }, 50);
+        }
+    }
+
+    _keyboardDidShow(e) {
+        RNSafeAreaGetter.getBottomPadding((error, bottomPadding) => {
+            if (error) {
+                console.log(error);
+            } else {
+                this.setState({keyboardHeight: e.endCoordinates.height - bottomPadding});
+            }
+        });
+    }
+
+    _keyboardDidHide(e) {
+        this.setState({keyboardHeight: 0});
+    }
+
     render() {
         return (
             <SafeAreaView style={{flex:1}}>
                 {
                     !this.state.getPictureActive &&
-                    <ScrollView style={[{flex: 1}]}>
+                    <ScrollView style={[{flex: 1}]} ref={view => {this.scrollView = view}}>
                         <UserImageThumbnailComponent size={styles.roundProfileLarge} uri={this.state.newImageUrl || this.state.imageUrl} onPress={this._selectNewProfilePicture.bind(this)} />
                         <View name={'inputWrapper'} style={styles.containerPadding}>
                             <TextInputComponent
@@ -260,6 +317,9 @@ export class SettingsScreen extends React.Component {
                                 keyboardType={'email-address'}
                             />
                             <TextInputComponent
+                                ref={input => {this.inputs['username'] = input;}}
+                                onFocus={() => this._inputFocused('username')}
+                                onSubmitEditing={() => {this._focusNextField('location');}}
                                 fontawesome={true}
                                 placeholder={strings.username}
                                 value={this.state.username}
@@ -269,6 +329,8 @@ export class SettingsScreen extends React.Component {
                                 maxLength={maxUsernameLength}
                             />
                             <TextInputComponent
+                                ref={input => {this.inputs['location'] = input;}}
+                                onFocus={() => this._inputFocused('location')}
                                 fontawesome={true}
                                 placeholder={strings.location}
                                 value={this.state.location}
@@ -276,6 +338,7 @@ export class SettingsScreen extends React.Component {
                                 icon={iconLocation}
                                 keyboardType={'default'}
                             />
+
                             {/*<TextInputComponent
                             fontawesome={true}*/}
                             {/*placeholder={strings.oldPassword}*/}
@@ -316,6 +379,7 @@ export class SettingsScreen extends React.Component {
                         <View name={'viewAttributions'} style={[styles.containerPadding, {flex: 1}]}>
                             <Button name={'saveChangesButton'} onPress={this._onPressViewAttributions} title={strings.viewAttributions} color={colorContrast}/>
                         </View>
+                        <View style={{height: this.state.keyboardHeight}}/>
                     </ScrollView>
                 }
                 {

@@ -4,9 +4,9 @@ import {FlatList, View} from "react-native";
 import {UserComponent} from "../Components/UserComponent";
 
 export class UsersScreen extends React.Component {
-    static navigationOptions = ({navigation})=> ({
+    static navigationOptions = {
         title: ' ',
-    });
+    };
 
     constructor(props) {
         super(props);
