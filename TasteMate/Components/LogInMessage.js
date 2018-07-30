@@ -22,4 +22,3 @@ export class LogInMessage extends React.Component {
         );
     }
 }
-// TODO [FEATURE]: Nicer looking 'log in' message when not logged in! (maybe with arrow pointing to login button?? Or show explore but as single obervations?

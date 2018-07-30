@@ -102,8 +102,8 @@ android {
         applicationId "com.tastemate"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 4
-        versionName "1.1"
+        versionCode 5
+        versionName "1.2"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
