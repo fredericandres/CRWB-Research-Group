@@ -108,6 +108,9 @@ export function _formatNumberWithString(number, type) {
             case ActivityEnum.COMMENT:
                 wordString = strings.commentsSg;
                 break;
+            case ActivityEnum.FOLLOW:
+                wordString = strings.kFollowersSg;
+                break;
         }
         numberString = number;
     } else {
@@ -123,6 +126,9 @@ export function _formatNumberWithString(number, type) {
                 break;
             case ActivityEnum.COMMENT:
                 wordString = strings.comments;
+                break;
+            case ActivityEnum.FOLLOW:
+                wordString = strings.kFollowers;
                 break;
         }
 
@@ -260,7 +266,7 @@ export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setA
 }
 
 export function _checkInternetConnection(onSuccess, onError) {
-    NetInfo.getConnectionInfo().then((connectionInfo) => {
+    getConnectionInfo().then((connectionInfo) => {
         console.log('Initial, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
         if (connectionInfo.type === 'wifi' || connectionInfo.type === 'cellular') {
             if (onSuccess) {
@@ -275,3 +281,18 @@ export function _checkInternetConnection(onSuccess, onError) {
         }
     });
 }
+
+const getConnectionInfo = async () => {
+    if (Platform.OS === 'ios') {
+        return new Promise((resolve, reject) => {
+            const connectionHandler = connectionInfo => {
+                NetInfo.removeEventListener('connectionChange', connectionHandler);
+                resolve(connectionInfo);
+            };
+
+            NetInfo.addEventListener('connectionChange', connectionHandler);
+        })
+    }
+
+    return NetInfo.getConnectionInfo();
+};

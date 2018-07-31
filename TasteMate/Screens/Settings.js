@@ -305,7 +305,7 @@ export class SettingsScreen extends React.Component {
                 {
                     !this.state.getPictureActive &&
                     <ScrollView style={[{flex: 1}]} ref={view => {this.scrollView = view}}>
-                        <UserImageThumbnailComponent size={styles.roundProfileLarge} uri={this.state.newImageUrl || this.state.imageUrl} onPress={this._selectNewProfilePicture.bind(this)} />
+                        <UserImageThumbnailComponent size={[styles.containerPadding, styles.roundProfileLarge]} uri={this.state.newImageUrl || this.state.imageUrl} onPress={this._selectNewProfilePicture.bind(this)} />
                         <View name={'inputWrapper'} style={styles.containerPadding}>
                             <TextInputComponent
                                 fontawesome={true}

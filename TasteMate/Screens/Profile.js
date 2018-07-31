@@ -27,7 +27,7 @@ function _toggleFollowUnfollow(navigation) {
     const followee = userid;
     const combined = _generateCombinedKey(follower, followee);
 
-    if (isFollowing === null) {
+    if (isFollowing === null || !userid || follower === followee) {
         // Do nothing, we are not sure yet if current user is following this user or not
     } else if (isFollowing) {
         console.log('Removing relationship of ' + follower + ' following ' + followee);
@@ -58,7 +58,7 @@ function _toggleFollowUnfollow(navigation) {
     }
 }
 
-function _generateCombinedKey(follower, followee) {
+export function _generateCombinedKey(follower, followee) {
     return follower + '_' + followee;
 }
 
@@ -110,6 +110,11 @@ export class ProfileScreen extends React.Component {
             observations: [],
             selectedIndex: 4
         };
+
+        if (!this.state.user.userid) {
+            this.props.navigation.goBack();
+        }
+
         this._onPressFollowers = this._onPressFollowers.bind(this);
         this._onPressPhotos = this._onPressPhotos.bind(this);
         this._onPressFollowing = this._onPressFollowing.bind(this);
@@ -121,15 +126,14 @@ export class ProfileScreen extends React.Component {
         this.followingIds = {};
         this.followersIds = {};
 
-        userid = this.state.user.userid || currentUser.uid;
+        userid = this.state.user.userid;
 
-        if (!this.state.user.username) {
+        if (!this.state.user.username && userid) {
             // Get user from DB
             firebase.database().ref(pathUsers).child(userid).once('value')
                 .then((dataSnapshot) => {
                     console.log('Successfully retrieved user data');
                     const user = dataSnapshot.toJSON();
-                    console.log('A');
                     this.setState({user: user});
                 }).catch((error) => {
                     console.error('Error while retrieving user data');
@@ -138,7 +142,7 @@ export class ProfileScreen extends React.Component {
             );
         }
 
-        if (currentUser && userid !== currentUser.uid) {
+        if (currentUser && userid && userid !== currentUser.uid) {
             // Is current user following this user?
             console.log('Retrieving follower status...');
             const ref = firebase.database().ref(pathFollow).child(_generateCombinedKey(currentUser.uid, userid));
@@ -183,7 +187,7 @@ export class ProfileScreen extends React.Component {
 
     _loadObservations(onStartup) {
         const obsSize = this.state.observations.length;
-        if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0)) {
+        if (userid && !this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0)) {
             const index = this.state.observations.length;
 
             console.log('Loading observations... Starting at ' + index + ' to ' + (index + OBS_LOAD_DEPTH));
@@ -278,19 +282,19 @@ export class ProfileScreen extends React.Component {
     }
 
     _observationKeyExtractor = (item, index) => item.observationid;
-    _followingKeyExtractor = (item, index) => item.username;
+    _followingKeyExtractor = (item, index) => item.username || item + index;
 
     render() {
         return (
             <SafeAreaView style={{flex: 1,}}>
                 <View name={'header'} style={{flex: 2, backgroundColor: colorMain}}>
-                    <UserImageThumbnailComponent size={styles.roundProfileLarge} user={this.state.user}/>
+                    <UserImageThumbnailComponent size={[styles.containerPadding, styles.roundProfileLarge]} user={this.state.user}/>
                     <View name={'username'} style={{flex: 1, alignItems: 'flex-end', flexDirection: 'row'}}>
                         <Text name={'username'}
-                              style={[styles.textTitleBoldDark, {textAlign: 'center', flex: 1}]}>{this.state.user.username}</Text>
+                              style={[styles.textTitleBoldDark, {textAlign: 'center', flex: 1}]}>{this.state.user.username || strings.unknownUsername}</Text>
                     </View>
                     <Text name={'location'}
-                          style={[styles.textTitle, {flex: 1, textAlign: 'center'}]}>{this.state.user.location}</Text>
+                          style={[styles.textTitle, {flex: 1, textAlign: 'center'}]}>{this.state.user.location || strings.unknownLocation}</Text>
                 </View>
                 <View name={'content'} style={{flex: 5}}>
                     <View name={'segmentedcontrolwrapper'}>

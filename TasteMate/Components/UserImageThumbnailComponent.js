@@ -19,7 +19,7 @@ export class UserImageThumbnailComponent extends React.Component {
         const source = imageUrl ? {uri: imageUrl} : defaultSource;
 
         return (
-            <TouchableOpacity name={'header'} disabled={!this.props.onPress} onPress={this.props.onPress} style={[styles.containerPadding, {flex: 0, flexDirection:'column'}]}>
+            <TouchableOpacity name={'header'} disabled={!this.props.onPress} onPress={this.props.onPress} style={{flex: 0, flexDirection:'column'}}>
                 <CachedImage name={'userprofilepic'} resizeMode={'cover'} defaultSource={defaultSource} source={source} style={this.props.size}/>
             </TouchableOpacity>
         );

@@ -383,11 +383,9 @@ export class CreateObservationScreen extends React.Component {
     }
 
     async _removeDraft(observationid) {
-        console.log(observationid);
         try {
             let drafts = this.state.drafts;
-            console.log(drafts);
-            if (drafts[observationid]) {
+            if (drafts && drafts[observationid]) {
                 delete drafts[observationid];
                 await AsyncStorage.setItem(AsyncStorageKeyObservations, JSON.stringify(drafts));
                 this.setState({drafts: drafts});

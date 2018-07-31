@@ -69,7 +69,7 @@ export class CommentComponent extends React.Component {
     render() {
         return (
             <View style={{flex: 1, flexDirection:'row', alignItems: 'center'}}>
-                <UserImageThumbnailComponent size={styles.roundProfileSmall} onPress={this._onPressProfile} user={this.state.user}/>
+                <UserImageThumbnailComponent size={[styles.containerPadding, styles.roundProfileSmall]} onPress={this._onPressProfile} user={this.state.user}/>
                 <View style={[{flexDirection: 'column', flex: 1}, styles.containerPadding]}>
                     <Text style={[styles.textStandardDark, {flex: 1}]}>{this.comment.message}</Text>
                     <TimeAgo name={'time'} style={styles.textSmall} time={this.comment.timestamp}/>

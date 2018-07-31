@@ -405,7 +405,7 @@ export class ObservationComponent extends React.Component {
         return (
             <View name={'wrapper'} style={{flex:1}} >
                 <View name={'header'} style={{flexDirection:'row'}}>
-                    <UserImageThumbnailComponent size={styles.roundProfile} onPress={this._onPressProfile} user={this.state.user}/>
+                    <UserImageThumbnailComponent size={[styles.containerPadding, styles.roundProfile]} onPress={this._onPressProfile} user={this.state.user}/>
                     <View name={'header'} style={[styles.containerPadding, {flex: 1, flexDirection:'column'}]}>
                         <View name={'header'} style={{flex: 1, flexDirection:'row'}}>
                             <Text name={'dishnames'} >
