@@ -531,4 +531,3 @@ export class HomeScreen extends React.Component {
         );
     }
 }
-// TODO [FEATURE]: empty list component with suggestions for followees/observations

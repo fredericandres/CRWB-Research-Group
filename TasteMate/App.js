@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
 
 // TODO: Firebase other DB
 // TODO: Push notifications
-// TODO: iOS input box overlapped by keyboard
 MapboxGL.setAccessToken(mapboxApiKey);
 
 export let currentUser = null;
