@@ -113,7 +113,7 @@ export class SignUpLogInScreen extends React.Component {
                             if (dataSnapshot.toJSON()) {
                                 // Display error message
                                 _stopActivityIndicator();
-                                this.setState({error: strings.errorMessageUsernameAlreadyInUse});
+                                this.setState({error: strings.formatString(strings.errorMessageUsernameAlreadyInUse)});
                             } else {
                                 // Create account
                                 _setActivityIndicatorText(strings.creatingAccount);

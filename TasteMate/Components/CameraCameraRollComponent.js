@@ -1,7 +1,7 @@
 import React from "react";
 import {Alert, CameraRoll, FlatList, Image, Platform, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
 import styles from "../styles";
-import strings from "../strings";
+import strings, {appName} from "../strings";
 import {
     colorContrast,
     colorMain,
@@ -98,17 +98,17 @@ export class CameraCameraRollComponent extends React.Component {
 
     _onPressCameraButton() {
         if (this.state.cameraPermission !== 'authorized') {
-            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.enableCamera, () => this._requestPermission('camera'));
+            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.formatString(strings.enableCamera, appName), () => this._requestPermission('camera'));
         }
         this.setState({activeItem: SourceEnum.CAMERA});
     }
 
     _onPressPermissionNeeded() {
         if (this.state.cameraPermission !== 'authorized') {
-            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.enableCamera, () => this._requestPermission('camera', () => console.log('Camera permission granted')));
+            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.formatString(strings.enableCamera, appName), () => this._requestPermission('camera', () => console.log('Camera permission granted')));
         }
         if (this.state.photoPermission !== 'authorized') {
-            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.enablePhoto, () => this._requestPermission('photo', () => console.log('Photo permission granted')));
+            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.formatString(strings.enablePhoto, appName), () => this._requestPermission('photo', () => console.log('Photo permission granted')));
         }
     }
 
@@ -144,7 +144,7 @@ export class CameraCameraRollComponent extends React.Component {
 
     _onPressPhotoButton(){
         if (this.state.photoPermission !== 'authorized') {
-            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.enablePhoto, () => this._requestPermission('photo', () => this._onAuthorizedPhoto(true)));
+            this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.formatString(strings.enablePhoto, appName), () => this._requestPermission('photo', () => this._onAuthorizedPhoto(true)));
         } else {
             this._onAuthorizedPhoto(true);
         }
@@ -285,7 +285,7 @@ export class CameraCameraRollComponent extends React.Component {
                 {
                     !cameraAuthorized &&
                     <TouchableOpacity onPress={this._onPressPermissionNeeded.bind(this)} style={{flex:1, alignItems:'center', justifyContent:'center'}}>
-                        <EmptyComponent message={strings.enableCameraAndPhoto}/>
+                        <EmptyComponent message={strings.formatString(strings.enableCameraAndPhoto, appName)}/>
                     </TouchableOpacity>
                 }
                 {

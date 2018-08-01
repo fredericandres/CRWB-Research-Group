@@ -3,7 +3,7 @@ import {FlatList, Keyboard, Platform, ScrollView, Text, TouchableOpacity, View} 
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";
-import strings from "../strings";
+import strings, {appName} from "../strings";
 import firebase from 'react-native-firebase';
 import {
     _checkInternetConnection,
@@ -51,7 +51,7 @@ export class HomeScreen extends React.Component {
     static navigationOptions = ({navigation}) => {
         const {params = {}} = navigation.state;
         return {
-            title: 'Tastemate ',
+            title: appName + ' ',
             headerLeft: (
                 <NavBarProfileButton nav={navigation} action={() => params.onProfilePressed()}/>
             ),
@@ -437,9 +437,9 @@ export class HomeScreen extends React.Component {
                         {
                             this.state.observations.length === 0 && this.state.feedEmpty &&
                             <ScrollView style={[{flex:1, flexDirection:'column'}]}>
-                                <View style={styles.containerPadding}>
-                                    <Text style={styles.textStandardDark}>{strings.emptyFeed} <Text onClick={() => this._loadObservationFeed(currentUser.uid, true, false)}>{strings.clickHereToRefresh}</Text></Text>
-                                </View>
+                                <TouchableOpacity style={styles.containerPadding} onPress={() => this._loadObservationFeed(currentUser.uid, true, false)}>
+                                    <Text style={styles.textStandardDark}>{strings.emptyFeed} {strings.clickHereToRefresh}</Text>
+                                </TouchableOpacity>
                                 <View>
                                     <FlatList
                                         horizontal={true}

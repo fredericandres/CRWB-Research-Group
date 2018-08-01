@@ -1,6 +1,6 @@
 import {StackActions} from "react-navigation";
 import {Alert, NativeModules, NetInfo, Platform} from "react-native";
-import strings from "../strings";
+import strings, {appName} from "../strings";
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
 import ImageResizer from 'react-native-image-resizer';
@@ -166,13 +166,13 @@ export function _navigateToScreen(screen, navigation, params) {
 }
 
 export function _getLanguageCode() {
-    let systemLanguage = 'en';
+    let systemLanguage = '';
     if (Platform.OS === 'android') {
         systemLanguage = NativeModules.I18nManager.localeIdentifier;
     } else {
         systemLanguage = NativeModules.SettingsManager.settings.AppleLocale;
     }
-    const languageCode = systemLanguage && systemLanguage.substring(0, 2);
+    const languageCode = (systemLanguage && systemLanguage.substring(0, 2)) || 'en';
     return languageCode;
 }
 
@@ -208,7 +208,7 @@ export function _handleAuthError(error, action) {
             errorMessage = strings.errorMessageWeakPassword;
             break;
         case 'auth/email-already-in-use':
-            errorMessage = strings.errorMessageEmailAlreadyInUse;
+            errorMessage = strings.formatString(strings.errorMessageEmailAlreadyInUse, appName);
             break;
     }
 

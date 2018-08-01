@@ -1,7 +1,7 @@
 import React from 'react';
 import {Alert, Button, findNodeHandle, Keyboard, Platform, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {NavBarLogoutButton} from "../Components/NavBarButton";
-import strings from "../strings";
+import strings, {appName} from "../strings";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import {
     _addPictureToStorage,
@@ -162,7 +162,7 @@ export class SettingsScreen extends React.Component {
                             if (dataSnapshot.toJSON()) {
                                 // Display error message
                                 this._stopActivityIndicator();
-                                _handleAuthError(strings.errorMessageUsernameAlreadyInUse, this._showErrorPopup);
+                                _handleAuthError(strings.formatString(strings.errorMessageUsernameAlreadyInUse, appName), this._showErrorPopup);
                             } else {
                                 this._updateUserInfoInDatabase(userInfoChange);
                             }

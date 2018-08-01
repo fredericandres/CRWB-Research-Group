@@ -31,7 +31,7 @@ import {
 import styles, {smileySuperLargeFontSize} from "../styles";
 import TimeAgo from "react-native-timeago";
 import {CommentComponent} from "./CommentComponent";
-import strings from "../strings";
+import strings, {appName} from "../strings";
 import Share from 'react-native-share';
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
@@ -353,8 +353,8 @@ export class ObservationComponent extends React.Component {
         // TODO: What is being shared? Link?
         Share.open({
             title: strings.share,
-            subject: strings.shareSubject,
-            message: strings.shareMessage,
+            subject: strings.formatString(strings.shareSubject, appName),
+            message: strings.formatString(strings.shareMessage, appName),
             dialogTitle: strings.shareDialogTitle,
             url: this.state.observation.imageUrl,
         }).catch(
