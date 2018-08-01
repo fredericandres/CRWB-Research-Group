@@ -6,7 +6,6 @@ import styles from "../styles";
 import strings, {appName} from "../strings";
 import firebase from 'react-native-firebase';
 import {
-    _checkInternetConnection,
     _formatNumberWithString,
     _navigateToScreen,
     _sortArrayByTimestamp,
@@ -28,7 +27,7 @@ import RNSafeAreaGetter from "../SafeAreaGetter";
 import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
-import {currentUser} from "../App";
+import {_checkInternetConnection, currentUser} from "../App";
 import {_generateCombinedKey} from "./Profile";
 
 const OBS_LOAD_DEPTH = 4;
@@ -43,6 +42,7 @@ const initialState ={
     feedEmptyObservations: {},
     feedEmptySelectedIndex: 0,
     feedEmptyFollowing: {},
+    cannotLoad: false,
 };
 
 // TODO [FEATURE]: Scroll to top of list when clicking on tastemate logo
@@ -78,6 +78,7 @@ export class HomeScreen extends React.Component {
         this._loadFeedEmptyInfo = this._loadFeedEmptyInfo.bind(this);
         this._addObservationsToState = this._addObservationsToState.bind(this);
         this._addIsFollowingToState = this._addIsFollowingToState.bind(this);
+        this._checkInternetConnectionAndStart = this._checkInternetConnectionAndStart.bind(this);
 
         this.unsubscriber = null;
         this.state = initialState;
@@ -99,12 +100,11 @@ export class HomeScreen extends React.Component {
             let resetState = initialState;
             resetState.user = user;
             this.setState(resetState, () => {
-                console.log(user);
                 if (!user) {
                     // Open SingUpLogIn screen if no account associated (not even anonymous)
                     _navigateToScreen('SignUpLogIn', this.props.navigation);
                 } else {
-                    _checkInternetConnection(() => this._loadObservationFeed(user.uid, true, false), () => this._setEmptyMessage(strings.noInternet));
+                    this._checkInternetConnectionAndStart(user);
                 }
             });
         });
@@ -113,6 +113,10 @@ export class HomeScreen extends React.Component {
             this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
             this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
         }
+    }
+
+    _checkInternetConnectionAndStart(user) {
+        _checkInternetConnection(() => this._loadObservationFeed((user && user.uid) || (currentUser && currentUser.uid), true, false), () => this._setEmptyMessage(strings.noInternet, true));
     }
 
     _onNavBarButtonPressed(isProfile) {
@@ -145,6 +149,7 @@ export class HomeScreen extends React.Component {
 
     _loadObservationFeed(userid, onStartup, isRefreshing) {
         const _loadObservations = this._loadObservations;
+        this._setEmptyMessage(strings.loading, false);
 
         if (this.followees && this.followees.length > 0 && !isRefreshing && !onStartup) {
             this._loadObservations(onStartup, isRefreshing);
@@ -176,7 +181,6 @@ export class HomeScreen extends React.Component {
             if (isRefreshing) {
                 this.setState({
                     observations: [],
-                    emptyListMessage: strings.loading
                 });
             }
             const index = isRefreshing ? 0 : this.state.observations.length;
@@ -204,11 +208,15 @@ export class HomeScreen extends React.Component {
 
     _handleError(error){
         console.log(error);
-        this._setEmptyMessage(strings.errorOccurred);
+        this._setEmptyMessage(strings.errorOccurred, true);
+        this.setState({isRefreshing: false});
     }
 
-    _setEmptyMessage(message) {
-        this.setState({emptyListMessage: message});
+    _setEmptyMessage(message, cannotLoad) {
+        this.setState({
+            emptyListMessage: message,
+            cannotLoad: cannotLoad
+        });
     }
 
     _addToObservationState(observations, onStartup, isRefreshing) {
@@ -223,7 +231,7 @@ export class HomeScreen extends React.Component {
         } else {
             this._loadFeedEmptyInfo();
         }
-        this._setEmptyMessage(strings.emptyFeed);
+        this._setEmptyMessage(strings.emptyFeed, false);
         this.setState({
             isRefreshing: false,
         });
@@ -432,13 +440,13 @@ export class HomeScreen extends React.Component {
                     <View style={{flex:1}}>
                         {
                             this.state.observations.length === 0 && !this.state.feedEmpty &&
-                            <EmptyComponent message={this.state.emptyListMessage}/>
+                            <EmptyComponent message={this.state.emptyListMessage} retry={this.state.cannotLoad && this._checkInternetConnectionAndStart}/>
                         }
                         {
                             this.state.observations.length === 0 && this.state.feedEmpty &&
                             <ScrollView style={[{flex:1, flexDirection:'column'}]}>
                                 <TouchableOpacity style={styles.containerPadding} onPress={() => this._loadObservationFeed(currentUser.uid, true, false)}>
-                                    <Text style={styles.textStandardDark}>{strings.emptyFeed} {strings.clickHereToRefresh}</Text>
+                                    <Text style={styles.textStandardDark}>{strings.emptyFeed} <Text style={styles.textStandardBold}>{strings.clickHereToRefresh}</Text></Text>
                                 </TouchableOpacity>
                                 <View>
                                     <FlatList

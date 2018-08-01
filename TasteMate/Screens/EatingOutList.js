@@ -21,6 +21,7 @@ import {MapMarkerComponent} from "../Components/MapMarkerComponent";
 import {EmptyComponent} from "../Components/EmptyComponent";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
+import {_checkInternetConnection} from "../App";
 
 export const NO_LOCATION = 'noLocation';
 export const FURTHER_AWAY = 'furtherAway';
@@ -32,7 +33,8 @@ const initialState = {
     user: null,
     userlocation: null,
     isRefreshing: false,
-    emptyListMessage: strings.loading
+    emptyListMessage: strings.loading,
+    cannotLoad: false,
 };
 
 export class EatingOutListScreen extends React.Component {
@@ -59,6 +61,8 @@ export class EatingOutListScreen extends React.Component {
         this._getEatingOutObservations = this._getEatingOutObservations.bind(this);
         this._getDistanceFromLatLonInKm = this._getDistanceFromLatLonInKm.bind(this);
         this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
+        this._setEmptyMessage = this._setEmptyMessage.bind(this);
+        this._checkInternetConnectionAndStart = this._checkInternetConnectionAndStart.bind(this);
     }
 
     componentDidMount() {
@@ -74,33 +78,16 @@ export class EatingOutListScreen extends React.Component {
                 if (!user) {
                     // Do nothing
                 } else {
-                    if (Platform.OS === 'android' && Platform.Version < 23) {
-                        // Do not check permission pre-Marshmallow
-                        this._getEatingOutObservations();
-                    } else {
-                        Permissions.request('location').then(response => {
-                            this.setState({locationPermission: response});
-                            if (response === 'authorized') {
-                                console.log('asdasd');
-                                navigator.geolocation.getCurrentPosition((position) => {
-                                    this.setState({ userlocation: position.coords}, () => this._getEatingOutObservations());
-                                }).catch((error) => {
-                                    console.log('Error while getting user location');
-                                    console.log(error);
-                                    this._getEatingOutObservations();
-                                });
-                            } else {
-                                this._getEatingOutObservations();
-                            }
-                        }).catch((error) => {
-                            console.log('Error while requesting location permission');
-                            console.log(error);
-                            this._getEatingOutObservations();
-                        });
-                    }
+                    this._checkInternetConnectionAndStart();
                 }
             });
         });
+    }
+
+    componentWillUnmount() {
+        if (this.unsubscriber) {
+            this.unsubscriber();
+        }
     }
 
     _onNavBarButtonPressed(isProfile) {
@@ -117,9 +104,39 @@ export class EatingOutListScreen extends React.Component {
         }
     }
 
+    _checkInternetConnectionAndStart() {
+        _checkInternetConnection(() => {
+            if (Platform.OS === 'android' && Platform.Version < 23) {
+                // Do not check permission pre-Marshmallow
+                this._getEatingOutObservations();
+            } else {
+                Permissions.request('location').then(response => {
+                    this.setState({locationPermission: response});
+                    if (response === 'authorized') {
+                        navigator.geolocation.getCurrentPosition((position) => {
+                            this.setState({userlocation: position.coords}, () => this._getEatingOutObservations());
+                        }).catch((error) => {
+                            console.log('Error while getting user location');
+                            console.log(error);
+                            this._getEatingOutObservations();
+                        });
+                    } else {
+                        this._getEatingOutObservations();
+                    }
+                }).catch((error) => {
+                    console.log('Error while requesting location permission');
+                    console.log(error);
+                    this._getEatingOutObservations();
+                });
+            }
+        }, () => this._setEmptyMessage(strings.noInternet, true));
+    }
+
     _getEatingOutObservations() {
         const _getDistanceFromLatLonInKm = this._getDistanceFromLatLonInKm;
         const curState = this.state;
+
+        this._setEmptyMessage(strings.loading, false);
 
         console.log('Loading observations ids saved as Eating Out...');
         const refEatingOut = firebase.database().ref(pathActions).orderByKey().equalTo(this.state.user.uid);
@@ -198,8 +215,8 @@ export class EatingOutListScreen extends React.Component {
                     this.setState({
                         observations: observations,
                         observationsList: observationsList,
-                        emptyListMessage: strings.noEatingOutList
                     });
+                    this._setEmptyMessage(strings.noEatingOutList, false);
                 }).catch(
                     (error) => {
                         console.log('Error while retrieving observations in Eating Out');
@@ -240,10 +257,11 @@ export class EatingOutListScreen extends React.Component {
         return deg * (Math.PI/180)
     }
 
-    componentWillUnmount() {
-        if (this.unsubscriber) {
-            this.unsubscriber();
-        }
+    _setEmptyMessage(message, cannotLoad) {
+        this.setState({
+            emptyListMessage: message,
+            cannotLoad: cannotLoad
+        });
     }
 
     _onPressList() {
@@ -273,7 +291,10 @@ export class EatingOutListScreen extends React.Component {
                 {
                     this.state.user && !this.state.user.isAnonymous &&
                     <View style={{ flex: 1 }}>
-                        {(!this.state.observations || this.state.observations.length === 0) && <EmptyComponent message={this.state.emptyListMessage}/>}
+                        {
+                            (!this.state.observations || this.state.observations.length === 0) &&
+                            <EmptyComponent message={this.state.emptyListMessage} retry={this.state.cannotLoad && this._checkInternetConnectionAndStart}/>
+                        }
                         {
                             (this.state.observations &&  this.state.observations.length > 0) &&
                             <View style={{ flex: 1 }}>
@@ -303,11 +324,11 @@ export class EatingOutListScreen extends React.Component {
                                         ))}
                                     </MapboxGL.MapView>
                                 }
+                                <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={[this.state.selectedIndex === ScreensEnum.MAP ? {top: 10, left: 10} : {top: 10, right: 10}, {width: 60, height: 60, borderRadius: 30, backgroundColor: colorAccent, position: 'absolute', alignItems:'center', justifyContent:'center'}]}>
+                                    <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? iconList : iconMap}  size={iconSizeStandard} color={colorBackground} />
+                                </TouchableOpacity>
                             </View>
                         }
-                        <TouchableOpacity name={'actionbutton'} onPress={this.state.selectedIndex === ScreensEnum.MAP ? this._onPressList : this._onPressMap} style={[this.state.selectedIndex === ScreensEnum.MAP ? {top: 10, left: 10} : {top: 10, right: 10}, {width: 60, height: 60, borderRadius: 30, backgroundColor: colorAccent, position: 'absolute', alignItems:'center', justifyContent:'center'}]}>
-                            <FontAwesome name={this.state.selectedIndex === ScreensEnum.MAP ? iconList : iconMap}  size={iconSizeStandard} color={colorBackground} />
-                        </TouchableOpacity>
                     </View>
                 }
                 {

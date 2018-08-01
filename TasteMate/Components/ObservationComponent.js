@@ -93,8 +93,8 @@ export class ObservationComponent extends React.Component {
                 }
             },
             (error) => {
-                console.error('Error while retrieving actions');
-                console.error(error);
+                console.log('Error while retrieving actions');
+                console.log(error);
             }
         );
 
@@ -122,8 +122,8 @@ export class ObservationComponent extends React.Component {
                 }
             },
             (error) => {
-                console.error('Error while retrieving comments');
-                console.error(error);
+                console.log('Error while retrieving comments');
+                console.log(error);
             }
         );
 
@@ -138,8 +138,8 @@ export class ObservationComponent extends React.Component {
                     this.setState({user: creator});
                 },
                 (error) => {
-                    console.error('Error while retrieving creator info');
-                    console.error(error);
+                    console.log('Error while retrieving creator info');
+                    console.log(error);
                 }
             );
         }
@@ -196,8 +196,8 @@ export class ObservationComponent extends React.Component {
             content,
             (error) => {
                 if (error) {
-                    console.error('Error during ' + path + ' transmission.');
-                    console.error(error);
+                    console.log('Error during ' + path + ' transmission.');
+                    console.log(error);
                     // TODO: display error message
                 } else {
                     console.log('Successfully ' + path + ' observation.');

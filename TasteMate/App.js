@@ -20,7 +20,7 @@ import {
     pathUsers,
     tastemateFont
 } from './constants/Constants';
-import {Platform, StatusBar, StyleSheet} from "react-native";
+import {Alert, NetInfo, Platform, StatusBar, StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
 import strings from "./strings";
@@ -67,6 +67,49 @@ firebase.auth().onAuthStateChanged((user) => {
         );
     }
 });
+
+let connectionInfo = null;
+let firstConnectionCall = null;
+const connectionHandler = connectionInformation => {
+    connectionInfo = connectionInformation;
+    console.log('Initial, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
+    if (firstConnectionCall) {
+        _checkInternetConnection(firstConnectionCall.onSuccess, firstConnectionCall.onError);
+        firstConnectionCall = null;
+    }
+};
+
+export function _checkInternetConnection(onSuccess, onError) {
+    if (Platform.OS === 'android') {
+        NetInfo.getConnectionInfo().then((connectionInformation) => {
+            console.log('Initial, type: ' + connectionInformation.type + ', effectiveType: ' + connectionInformation.effectiveType);
+            dealWithConnectionInfo(connectionInformation, onSuccess, onError);
+        });
+    } else {
+        if (connectionInfo) {
+            dealWithConnectionInfo(connectionInfo, onSuccess, onError);
+        } else {
+            firstConnectionCall = {onSuccess: onSuccess, onError: onError};
+            NetInfo.addEventListener('connectionChange', connectionHandler);
+        }
+    }
+}
+
+function dealWithConnectionInfo(connectionInformation, onSuccess, onError) {
+    if (connectionInformation.type === 'wifi' || connectionInformation.type === 'cellular') {
+        if (onSuccess) {
+            onSuccess();
+        } else {
+            console.log('WARNING - _checkInternetConnection: No success action defined!');
+        }
+    } else {
+        if (onError) {
+            onError();
+        } else {
+            Alert.alert(strings.noInternetAlertTitle, strings.noInternetAlertMessage, [{text: strings.ok}]);
+        }
+    }
+}
 
 const HomeStack = createStackNavigator({
         Home: { screen: HomeScreen },

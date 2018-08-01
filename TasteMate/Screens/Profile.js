@@ -48,8 +48,8 @@ function _toggleFollowUnfollow(navigation) {
             followee: followee,
         }, (error) => {
             if (error) {
-                console.error('Error during user following relationship transmission.');
-                console.error(error);
+                console.log('Error during user following relationship transmission.');
+                console.log(error);
             } else {
                 console.log('Successfully added ' + follower + ' to follow ' + followee);
                 navigation.setParams({ isFollowing: true });
@@ -136,8 +136,8 @@ export class ProfileScreen extends React.Component {
                     const user = dataSnapshot.toJSON();
                     this.setState({user: user});
                 }).catch((error) => {
-                    console.error('Error while retrieving user data');
-                    console.error(error);
+                    console.log('Error while retrieving user data');
+                    console.log(error);
                 }
             );
         }
@@ -152,8 +152,8 @@ export class ProfileScreen extends React.Component {
                     this.props.navigation.setParams({isFollowing: dataSnapshot.toJSON() !== null});
                 }).catch(
                 (error) => {
-                    console.error('Error while retrieving follower status');
-                    console.error(error);
+                    console.log('Error while retrieving follower status');
+                    console.log(error);
                 }
             );
         }
@@ -247,11 +247,11 @@ export class ProfileScreen extends React.Component {
                                     if (user !== null) {
                                         callback(user);
                                     } else {
-                                        console.error('Error while retrieving user with id ' + uid)
+                                        console.log('Error while retrieving user with id ' + uid)
                                     }
                                 },
                                 (error) => {
-                                    console.error(error);
+                                    console.log(error);
                                 }
                             );
                         }
@@ -259,8 +259,8 @@ export class ProfileScreen extends React.Component {
                 }
             },
             (error) => {
-                console.error('Error while retrieving ' + type + ' of ' + userid);
-                console.error(error);
+                console.log('Error while retrieving ' + type + ' of ' + userid);
+                console.log(error);
             }
         );
     }

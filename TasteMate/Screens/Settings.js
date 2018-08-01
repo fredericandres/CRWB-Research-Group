@@ -236,9 +236,9 @@ export class SettingsScreen extends React.Component {
 
                 this._uploadNewPicture();
             }).catch((error) => {
-                console.error('Error during user information update transmission.');
+                console.log('Error during user information update transmission.');
                 this._stopActivityIndicator();
-                console.error(error);
+                console.log(error);
                 _handleAuthError(error, this._showErrorPopup);
             }
         );

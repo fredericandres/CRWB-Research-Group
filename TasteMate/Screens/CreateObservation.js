@@ -22,7 +22,6 @@ import strings from "../strings";
 import styles, {smallFontSize, standardFontSize} from "../styles";
 import {
     _addPictureToStorage,
-    _checkInternetConnection,
     AsyncStorageKeyObservations,
     colorAccent,
     colorBackground,
@@ -52,7 +51,7 @@ import {allVocabulary} from "../constants/Vocabulary";
 import RNFetchBlob from 'react-native-fetch-blob';
 import XMLParser from 'react-xml-parser';
 import firebase from 'react-native-firebase';
-import {currentUser} from "../App";
+import {_checkInternetConnection, currentUser} from "../App";
 import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
 import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
 import {EmptyComponent} from "../Components/EmptyComponent";

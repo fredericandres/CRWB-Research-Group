@@ -8,6 +8,7 @@ import {SearchBar} from "../Components/SearchBar";
 import {_navigateToScreen, colorMain} from "../constants/Constants";
 import firebase from 'react-native-firebase';
 import {EmptyComponent} from "../Components/EmptyComponent";
+import {_checkInternetConnection} from "../App";
 
 const numColumns = 3;
 const OBS_LOAD_DEPTH = 9;
@@ -17,7 +18,8 @@ const initialState = {
     observations: [],
     searchText: '',
     searchTextSearched: '',
-    emptyListMessage: strings.loading
+    emptyListMessage: strings.loading,
+    cannotLoad: false,
 };
 
 export class SearchExploreScreen extends React.Component {
@@ -50,6 +52,7 @@ export class SearchExploreScreen extends React.Component {
         this._setEmptyMessage = this._setEmptyMessage.bind(this);
         this._handleError = this._handleError.bind(this);
         this._onPressSearchButton = this._onPressSearchButton.bind(this);
+        this._checkInternetConnectionAndStart = this._checkInternetConnectionAndStart.bind(this);
 
         this.unsubscriber = null;
         this.state = initialState;
@@ -68,7 +71,7 @@ export class SearchExploreScreen extends React.Component {
                 if (!user) {
                     // Do nothing
                 } else {
-                    this._loadObservations(true, false);
+                    this._checkInternetConnectionAndStart();
                 }
             });
         });
@@ -94,7 +97,13 @@ export class SearchExploreScreen extends React.Component {
         }
     }
 
+    _checkInternetConnectionAndStart() {
+        _checkInternetConnection(() => this._loadObservations(true, false), () => this._setEmptyMessage(strings.noInternet, true));
+    }
+
     _loadObservations(onStartup, isRefreshing) {
+        this._setEmptyMessage(strings.loading, false);
+
         const obsSize = this.state.observations.length;
         if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0 || isRefreshing)) {
             const index = isRefreshing ? 0 : this.state.observations.length;
@@ -145,16 +154,19 @@ export class SearchExploreScreen extends React.Component {
             }
         }
 
-        this._setEmptyMessage(strings.noSearchResults);
+        this._setEmptyMessage(strings.noSearchResults, false);
     }
 
     _handleError(error){
         console.log(error);
-        this._setEmptyMessage(strings.errorOccurred);
+        this._setEmptyMessage(strings.errorOccurred, true);
     }
 
-    _setEmptyMessage(message) {
-        this.setState({emptyListMessage: message});
+    _setEmptyMessage(message, cannotLoad) {
+        this.setState({
+            emptyListMessage: message,
+            cannotLoad: cannotLoad
+        });
     }
 
     _onRefresh() {
@@ -184,7 +196,7 @@ export class SearchExploreScreen extends React.Component {
                 <SearchBar placeholder={strings.foodCraving}  value={this.state.searchText} onChangeText={(text) => this._onUpdateSearchText(text)} onSubmitEditing={this._onPressSearchButton} onPressSearch={this._onPressSearchButton}/>
                 <View style={[{flex:1}, styles.explorePadding]}>
                     {
-                        this.state.observations.length === 0 && <EmptyComponent message={this.state.emptyListMessage}/>
+                        this.state.observations.length === 0 && <EmptyComponent message={this.state.emptyListMessage} retry={this.state.cannotLoad && this._checkInternetConnectionAndStart}/>
                     }
                     {
                         this.state.observations.length > 0 &&

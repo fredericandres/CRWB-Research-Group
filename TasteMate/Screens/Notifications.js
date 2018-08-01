@@ -14,6 +14,7 @@ import {
 import firebase from 'react-native-firebase';
 import strings from "../strings";
 import {EmptyComponent} from "../Components/EmptyComponent";
+import {_checkInternetConnection, currentUser} from "../App";
 
 const NTF_LOAD_DEPTH = 15;
 const initialState = {
@@ -23,7 +24,8 @@ const initialState = {
     users: {},
     observations: {},
     isRefreshing: false,
-    emptyListMessage: strings.loading
+    emptyListMessage: strings.loading,
+    cannotLoad: false,
 };
 
 // TODO [FEATURE]: push notifications
@@ -53,6 +55,7 @@ export class NotificationsScreen extends React.Component {
         this._onNavBarButtonPressed = this._onNavBarButtonPressed.bind(this);
         this._setEmptyMessage = this._setEmptyMessage.bind(this);
         this._handleError = this._handleError.bind(this);
+        this._checkInternetConnectionAndStart = this._checkInternetConnectionAndStart.bind(this);
 
         this.unsubscriber = null;
         this.state = initialState;
@@ -74,7 +77,7 @@ export class NotificationsScreen extends React.Component {
                 if (!user) {
                     // Do nothing
                 } else {
-                    this._loadNotifications(user.uid, true, false);
+                    this._checkInternetConnectionAndStart();
                 }
             });
         });
@@ -100,7 +103,13 @@ export class NotificationsScreen extends React.Component {
         }
     }
 
+    _checkInternetConnectionAndStart(user) {
+        _checkInternetConnection(() => this._loadNotifications((user && user.uid) || (currentUser && currentUser.uid), true, false), () => this._setEmptyMessage(strings.noInternet, true));;
+    }
+
     _loadNotifications(userid, onStartup, isRefreshing) {
+        this._setEmptyMessage(strings.loading, false);
+
         const ntfSize = this.state.notificationsAll.length;
         if (!this.isLoadingNotifications && (ntfSize === 0 || ntfSize % NTF_LOAD_DEPTH === 0 || isRefreshing)) {
             if (isRefreshing) {
@@ -187,11 +196,14 @@ export class NotificationsScreen extends React.Component {
 
     _handleError(error){
         console.log(error);
-        this._setEmptyMessage(strings.errorOccurred);
+        this._setEmptyMessage(strings.errorOccurred, true);
     }
 
-    _setEmptyMessage(message) {
-        this.setState({emptyListMessage: message});
+    _setEmptyMessage(message, cannotLoad) {
+        this.setState({
+            emptyListMessage: message,
+            cannotLoad: cannotLoad
+        });
     }
 
     _addToNotificationState(notifications) {
@@ -227,7 +239,7 @@ export class NotificationsScreen extends React.Component {
             notifications: newNotifs,
             notificationsAll: notifications
         });
-        this._setEmptyMessage(strings.noNotifications);
+        this._setEmptyMessage(strings.noNotifications, false);
     }
 
     _addUserToState(user, userid) {
@@ -266,7 +278,7 @@ export class NotificationsScreen extends React.Component {
                     this.state.user && !this.state.user.isAnonymous &&
                     <View style={{flex:1}}>
                         {
-                            this.state.notifications.length === 0 && <EmptyComponent message={this.state.emptyListMessage}/>
+                            this.state.notifications.length === 0 && <EmptyComponent message={this.state.emptyListMessage} retry={this.state.cannotLoad && this._checkInternetConnectionAndStart}/>
                         }
                         {
                             this.state.notifications.length > 0 &&

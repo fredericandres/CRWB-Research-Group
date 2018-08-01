@@ -94,15 +94,6 @@ export class CameraCameraRollComponent extends React.Component {
         })
     }
 
-    /************* CAMERA *************/
-
-    _onPressCameraButton() {
-        if (this.state.cameraPermission !== 'authorized') {
-            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.formatString(strings.enableCamera, appName), () => this._requestPermission('camera'));
-        }
-        this.setState({activeItem: SourceEnum.CAMERA});
-    }
-
     _onPressPermissionNeeded() {
         if (this.state.cameraPermission !== 'authorized') {
             this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.formatString(strings.enableCamera, appName), () => this._requestPermission('camera', () => console.log('Camera permission granted')));
@@ -110,6 +101,15 @@ export class CameraCameraRollComponent extends React.Component {
         if (this.state.photoPermission !== 'authorized') {
             this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.formatString(strings.enablePhoto, appName), () => this._requestPermission('photo', () => console.log('Photo permission granted')));
         }
+    }
+
+    /************* CAMERA *************/
+
+    _onPressCameraButton() {
+        if (this.state.cameraPermission !== 'authorized') {
+            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.formatString(strings.enableCamera, appName), () => this._requestPermission('camera'));
+        }
+        this.setState({activeItem: SourceEnum.CAMERA});
     }
 
     async takePicture() {

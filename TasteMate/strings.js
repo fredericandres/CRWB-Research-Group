@@ -192,6 +192,7 @@ export default strings = new LocalizedStrings({
         kFollowersSg: '{0} follower',
         clickHereToRefresh: 'Simply click here to refresh your feed once you\'re done!',
         noInternet: 'Seems like you\'re not connected to the Internet. Please connect to get the most recent data.',
+        tryAgain: 'Try Again',
     },
     fr: {
         explore: 'Explorer',
@@ -991,5 +992,6 @@ export default strings = new LocalizedStrings({
         kFollowersSg: '{0} Folgender',
         clickHereToRefresh: 'Sobald du fertig bist, kannst du einfach hier klicken, um deinen Feed zu aktualisieren!',
         noInternet: 'Sieht so aus, als ob dein Handy nicht mit dem Internet verbunden ist. Bitte verbinde es, damit du die neuesten Daten bekommen kannst',
+        tryAgain: 'Erneut versuchen',
     },
 });

@@ -1,5 +1,5 @@
 import {StackActions} from "react-navigation";
-import {Alert, NativeModules, NetInfo, Platform} from "react-native";
+import {NativeModules, Platform} from "react-native";
 import strings, {appName} from "../strings";
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
@@ -71,7 +71,7 @@ export const iconSend = 'send';
 export const iconClose = 'close';
 export const iconCamera = 'camera-retro';
 export const iconFlashOn = 'ios-flash';
-export const iconFlashOff = 'ios-flash-outline';
+export const iconFlashOff = 'ios-flash-off';
 export const iconCameraRoll = 'md-photos';
 export const iconCameraFront = 'camera-front-variant';
 export const iconCameraBack = 'camera-rear-variant';
@@ -264,35 +264,3 @@ export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setA
         console.log(error);
     });
 }
-
-export function _checkInternetConnection(onSuccess, onError) {
-    getConnectionInfo().then((connectionInfo) => {
-        console.log('Initial, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
-        if (connectionInfo.type === 'wifi' || connectionInfo.type === 'cellular') {
-            if (onSuccess) {
-                onSuccess();
-            }
-        } else {
-            if (onError) {
-                onError();
-            } else {
-                Alert.alert(strings.noInternetAlertTitle, strings.noInternetAlertMessage, [{text: strings.ok}]);
-            }
-        }
-    });
-}
-
-const getConnectionInfo = async () => {
-    if (Platform.OS === 'ios') {
-        return new Promise((resolve, reject) => {
-            const connectionHandler = connectionInfo => {
-                NetInfo.removeEventListener('connectionChange', connectionHandler);
-                resolve(connectionInfo);
-            };
-
-            NetInfo.addEventListener('connectionChange', connectionHandler);
-        })
-    }
-
-    return NetInfo.getConnectionInfo();
-};

@@ -2,7 +2,6 @@ import React from "react";
 import styles from "../styles";
 import {Platform, TextInput, TouchableOpacity, View} from "react-native";
 import {
-    _checkInternetConnection,
     colorContrast,
     colorLight,
     colorMain,
@@ -12,7 +11,7 @@ import {
 } from "../constants/Constants";
 import strings from "../strings";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {currentUser} from "../App";
+import {_checkInternetConnection, currentUser} from "../App";
 import firebase from 'react-native-firebase';
 import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
 
