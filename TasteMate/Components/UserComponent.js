@@ -20,7 +20,9 @@ export class UserComponent extends React.Component {
     render() {
         return (
             <TouchableOpacity onPress={this._onPressUser} style={{flexDirection:'row'}}>
-                <UserImageThumbnailComponent size={[styles.containerPadding, styles.roundProfile]} user={this.user.imageUrl} />
+                <View style={styles.containerPadding}>
+                    <UserImageThumbnailComponent size={styles.roundProfile} user={this.user.imageUrl} />
+                </View>
                 <View name={'textcontentwrapper'} style={[styles.containerPadding, {flex: 1, flexDirection:'column', justifyContent:'center'}]}>
                     <Text name={'username'} style={styles.textStandardBold}>{this.user.username}</Text>
                     <Text name={'location'} style={styles.textSmall}>{this.user.location}</Text>

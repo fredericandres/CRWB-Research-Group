@@ -5,6 +5,7 @@ import "moment/locale/ja";
 import "moment/locale/fr";
 import "moment/locale/pt";
 import "moment/locale/de";
+import "moment/locale/ta";
 
 moment.locale(_getLanguageCode());
 

@@ -173,7 +173,7 @@ export class ProfileScreen extends React.Component {
         const followersSize = Object.keys(this.followersIds).length;
         if (followersSize === 0 || followersSize % FOLLOW_LOAD_DEPTH === 0) {
             console.log('Loading followers...');
-            this._loadUsers('followee', userid, this.followersIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => {this.setState(prevState => ({followers: [...prevState.followers, dataSnapshot]}))});
+            this._loadUsers('followee', userid, this.followersIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => this.setState(prevState => ({followers: [...prevState.followers, dataSnapshot]})));
         }
     }
 
@@ -181,7 +181,7 @@ export class ProfileScreen extends React.Component {
         const followingSize = Object.keys(this.followingIds).length;
         if (followingSize === 0 || followingSize % FOLLOW_LOAD_DEPTH === 0) {
             console.log('Loading following...');
-            this._loadUsers('follower', userid, this.followingIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => {this.setState(prevState => ({following: [...prevState.following, dataSnapshot]}))});
+            this._loadUsers('follower', userid, this.followingIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => this.setState(prevState => ({following: [...prevState.following, dataSnapshot]})));
         }
     }
 
@@ -288,7 +288,9 @@ export class ProfileScreen extends React.Component {
         return (
             <SafeAreaView style={{flex: 1,}}>
                 <View name={'header'} style={{flex: 2, backgroundColor: colorMain}}>
-                    <UserImageThumbnailComponent size={[styles.containerPadding, styles.roundProfileLarge]} user={this.state.user}/>
+                    <View style={styles.containerPadding}>
+                        <UserImageThumbnailComponent size={styles.roundProfileLarge} user={this.state.user}/>
+                    </View>
                     <View name={'username'} style={{flex: 1, alignItems: 'flex-end', flexDirection: 'row'}}>
                         <Text name={'username'}
                               style={[styles.textTitleBoldDark, {textAlign: 'center', flex: 1}]}>{this.state.user.username || strings.unknownUsername}</Text>

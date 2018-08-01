@@ -129,7 +129,9 @@ export class NotificationComponent extends React.Component {
                 <TouchableOpacity onPress={this.notification.type === ActivityEnum.FOLLOW ? this._onPressProfile : this._onPressObservation} style={[{flexDirection:'row', backgroundColor:colorBackground}]}>
                     {!this.notification.read && <Animated.View name={'fadingbackground'} style={{position: 'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:colorMain, opacity: this.state.fadeAnim}}/>}
                     <View style={{flexDirection:'column', justifyContent:'center'}}>
-                        <UserImageThumbnailComponent size={[styles.roundProfile, styles.containerPadding]} user={this.users && this.users[this.notification.users[0]]} onPress={this._onPressProfile/*this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles*/} />
+                        <View style={styles.containerPadding}>
+                            <UserImageThumbnailComponent size={styles.roundProfile} user={this.users && this.users[this.notification.users[0]]} onPress={this._onPressProfile/*this.notification.senderid.length === 1 ? () => this._onPressProfile(0) : this._onPressMultipleProfiles*/} />
+                        </View>
                         <View style={[styles.containerPadding, styles.roundProfileSmall, {backgroundColor:backgroundColor, position:'absolute', bottom:0, right:0, justifyContent:'center', alignItems:'center'}]}>
                             <View style={{width:iconSizeTiny, height:iconSizeTiny, alignItems:'center', justifyContent:'center'}}>
                                 {

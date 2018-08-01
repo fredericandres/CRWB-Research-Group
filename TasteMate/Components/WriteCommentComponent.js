@@ -74,7 +74,9 @@ export class WriteCommentComponent extends React.Component {
     render() {
         return (
             <View style={{flex: 1, flexDirection:'row', alignItems: 'center', opacity:this.props.hidden ? 0 : 100}}>
-                <UserImageThumbnailComponent size={[styles.containerPadding, styles.roundProfileSmall]} user={currentUser}/>
+                <View style={styles.containerPadding}>
+                    <UserImageThumbnailComponent size={styles.roundProfileSmall} user={currentUser}/>
+                </View>
                 <TextInput
                     ref={input => this.textInput = input}
                     style={[styles.textStandardDark, styles.containerPadding, {flex: 1}]}

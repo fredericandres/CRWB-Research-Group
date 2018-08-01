@@ -173,7 +173,6 @@ export class SearchExploreScreen extends React.Component {
     }
 
     _onPressSearchButton() {
-        // TODO: test if search is really working
         this.setState((prevState) => ({searchTextSearched: prevState.searchText}), () => this._loadObservations(true, true));
     }
 

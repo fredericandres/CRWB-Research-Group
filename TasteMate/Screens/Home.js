@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, Keyboard, Platform, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Keyboard, Platform, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
 import {ObservationComponent} from "../Components/ObservationComponent";
 import styles from "../styles";
@@ -75,7 +75,6 @@ export class HomeScreen extends React.Component {
         this._handleError = this._handleError.bind(this);
         this._keyboardDidHide = this._keyboardDidHide.bind(this);
         this._keyboardDidShow = this._keyboardDidShow.bind(this);
-        this._loadFeedEmpty = this._loadFeedEmpty.bind(this);
         this._loadFeedEmptyInfo = this._loadFeedEmptyInfo.bind(this);
         this._addObservationsToState = this._addObservationsToState.bind(this);
         this._addIsFollowingToState = this._addIsFollowingToState.bind(this);
@@ -100,11 +99,12 @@ export class HomeScreen extends React.Component {
             let resetState = initialState;
             resetState.user = user;
             this.setState(resetState, () => {
+                console.log(user);
                 if (!user) {
                     // Open SingUpLogIn screen if no account associated (not even anonymous)
                     _navigateToScreen('SignUpLogIn', this.props.navigation);
                 } else {
-                    this._loadObservationFeed(user.uid, true, false);
+                    _checkInternetConnection(() => this._loadObservationFeed(user.uid, true, false), () => this._setEmptyMessage(strings.noInternet));
                 }
             });
         });
@@ -146,7 +146,7 @@ export class HomeScreen extends React.Component {
     _loadObservationFeed(userid, onStartup, isRefreshing) {
         const _loadObservations = this._loadObservations;
 
-        if (this.followees && this.followees.length > 0 && !isRefreshing) {
+        if (this.followees && this.followees.length > 0 && !isRefreshing && !onStartup) {
             this._loadObservations(onStartup, isRefreshing);
         } else {
             console.log('Loading people the current user follows...');
@@ -221,7 +221,7 @@ export class HomeScreen extends React.Component {
                 this.setState(prevState => ({observations: prevState.observations.concat(observations)}));
             }
         } else {
-            this._loadFeedEmpty();
+            this._loadFeedEmptyInfo();
         }
         this._setEmptyMessage(strings.emptyFeed);
         this.setState({
@@ -253,7 +253,7 @@ export class HomeScreen extends React.Component {
             feedEmpty: emptyFeed
         });
         if (emptyFeed) {
-            this._loadFeedEmpty();
+            this._loadFeedEmptyInfo();
         }
     }
 
@@ -296,10 +296,6 @@ export class HomeScreen extends React.Component {
             this.setState({keyboardHeight: 0});
             this.bottomOfList = false;
         }
-    }
-
-    _loadFeedEmpty() {
-        _checkInternetConnection(() => this._loadFeedEmptyInfo(), () => this._setEmptyMessage(strings.noInternet));
     }
 
     _loadFeedEmptyInfo() {
@@ -440,9 +436,9 @@ export class HomeScreen extends React.Component {
                         }
                         {
                             this.state.observations.length === 0 && this.state.feedEmpty &&
-                            <View style={[{flex:1, flexDirection:'column'}]}>
+                            <ScrollView style={[{flex:1, flexDirection:'column'}]}>
                                 <View style={styles.containerPadding}>
-                                    <Text style={styles.textStandardDark}>{strings.emptyFeed} {strings.pullToRefresh}</Text>
+                                    <Text style={styles.textStandardDark}>{strings.emptyFeed} <Text onClick={() => this._loadObservationFeed(currentUser.uid, true, false)}>{strings.clickHereToRefresh}</Text></Text>
                                 </View>
                                 <View>
                                     <FlatList
@@ -505,7 +501,7 @@ export class HomeScreen extends React.Component {
                                         </View>
                                     }
                                 </View>
-                            </View>
+                            </ScrollView>
                         }
                         {
                             this.state.observations.length > 0 &&
