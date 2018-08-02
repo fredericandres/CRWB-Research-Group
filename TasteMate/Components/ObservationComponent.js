@@ -1,10 +1,7 @@
-import React from "react";
-import {ActionSheetIOS, Alert, FlatList, Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import React from 'react';
+import {ActionSheetIOS, Alert, FlatList, Image, Platform, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {
-    _formatNumberWithString,
-    _navigateToScreen,
-    _sortArrayByTimestamp,
     ActivityEnum,
     colorAccent,
     colorBackground,
@@ -13,6 +10,7 @@ import {
     colorMain,
     colorStandardBackground,
     EmojiEnum,
+    formatNumberWithString,
     iconCutlery,
     iconEatingOut,
     iconLike,
@@ -20,6 +18,7 @@ import {
     iconShare,
     iconSizeSmall,
     iconSizeStandard,
+    navigateToScreen,
     pathActions,
     pathComments,
     pathCutleries,
@@ -27,23 +26,24 @@ import {
     pathObservations,
     pathShares,
     pathUsers
-} from "../constants/Constants";
-import styles, {smileySuperLargeFontSize} from "../styles";
-import TimeAgo from "react-native-timeago";
-import {CommentComponent} from "./CommentComponent";
-import strings, {appName} from "../strings";
+} from '../Constants/Constants';
+import styles, {smileySuperLargeFontSize} from '../styles';
+import TimeAgo from 'react-native-timeago';
+import {CommentComponent} from './CommentComponent';
+import strings, {appName} from '../strings';
 import Share from 'react-native-share';
 import firebase from 'react-native-firebase';
-import {currentUser} from "../App";
-import {WriteCommentComponent} from "./WriteCommentComponent";
+import {currentUser} from '../App';
+import {WriteCommentComponent} from './WriteCommentComponent';
 import {CachedImage} from 'react-native-cached-image';
-import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
-import {allVocabulary} from "../constants/Vocabulary";
-import {allCurrencies} from "../constants/Currencies";
-import {allDietaryRestrictions} from "../constants/DietaryRestrictions";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import LinearGradient from "react-native-linear-gradient";
-import ReadMore from "./ReadMore";
+import {UserImageThumbnailComponent} from './UserImageThumbnailComponent';
+import {allVocabulary} from '../Constants/Vocabulary';
+import {allCurrencies} from '../Constants/Currencies';
+import {allDietaryRestrictions} from '../Constants/DietaryRestrictions';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import LinearGradient from 'react-native-linear-gradient';
+import ReadMore from './ReadMore';
+import {sortArrayByTimestamp} from '../Helpers/FirebaseHelper';
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -75,9 +75,8 @@ export class ObservationComponent extends React.Component {
 
         console.log('Loading actions...');
         const refActions = firebase.database().ref(pathActions).child(this.state.observation.userid).child(this.state.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
-        refActions.once(
-            'value',
-            (dataSnapshot) => {
+        refActions.once('value')
+            .then((dataSnapshot) => {
                 console.log('Received actions.');
                 const actions = dataSnapshot.toJSON();
                 if (actions) {
@@ -91,8 +90,7 @@ export class ObservationComponent extends React.Component {
                         this.setState({cutleried: true});
                     }
                 }
-            },
-            (error) => {
+            }).catch((error) => {
                 console.log('Error while retrieving actions');
                 console.log(error);
             }
@@ -100,9 +98,8 @@ export class ObservationComponent extends React.Component {
 
         console.log('Checking if comments exist...');
         const refComments = firebase.database().ref(pathComments).child(this.state.observation.userid).child(this.state.observation.observationid).orderByChild('timestamp').limitToLast(2);
-        refComments.once(
-            'value',
-            (dataSnapshot) => {
+        refComments.once('value')
+            .then((dataSnapshot) => {
                 console.log('Received comments.');
                 const commentsJson = dataSnapshot.toJSON();
                 let comments = [];
@@ -113,15 +110,14 @@ export class ObservationComponent extends React.Component {
                         comments.push(comment);
                     });
                 }
-                _sortArrayByTimestamp(comments, true);
+                sortArrayByTimestamp(comments, true);
                 if (comments.length > 1) {
                     this.setState({moreComments: true});
                     comments.splice(0,1);
                 } else if (comments.length === 1) {
                     this.setState({comments: comments});
                 }
-            },
-            (error) => {
+            }).catch((error) => {
                 console.log('Error while retrieving comments');
                 console.log(error);
             }
@@ -332,7 +328,7 @@ export class ObservationComponent extends React.Component {
                         error.log(error);
                     } else {
                         console.log('Successfully removed observation');
-                        this.props.onDelete(this.state.observation);
+                        this.props.onDelete && this.props.onDelete(this.state.observation);
                     }
                 }
             );
@@ -373,14 +369,14 @@ export class ObservationComponent extends React.Component {
     _onPressProfile() {
         let params = {};
         params.user = {userid: this.state.observation.userid};
-        _navigateToScreen('Profile', this.props.navigation, params);
+        navigateToScreen('Profile', this.props.navigation, params);
     }
 
     _onPressMoreComments() {
         let params = {};
         params.comments = this.state.comments;
         params.observation = this.state.observation;
-        _navigateToScreen('Comments', this.props.navigation, params);
+        navigateToScreen('Comments', this.props.navigation, params);
     }
 
     _onCommentDelete(comment, index) {
@@ -396,7 +392,7 @@ export class ObservationComponent extends React.Component {
         });
     }
 
-    _keyExtractor = (item, index) => item.timestamp + item.senderid;
+    _keyExtractor = (item) => item.timestamp + item.senderid;
 
     render() {
         const dietaryRestriction = this.state.observation.dietaryRestriction ? allDietaryRestrictions[this.state.observation.dietaryRestriction] : undefined;
@@ -498,7 +494,7 @@ export class ObservationComponent extends React.Component {
                         {/*TODO [FEATURE]: enable clicking on likes/cutleries to see who liked/cutleried/shared*/}
                         <View name={'information'} style={{flexDirection: 'row'}}>
                             <TimeAgo name={'time'} style={styles.textSmall} time={this.state.observation.timestamp}/>
-                            <Text name={'details'} style={styles.textSmall}> • {_formatNumberWithString(this.state.observation.likesCount, ActivityEnum.LIKE)} • {_formatNumberWithString(this.state.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {_formatNumberWithString(this.state.observation.sharesCount, ActivityEnum.SHARE)} • {_formatNumberWithString(this.state.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
+                            <Text name={'details'} style={styles.textSmall}> • {formatNumberWithString(this.state.observation.likesCount, ActivityEnum.LIKE)} • {formatNumberWithString(this.state.observation.cutleriesCount, ActivityEnum.CUTLERY)} • {formatNumberWithString(this.state.observation.sharesCount, ActivityEnum.SHARE)} • {formatNumberWithString(this.state.observation.commentsCount, ActivityEnum.COMMENT)}</Text>
                         </View>
                     </View>
                 </View>

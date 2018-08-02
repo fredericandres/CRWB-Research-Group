@@ -1,8 +1,7 @@
-import React from "react";
-import styles from "../styles";
+import React from 'react';
 import {CachedImage} from 'react-native-cached-image';
-import {TouchableOpacity} from "react-native";
-import {currentUserInformation} from "../App";
+import {TouchableOpacity} from 'react-native';
+import {currentUserInformation} from '../App';
 
 export class UserImageThumbnailComponent extends React.Component {
     render() {

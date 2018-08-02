@@ -2,7 +2,7 @@ import React from "react";
 import {TouchableOpacity} from "react-native";
 import styles from "../styles";
 import {CachedImage} from "react-native-cached-image";
-import {_navigateToScreen} from "../constants/Constants";
+import {navigateToScreen} from "../Constants/Constants";
 
 export class ObservationExploreComponent extends React.Component {
     constructor(props) {
@@ -14,7 +14,7 @@ export class ObservationExploreComponent extends React.Component {
         if (!onPress) {
             let params = {};
             params.observation = this.props.observation;
-            onPress = () => _navigateToScreen('ObservationDetail', this.props.navigation, params);
+            onPress = () => navigateToScreen('ObservationDetail', this.props.navigation, params);
         }
         const onLongPress = this.props.onLongPress;
 

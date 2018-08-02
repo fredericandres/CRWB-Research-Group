@@ -1,6 +1,6 @@
 import React from "react";
 import styles, {standardFontSize} from "../styles";
-import {colorBackground, colorContrast, colorLight, colorMain, iconSizeStandard} from "../constants/Constants";
+import {colorBackground, colorContrast, colorLight, colorMain, iconSizeStandard} from "../Constants/Constants";
 import {Alert, TextInput, TouchableOpacity, View} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";

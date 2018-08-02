@@ -1,9 +1,6 @@
 import {StackActions} from "react-navigation";
 import {NativeModules, Platform} from "react-native";
-import strings, {appName} from "../strings";
-import firebase from 'react-native-firebase';
-import {currentUser} from "../App";
-import ImageResizer from 'react-native-image-resizer';
+import strings from "../strings";
 
 export const colorMain = '#ffc658';
 export const colorContrast = '#333333';
@@ -90,7 +87,15 @@ export const AsyncStorageKeyObservations = 'OBSERVATIONS';
 
 export const ReactNavigationTabBarHeight = 49;
 
-export function _formatNumberWithString(number, type) {
+/**
+ * Formats a given number of a given ActivityEnum type into a user-readable string. For example
+ * formatNumberWithString(0, ActivityEnum.LIKE) returns the string 'zero likes'
+ * @param number The number to be formatted
+ * @param type The ActivityEnum type of the number
+ * @returns {Array<string | module:react-native-localization.Formatted> | string} A localized string of the number
+ * and type
+ */
+export function formatNumberWithString(number, type) {
     let wordString = '';
     let numberString = '';
 
@@ -132,32 +137,35 @@ export function _formatNumberWithString(number, type) {
                 break;
         }
 
-        if (number === undefined) {
-            numberString = '0';
-        } else if (number < 1000) {
-            numberString = number;
-        } else if (number < 1000000) {
-            numberString = strings.formatString(strings.thousand, Math.floor(number / 1000));
-        } else {
-            numberString = strings.formatString(strings.million, Math.floor(number / 1000000));
-        }
+        numberString = formatNumber(number);
     }
     return strings.formatString(wordString, numberString);
 }
 
-export function _formatNumber(number) {
+/**
+ * Formats a number into a more human-readable number, such as 1000 into 1k
+ * @param number The number to be formatted
+ * @returns {*} A string of the formatted number and its abbreviation (if any)
+ */
+export function formatNumber(number) {
     if (number === undefined) {
         return '0';
     } else if (number < 1000) {
-        return number;
+        return number.toString();
     } else if (number < 1000000) {
-        return Math.floor(number / 1000);
+        return strings.formatString(strings.thousand, Math.floor(number / 1000));
     } else {
-        return Math.floor(number / 1000000);
+        return strings.formatString(strings.million, Math.floor(number / 1000000));
     }
 }
 
-export function _navigateToScreen(screen, navigation, params) {
+/**
+ * Navigates to the specified screen with the specified parameters
+ * @param screen The name of the screen to be navigated to
+ * @param navigation The navigation object to be used
+ * @param params The parameters to be handed over to the screen
+ */
+export function navigateToScreen(screen, navigation, params) {
     const pushAction = StackActions.push({
         routeName: screen,
         params: params,
@@ -165,102 +173,25 @@ export function _navigateToScreen(screen, navigation, params) {
     navigation.dispatch(pushAction);
 }
 
-export function _getLanguageCode() {
+/**
+ * Gets the current language code of the system
+ * @returns {*|string|string} A two-character string of the system language, default is 'en'
+ */
+export function getLanguageCode() {
     let systemLanguage = '';
     if (Platform.OS === 'android') {
         systemLanguage = NativeModules.I18nManager.localeIdentifier;
     } else {
         systemLanguage = NativeModules.SettingsManager.settings.AppleLocale;
     }
-    const languageCode = (systemLanguage && systemLanguage.substring(0, 2)) || 'en';
-    return languageCode;
+    return (systemLanguage && systemLanguage.substring(0, 2)) || 'en';
 }
 
-export function _sortArrayByTimestamp(array, reverse) {
-    if (array) {
-        array.sort(function (a, b) {
-            if (a.timestamp < b.timestamp)
-                return reverse ? -1 : 1;
-            if (a.timestamp > b.timestamp)
-                return reverse ? 1 : -1;
-            return 0;
-        });
-    }
-}
-
-export function _handleAuthError(error, action) {
-    let errorMessage = '';
-
-    switch (error.code) {
-        case 'auth/invalid-email':
-            errorMessage = strings.errorMessageInvalidEmail;
-            break;
-        case 'auth/user-disabled':
-            errorMessage = strings.errorMessageUserDisabled;
-            break;
-        case 'auth/user-not-found':
-            errorMessage = strings.errorMessageUserNotFound;
-            break;
-        case 'auth/wrong-password':
-            errorMessage = strings.errorMessageWrongPassword;
-            break;
-        case 'auth/weak-password':
-            errorMessage = strings.errorMessageWeakPassword;
-            break;
-        case 'auth/email-already-in-use':
-            errorMessage = strings.formatString(strings.errorMessageEmailAlreadyInUse, appName);
-            break;
-    }
-
-    action(errorMessage)
-}
-
-export function _formatUsername(username) {
+/**
+ * Formats a specified username to be alphanumeric
+ * @param username The username to be formatted
+ * @returns {*} The formatted username
+ */
+export function formatUsername(username) {
     return username.replace(/[^0-9A-Za-z]/g, '');
-}
-
-export function _addPictureToStorage(path, imageUrl, refToUpdate, callback, setActivityIndicatorText, stopActivityIndicator) {
-    setActivityIndicatorText(strings.uploadingPicture);
-    console.log('Resizing picture...');
-
-    ImageResizer.createResizedImage(imageUrl, 2000, 2000, 'JPEG', 80, 0)
-        .then(reply => {
-            console.log('Adding picture to storage...');
-            const settableMetadata = {
-                contentType: 'image/jpeg',
-                customMetadata: {
-                    userid: currentUser.uid
-                }
-            };
-
-            const imageRef = firebase.storage().ref(path);
-            imageRef.putFile(reply.uri, settableMetadata)
-                .then((response) => {
-                    console.log('Successfully added picture to storage');
-                    console.log('Saving image url to item...');
-                    const update = {imageUrl: response.downloadURL};
-                    refToUpdate.update(update)
-                        .then(() => {
-                            console.log('Successfully updated item to include image url.');
-                            stopActivityIndicator();
-                            if (callback) {
-                                callback(response.downloadURL);
-                            }
-                        }).catch((error) => {
-                            console.log('Error during image url transmission.');
-                            stopActivityIndicator();
-                            console.log(error);
-                            // TODO: display error message
-                        }
-                    );
-                }).catch((error) => {
-                stopActivityIndicator();
-                console.log('Error while adding picture to storage');
-                console.log(error);
-            });
-        }).catch((error) => {
-        stopActivityIndicator();
-        console.log('Error while resizing picture');
-        console.log(error);
-    });
 }

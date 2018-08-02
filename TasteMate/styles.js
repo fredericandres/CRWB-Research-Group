@@ -1,5 +1,5 @@
 import {Dimensions, Platform, StatusBar, StyleSheet} from 'react-native';
-import {colorBackground, colorContrast, colorLight, colorMain} from "./constants/Constants";
+import {colorBackground, colorContrast, colorLight, colorMain} from "./Constants/Constants";
 import {Header} from 'react-navigation';
 
 const bold = 'bold';

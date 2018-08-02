@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {_navigateToScreen, colorContrast, iconNew, iconSignOut, iconSizeNavBar, iconUser} from "../constants/Constants";
+import {navigateToScreen, colorContrast, iconNew, iconSignOut, iconSizeNavBar, iconUser} from "../Constants/Constants";
 import styles from "../styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import strings from "../strings";
@@ -14,7 +14,7 @@ export class NavBarButton extends React.Component {
         if (onDataChangedAction) {
             params.onDataChangedAction = onDataChangedAction;
         }
-        _navigateToScreen(screen, this.props.nav, params);
+        navigateToScreen(screen, this.props.nav, params);
     }
 
     render() {

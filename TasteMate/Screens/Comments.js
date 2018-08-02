@@ -4,14 +4,14 @@ import strings from "../strings";
 import {CommentComponent} from "../Components/CommentComponent";
 import {WriteCommentComponent} from "../Components/WriteCommentComponent";
 import {
-    _sortArrayByTimestamp,
     colorBackground,
     pathComments,
     ReactNavigationTabBarHeight
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import firebase from 'react-native-firebase';
 import {currentUser} from "../App";
 import RNSafeAreaGetter from 'react-native-safe-area-getter';
+import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
 
 const CMT_LOAD_DEPTH = 10;
 
@@ -81,14 +81,12 @@ export class CommentsScreen extends React.Component {
     _loadComments(onStartup, isRefreshing) {
         const ntfSize = this.state.comments.length;
         if (ntfSize === 0 || ntfSize % CMT_LOAD_DEPTH === 0 || isRefreshing || onStartup) {
-            const currentState = this.state;
             const index = (isRefreshing ? 0 : ntfSize) + CMT_LOAD_DEPTH;
 
             console.log('Loading comments...');
             const refComments = firebase.database().ref(pathComments).child(this.observation.userid).child(this.observation.observationid).orderByChild('timestamp').limitToLast(index);
-            refComments.once(
-                'value',
-                (dataSnapshot) => {
+            refComments.once('value')
+                .then((dataSnapshot) => {
                     console.log('Comments successfully retrieved');
                     const commentsJson = dataSnapshot.toJSON();
                     let comments = [];
@@ -100,10 +98,8 @@ export class CommentsScreen extends React.Component {
                         });
                     }
 
-                    // let comments = dataSnapshot.toJSON() ? Object.values(dataSnapshot.toJSON()) : [];
                     this._addToCommentState(comments);
-                },
-                (error) => {
+                }).catch((error) => {
                     console.error('Error while retrieving comments');
                     console.error(error);
                 }
@@ -113,7 +109,7 @@ export class CommentsScreen extends React.Component {
 
     _addToCommentState(comments) {
         if (comments && comments.length > 0) {
-            _sortArrayByTimestamp(comments);
+            sortArrayByTimestamp(comments);
 
             this.setState({comments: comments});
         }
@@ -139,7 +135,7 @@ export class CommentsScreen extends React.Component {
         this.setState({comments:comments});
     }
 
-    _keyExtractor = (item, index) => item.timestamp + item.senderid;
+    _keyExtractor = (item,) => item.timestamp + item.senderid;
 
     render() {
         return (

@@ -1,9 +1,7 @@
-import React from "react";
-import styles from "../styles";
-import {ActivityIndicator, Image, Text, TouchableOpacity, View} from "react-native";
-import {_navigateToScreen, colorBackground, pathUsers} from "../constants/Constants";
-import TimeAgo from "react-native-timeago";
-import firebase from 'react-native-firebase';
+import React from 'react';
+import styles from '../styles';
+import {ActivityIndicator, Text, View} from 'react-native';
+import {colorBackground} from '../Constants/Constants';
 
 export class ActivityIndicatorComponent extends React.Component {
     render() {

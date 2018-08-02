@@ -4,17 +4,17 @@ import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarBu
 import {NotificationComponent} from "../Components/NotificationComponent";
 import {LogInMessage} from "../Components/LogInMessage";
 import {
-    _navigateToScreen,
-    _sortArrayByTimestamp,
+    navigateToScreen,
     ActivityEnum,
     pathNotifications,
     pathObservations,
     pathUsers
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import firebase from 'react-native-firebase';
 import strings from "../strings";
 import {EmptyComponent} from "../Components/EmptyComponent";
 import {_checkInternetConnection, currentUser} from "../App";
+import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
 
 const NTF_LOAD_DEPTH = 15;
 const initialState = {
@@ -94,17 +94,17 @@ export class NotificationsScreen extends React.Component {
             if (isProfile) {
                 let params = {};
                 params.myProfile = true;
-                _navigateToScreen('MyProfile', this.props.navigation, params);
+                navigateToScreen('MyProfile', this.props.navigation, params);
             } else {
-                _navigateToScreen('CreateObservation', this.props.navigation);
+                navigateToScreen('CreateObservation', this.props.navigation);
             }
         } else {
-            _navigateToScreen('SignUpLogIn', this.props.navigation);
+            navigateToScreen('SignUpLogIn', this.props.navigation);
         }
     }
 
     _checkInternetConnectionAndStart(user) {
-        _checkInternetConnection(() => this._loadNotifications((user && user.uid) || (currentUser && currentUser.uid), true, false), () => this._setEmptyMessage(strings.noInternet, true));;
+        _checkInternetConnection(() => this._loadNotifications((user && user.uid) || (currentUser && currentUser.uid), true, false), () => this._setEmptyMessage(strings.noInternet, true));
     }
 
     _loadNotifications(userid, onStartup, isRefreshing) {
@@ -209,7 +209,7 @@ export class NotificationsScreen extends React.Component {
     _addToNotificationState(notifications) {
         let newNotifs = [];
         if (notifications && notifications.length > 0) {
-            _sortArrayByTimestamp(notifications);
+            sortArrayByTimestamp(notifications);
 
             let currentGroup = {};
             for (let i = 0; i < notifications.length; i++) {
@@ -269,7 +269,7 @@ export class NotificationsScreen extends React.Component {
         this._loadNotifications(this.state.user.uid, false, false);
     }
 
-    _keyExtractor = (item, index) => item.userid + item.type + item.timestamp + item.observationid;
+    _keyExtractor = (item) => item.userid + item.type + item.timestamp + item.observationid;
 
     render() {
         return (

@@ -16,7 +16,7 @@ export class UsersScreen extends React.Component {
         };
     }
 
-    _keyExtractor = (item, index) => item;
+    _keyExtractor = (item) => item;
 
     render() {
         return (

@@ -2,15 +2,14 @@ import React from 'react';
 import {FlatList, SafeAreaView, Text, View} from 'react-native';
 import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
 import {
-    _formatNumber,
-    _sortArrayByTimestamp,
+    formatNumber,
     colorMain,
     iconCog,
     iconFollow,
     iconUnfollow,
     pathFollow,
     pathUsers
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import styles from "../styles";
 import {UserComponent} from "../Components/UserComponent";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
@@ -20,6 +19,7 @@ import {currentUser, currentUserInformation} from "../App";
 import firebase from 'react-native-firebase';
 import {EmptyComponent} from "../Components/EmptyComponent";
 import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
+import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
 
 function _toggleFollowUnfollow(navigation) {
     const isFollowing = navigation.getParam('isFollowing');
@@ -214,7 +214,7 @@ export class ProfileScreen extends React.Component {
         let observations = newObservations ? Object.values(newObservations) : null;
 
         if (observations && observations.length > 0) {
-            _sortArrayByTimestamp(observations);
+            sortArrayByTimestamp(observations);
 
             if (onStartup) {
                 this.setState({observations: observations});
@@ -230,9 +230,8 @@ export class ProfileScreen extends React.Component {
     _loadUsers(type, userid, idarray, loadDepth, callback) {
         // Load all matches of userid in combination of type
         const ref = firebase.database().ref(pathFollow).orderByChild(type).equalTo(userid).limitToFirst(loadDepth);
-        ref.once(
-            'value',
-            (dataSnapshot) => {
+        ref.once('value')
+            .then((dataSnapshot) => {
                 console.log('Successfully loaded ' + type + 's');
                 if (dataSnapshot.numChildren() !== idarray.size) {
                     // Loop through results to get all users
@@ -257,8 +256,7 @@ export class ProfileScreen extends React.Component {
                         }
                     });
                 }
-            },
-            (error) => {
+            }).catch((error) => {
                 console.log('Error while retrieving ' + type + ' of ' + userid);
                 console.log(error);
             }
@@ -281,7 +279,7 @@ export class ProfileScreen extends React.Component {
         this.setState({user: currentUserInformation});
     }
 
-    _observationKeyExtractor = (item, index) => item.observationid;
+    _observationKeyExtractor = (item) => item.observationid;
     _followingKeyExtractor = (item, index) => item.username || item + index;
 
     render() {
@@ -307,14 +305,14 @@ export class ProfileScreen extends React.Component {
                         </View>
                         <View name={'segmentedcontrolwrapper'}
                               style={[{flexDirection: 'row'}, styles.containerPadding]}>
-                            <ProfileSegmentedControlItem name={'photos'} text={strings.photos} number={_formatNumber(this.state.user.observations)}
+                            <ProfileSegmentedControlItem name={'photos'} text={strings.photos} number={formatNumber(this.state.user.observations)}
                                                          isSelected={this.state.selectedIndex === 0}
                                                          action={this._onPressPhotos}/>
                             <ProfileSegmentedControlItem name={'followers'} text={strings.followers}
-                                                         isSelected={this.state.selectedIndex === 1} number={_formatNumber(this.state.user.followers)}
+                                                         isSelected={this.state.selectedIndex === 1} number={formatNumber(this.state.user.followers)}
                                                          action={this._onPressFollowers}/>
                             <ProfileSegmentedControlItem name={'following'} text={strings.following}
-                                                         isSelected={this.state.selectedIndex === 2} number={_formatNumber(this.state.user.followees)}
+                                                         isSelected={this.state.selectedIndex === 2} number={formatNumber(this.state.user.followees)}
                                                          action={this._onPressFollowing}/>
                         </View>
                     </View>

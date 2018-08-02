@@ -19,7 +19,7 @@ import {
     iconSizeStandard,
     pathUsers,
     tastemateFont
-} from './constants/Constants';
+} from './Constants/Constants';
 import {Alert, NetInfo, Platform, StatusBar, StyleSheet} from "react-native";
 import {SettingsScreen} from "./Screens/Settings";
 import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
@@ -28,7 +28,7 @@ import {MapScreen} from "./Screens/Map";
 import firebase from 'react-native-firebase';
 import {CommentsScreen} from "./Screens/Comments";
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
-import {mapboxApiKey} from "./constants/ApiKeys";
+import {mapboxApiKey} from "./Constants/ApiKeys";
 import {UsersScreen} from "./Screens/Users";
 
 StatusBar.setHidden(false);

@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "../styles";
-import {iconCheckboxChecked, iconCheckboxUnchecked, iconSizeSmall} from "../constants/Constants";
+import {iconCheckboxChecked, iconCheckboxUnchecked, iconSizeSmall} from "../Constants/Constants";
 import {Text, TouchableOpacity, View} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 

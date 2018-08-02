@@ -3,6 +3,7 @@ import {FlatList, Text, View} from "react-native";
 import styles from "../styles";
 import {ObservationExploreComponent} from "./ObservationExploreComponent";
 import {FURTHER_AWAY, NO_LOCATION} from "../Screens/EatingOutList";
+import strings from "../strings";
 
 export class EatingOutListComponent extends React.Component {
     constructor(props) {

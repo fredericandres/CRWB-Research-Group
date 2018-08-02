@@ -13,8 +13,7 @@ import {
 import strings from "../strings";
 import styles from "../styles";
 import {
-    _formatUsername,
-    _handleAuthError,
+    formatUsername,
     colorAccent,
     iconEmail,
     iconLocation,
@@ -23,10 +22,11 @@ import {
     maxUsernameLength,
     pathUsers,
     tastemateFont
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import firebase from 'react-native-firebase';
 import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
+import {handleAuthError} from "../Helpers/FirebaseHelper";
 
 export class SignUpLogInScreen extends React.Component {
     static navigationOptions = {
@@ -106,9 +106,8 @@ export class SignUpLogInScreen extends React.Component {
 
                     console.log('Checking if username already exists...');
                     const refUsername = firebase.database().ref(pathUsers).orderByChild('username').equalTo(this.state.username);
-                    refUsername.once(
-                        'value',
-                        (dataSnapshot) => {
+                    refUsername.once('value')
+                        .then((dataSnapshot) => {
                             console.log('Username successfully checked');
                             if (dataSnapshot.toJSON()) {
                                 // Display error message
@@ -132,7 +131,7 @@ export class SignUpLogInScreen extends React.Component {
                                             console.log('Error during user information transmission.');
                                             console.log(error);
                                             _stopActivityIndicator();
-                                            _handleAuthError(error, _onAuthError);
+                                            _onAuthError(handleAuthError(error));
                                         } else {
                                             _stopActivityIndicator();
                                             console.log('Successfully added user information to DB.');
@@ -142,11 +141,10 @@ export class SignUpLogInScreen extends React.Component {
                                     console.log('Error during signup.');
                                     console.log(error);
                                     _stopActivityIndicator();
-                                    _handleAuthError(error, _onAuthError);
+                                    _onAuthError(handleAuthError(error));
                                 });
                             }
-                        },
-                        (error) => {
+                        }).catch((error) => {
                             _stopActivityIndicator();
                             console.log('Error while checking if username exists');
                             console.log(error);
@@ -163,7 +161,7 @@ export class SignUpLogInScreen extends React.Component {
                     console.log('Error during login.');
                     console.log(error);
                     _stopActivityIndicator();
-                    _handleAuthError(error, _onAuthError);
+                    _onAuthError(handleAuthError(error));
                 });
             }
         }
@@ -191,7 +189,7 @@ export class SignUpLogInScreen extends React.Component {
                 console.log('Error during signup.');
                 console.log(error);
                 this._stopActivityIndicator();
-                this._handleAuthError(error, this._onAuthError);
+                this._onAuthError(handleAuthError(error));
             });
         }
     }
@@ -294,7 +292,7 @@ export class SignUpLogInScreen extends React.Component {
                                 hidden={!this.state.signUpActive}
                                 placeholder={strings.username}
                                 value={this.state.username}
-                                onChangeText={(text) => this.setState({username: _formatUsername(text)})}
+                                onChangeText={(text) => this.setState({username: formatUsername(text)})}
                                 icon={iconUser}
                                 keyboardType={'default'}
                                 returnKeyType={'next'}

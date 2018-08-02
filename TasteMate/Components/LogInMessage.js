@@ -2,7 +2,7 @@ import React from "react";
 import {Text, View} from "react-native";
 import styles from "../styles";
 import strings, {appName} from "../strings";
-import {iconArrowUpLeft, iconSizeStandard} from "../constants/Constants";
+import {iconArrowUpLeft, iconSizeStandard} from "../Constants/Constants";
 import Feather from "react-native-vector-icons/Feather";
 
 export class LogInMessage extends React.Component {

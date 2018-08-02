@@ -1,7 +1,7 @@
 import React from "react";
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
 import {Dimensions, Text, View} from "react-native";
-import {colorContrast} from "../constants/Constants";
+import {colorContrast} from "../Constants/Constants";
 import styles from "../styles";
 
 export class MapMarkerComponent extends React.Component {

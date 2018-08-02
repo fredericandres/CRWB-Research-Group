@@ -6,9 +6,8 @@ import styles from "../styles";
 import strings, {appName} from "../strings";
 import firebase from 'react-native-firebase';
 import {
-    _formatNumberWithString,
-    _navigateToScreen,
-    _sortArrayByTimestamp,
+    formatNumberWithString,
+    navigateToScreen,
     ActivityEnum,
     colorBackground,
     colorContrast,
@@ -20,7 +19,7 @@ import {
     pathObservations,
     pathUsers,
     ReactNavigationTabBarHeight
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import {LogInMessage} from "../Components/LogInMessage";
 import {EmptyComponent} from "../Components/EmptyComponent";
 import RNSafeAreaGetter from "../SafeAreaGetter";
@@ -29,6 +28,7 @@ import {ObservationExploreComponent} from "../Components/ObservationExploreCompo
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import {_checkInternetConnection, currentUser} from "../App";
 import {_generateCombinedKey} from "./Profile";
+import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
 
 const OBS_LOAD_DEPTH = 4;
 const initialState ={
@@ -89,6 +89,8 @@ export class HomeScreen extends React.Component {
         this.bottomOfList = false;
     }
 
+    /************* LIFECYCLE *************/
+
     componentDidMount() {
         this.props.navigation.setParams({
             onProfilePressed: (() => this._onNavBarButtonPressed(true)),
@@ -102,7 +104,7 @@ export class HomeScreen extends React.Component {
             this.setState(resetState, () => {
                 if (!user) {
                     // Open SingUpLogIn screen if no account associated (not even anonymous)
-                    _navigateToScreen('SignUpLogIn', this.props.navigation);
+                    navigateToScreen('SignUpLogIn', this.props.navigation);
                 } else {
                     this._checkInternetConnectionAndStart(user);
                 }
@@ -112,26 +114,6 @@ export class HomeScreen extends React.Component {
         if (Platform.OS === 'ios') {
             this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
             this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
-        }
-    }
-
-    _checkInternetConnectionAndStart(user) {
-        _checkInternetConnection(() => this._loadObservationFeed((user && user.uid) || (currentUser && currentUser.uid), true, false), () => this._setEmptyMessage(strings.noInternet, true));
-    }
-
-    _onNavBarButtonPressed(isProfile) {
-        if (this.state.user && !this.state.user.isAnonymous) {
-            if (isProfile) {
-                let params = {};
-                params.myProfile = true;
-                _navigateToScreen('MyProfile', this.props.navigation, params);
-            } else {
-                let params = {};
-                params.onCreate = this._onCreate;
-                _navigateToScreen('CreateObservation', this.props.navigation, params);
-            }
-        } else {
-            _navigateToScreen('SignUpLogIn', this.props.navigation);
         }
     }
 
@@ -147,6 +129,28 @@ export class HomeScreen extends React.Component {
         }
     }
 
+    _onNavBarButtonPressed(isProfile) {
+        if (this.state.user && !this.state.user.isAnonymous) {
+            if (isProfile) {
+                let params = {};
+                params.myProfile = true;
+                navigateToScreen('MyProfile', this.props.navigation, params);
+            } else {
+                let params = {};
+                params.onCreate = this._onCreate;
+                navigateToScreen('CreateObservation', this.props.navigation, params);
+            }
+        } else {
+            navigateToScreen('SignUpLogIn', this.props.navigation);
+        }
+    }
+
+    /************* OBSERVATIONS *************/
+
+    _checkInternetConnectionAndStart(user) {
+        _checkInternetConnection(() => this._loadObservationFeed((user && user.uid) || (currentUser && currentUser.uid), true, false), () => this._setEmptyMessage(strings.noInternet, true));
+    }
+
     _loadObservationFeed(userid, onStartup, isRefreshing) {
         const _loadObservations = this._loadObservations;
         this._setEmptyMessage(strings.loading, false);
@@ -156,9 +160,8 @@ export class HomeScreen extends React.Component {
         } else {
             console.log('Loading people the current user follows...');
             const refFollowees = firebase.database().ref(pathFollow).orderByChild('follower').equalTo(userid);
-            refFollowees.once(
-                'value',
-                (dataSnapshot) => {
+            refFollowees.once('value')
+                .then((dataSnapshot) => {
                     console.log('Followees successfully retrieved');
                     let followees = [userid];
                     dataSnapshot.forEach(function (childSnapshot) {
@@ -166,8 +169,7 @@ export class HomeScreen extends React.Component {
                     });
                     this.followees = followees;
                     _loadObservations(onStartup, isRefreshing);
-                },
-                (error) => {
+                }).catch((error) => {
                     console.log('Error while retrieving followees');
                     this._handleError(error);
                 }
@@ -206,22 +208,9 @@ export class HomeScreen extends React.Component {
         }
     }
 
-    _handleError(error){
-        console.log(error);
-        this._setEmptyMessage(strings.errorOccurred, true);
-        this.setState({isRefreshing: false});
-    }
-
-    _setEmptyMessage(message, cannotLoad) {
-        this.setState({
-            emptyListMessage: message,
-            cannotLoad: cannotLoad
-        });
-    }
-
     _addToObservationState(observations, onStartup, isRefreshing) {
         if (observations && observations.length > 0) {
-            _sortArrayByTimestamp(observations);
+            sortArrayByTimestamp(observations);
 
             if (onStartup || isRefreshing) {
                 this.setState({observations: observations});
@@ -237,6 +226,19 @@ export class HomeScreen extends React.Component {
         });
     }
 
+    _handleError(error){
+        console.log(error);
+        this._setEmptyMessage(strings.errorOccurred, true);
+        this.setState({isRefreshing: false});
+    }
+
+    _setEmptyMessage(message, cannotLoad) {
+        this.setState({
+            emptyListMessage: message,
+            cannotLoad: cannotLoad
+        });
+    }
+
     _onRefresh() {
         console.log('Refreshing...');
         this.setState({isRefreshing: true});
@@ -247,8 +249,6 @@ export class HomeScreen extends React.Component {
         console.log('Loading more observations...');
         this._loadObservationFeed(this.state.user.uid, false, false);
     }
-
-    _keyExtractor = (item, index) => this.state.observations[index].observationid;
 
     _onDelete(observation) {
         let array = [...this.state.observations];
@@ -268,6 +268,8 @@ export class HomeScreen extends React.Component {
     _onCreate(newObs) {
         this.setState((prevState) => ({observations: [newObs].concat(prevState.observations)}));
     }
+
+    _keyExtractor = (item, index) => this.state.observations[index].observationid;
 
     _scrollToItem(index) {
         if (index < this.state.observations.length - 1) {
@@ -299,12 +301,14 @@ export class HomeScreen extends React.Component {
         }
     }
 
-    _keyboardDidHide(e) {
+    _keyboardDidHide() {
         if (this.bottomOfList) {
             this.setState({keyboardHeight: 0});
             this.bottomOfList = false;
         }
     }
+
+    /************* FEED EMPTY *************/
 
     _loadFeedEmptyInfo() {
         this.setState({
@@ -364,7 +368,7 @@ export class HomeScreen extends React.Component {
     _addObservationsToState(userObservations, userid) {
         if (userObservations) {
             let observations = this.state.feedEmptyObservations;
-            _sortArrayByTimestamp(userObservations);
+            sortArrayByTimestamp(userObservations);
             observations[userid] = userObservations;
             this.setState({feedEmptyObservations: observations});
         }
@@ -423,7 +427,7 @@ export class HomeScreen extends React.Component {
     _onPressProfile(user) {
         let params = {};
         params.user = user;
-        _navigateToScreen('Profile', this.props.navigation, params);
+        navigateToScreen('Profile', this.props.navigation, params);
     }
 
     _feedEmptyUserKeyExtractor = (item, index) => item.userid || item + index;
@@ -476,7 +480,7 @@ export class HomeScreen extends React.Component {
                                                     <TouchableOpacity onPress={() => this._onPressProfile(selectedUser)}>
                                                         <Text style={[styles.textStandardBold]}>{(selectedUser && selectedUser.username) || strings.unknownUsername}</Text>
                                                     </TouchableOpacity>
-                                                    <Text style={[styles.textSmall]}>{(selectedUser && selectedUser.location) || strings.unknownLocation} • {_formatNumberWithString(selectedUser.followers, ActivityEnum.FOLLOW)}</Text>
+                                                    <Text style={[styles.textSmall]}>{(selectedUser && selectedUser.location) || strings.unknownLocation} • {formatNumberWithString(selectedUser.followers, ActivityEnum.FOLLOW)}</Text>
                                                 </View>
                                                 {
                                                     selectedUser.userid && selectedUser.userid !== currentUser.uid &&
@@ -496,7 +500,7 @@ export class HomeScreen extends React.Component {
                                                     data={selectedObservations}
                                                     style={styles.containerPadding}
                                                     keyExtractor={this._feedEmptyObsKeyExtractor}
-                                                    renderItem={({item, index}) =>
+                                                    renderItem={({item}) =>
                                                         <ObservationExploreComponent
                                                             observation={item} {...this.props}/>
                                                     }

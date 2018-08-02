@@ -5,7 +5,7 @@ import styles from "../styles";
 import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
 import strings from "../strings";
 import {SearchBar} from "../Components/SearchBar";
-import {_navigateToScreen, colorMain} from "../constants/Constants";
+import {navigateToScreen, colorMain} from "../Constants/Constants";
 import firebase from 'react-native-firebase';
 import {EmptyComponent} from "../Components/EmptyComponent";
 import {_checkInternetConnection} from "../App";
@@ -88,12 +88,12 @@ export class SearchExploreScreen extends React.Component {
             if (isProfile) {
                 let params = {};
                 params.myProfile = true;
-                _navigateToScreen('MyProfile', this.props.navigation, params);
+                navigateToScreen('MyProfile', this.props.navigation, params);
             } else {
-                _navigateToScreen('CreateObservation', this.props.navigation);
+                navigateToScreen('CreateObservation', this.props.navigation);
             }
         } else {
-            _navigateToScreen('SignUpLogIn', this.props.navigation);
+            navigateToScreen('SignUpLogIn', this.props.navigation);
         }
     }
 
@@ -188,7 +188,7 @@ export class SearchExploreScreen extends React.Component {
         this.setState((prevState) => ({searchTextSearched: prevState.searchText}), () => this._loadObservations(true, true));
     }
 
-    _keyExtractor = (item, index) => item.observationid;
+    _keyExtractor = (item) => item.observationid;
 
     render() {
         return (

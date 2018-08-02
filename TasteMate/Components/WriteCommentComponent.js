@@ -8,7 +8,7 @@ import {
     iconSend,
     iconSizeSmall,
     pathComments
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import strings from "../strings";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {_checkInternetConnection, currentUser} from "../App";

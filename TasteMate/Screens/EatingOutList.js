@@ -6,8 +6,7 @@ import {EatingOutListComponent} from "../Components/EatingOutListComponent";
 import Permissions from "react-native-permissions";
 import firebase from 'react-native-firebase';
 import {
-    _navigateToScreen,
-    _sortArrayByTimestamp,
+    navigateToScreen,
     colorAccent,
     colorBackground,
     iconList,
@@ -15,13 +14,14 @@ import {
     iconSizeStandard,
     pathActions,
     pathObservations
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import {LogInMessage} from "../Components/LogInMessage";
 import {MapMarkerComponent} from "../Components/MapMarkerComponent";
 import {EmptyComponent} from "../Components/EmptyComponent";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
 import {_checkInternetConnection} from "../App";
+import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
 
 export const NO_LOCATION = 'noLocation';
 export const FURTHER_AWAY = 'furtherAway';
@@ -95,12 +95,12 @@ export class EatingOutListScreen extends React.Component {
             if (isProfile) {
                 let params = {};
                 params.myProfile = true;
-                _navigateToScreen('MyProfile', this.props.navigation, params);
+                navigateToScreen('MyProfile', this.props.navigation, params);
             } else {
-                _navigateToScreen('CreateObservation', this.props.navigation);
+                navigateToScreen('CreateObservation', this.props.navigation);
             }
         } else {
-            _navigateToScreen('SignUpLogIn', this.props.navigation);
+            navigateToScreen('SignUpLogIn', this.props.navigation);
         }
     }
 
@@ -208,7 +208,7 @@ export class EatingOutListScreen extends React.Component {
                             }
                         }
                     } else {
-                        _sortArrayByTimestamp(observations);
+                        sortArrayByTimestamp(observations);
                         observationsList.push({distance: NO_LOCATION, observations:observations});
                     }
 
@@ -272,7 +272,7 @@ export class EatingOutListScreen extends React.Component {
         this.setState({selectedIndex: ScreensEnum.MAP});
     }
 
-    _keyExtractor = (item, index) => item.distance.toString();
+    _keyExtractor = (item) => item.distance.toString();
 
     render() {
         let location = this.state.userlocation;

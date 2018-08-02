@@ -1,5 +1,5 @@
 import LocalizedStrings from 'react-native-localization';
-import {_getLanguageCode} from './constants/Constants';
+import {getLanguageCode} from './Constants/Constants';
 import moment from "moment";
 import "moment/locale/ja";
 import "moment/locale/fr";
@@ -7,7 +7,7 @@ import "moment/locale/pt";
 import "moment/locale/de";
 import "moment/locale/ta";
 
-moment.locale(_getLanguageCode());
+moment.locale(getLanguageCode());
 
 // Get/change translations here: https://docs.google.com/spreadsheets/d/1JXiic2aAk2YrC53YfQs0_XKjRLzOpmVa6DNIK7LdaWg/edit?usp=sharing
 

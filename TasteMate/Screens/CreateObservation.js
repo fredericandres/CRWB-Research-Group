@@ -16,12 +16,11 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import {NavBarCloseButton} from "../Components/NavBarButton";
-import Observation from "../Data/Observation";
-import strings from "../strings";
-import styles, {smallFontSize, standardFontSize} from "../styles";
+import {NavBarCloseButton} from '../Components/NavBarButton';
+import Observation from '../Data/Observation';
+import strings from '../strings';
+import styles, {smallFontSize, standardFontSize} from '../styles';
 import {
-    _addPictureToStorage,
     AsyncStorageKeyObservations,
     colorAccent,
     colorBackground,
@@ -39,27 +38,28 @@ import {
     iconPrice,
     iconSizeSmall,
     iconSizeStandard,
-    pathObservations,
-} from "../constants/Constants";
-import {mapboxApiKey} from "../constants/ApiKeys";
-import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
-import {TextInputComponent} from "../Components/TextInputComponent";
-import {allCurrencies} from "../constants/Currencies";
-import {SearchBar} from "../Components/SearchBar";
-import {SettingsSwitchComponent} from "../Components/SettingsSwitchComponent";
-import {allVocabulary} from "../constants/Vocabulary";
+    pathObservations
+} from '../Constants/Constants';
+import {mapboxApiKey} from '../Constants/ApiKeys';
+import {ObservationExploreComponent} from '../Components/ObservationExploreComponent';
+import {TextInputComponent} from '../Components/TextInputComponent';
+import {allCurrencies} from '../Constants/Currencies';
+import {SearchBar} from '../Components/SearchBar';
+import {SettingsSwitchComponent} from '../Components/SettingsSwitchComponent';
+import {allVocabulary} from '../Constants/Vocabulary';
 import RNFetchBlob from 'react-native-fetch-blob';
 import XMLParser from 'react-xml-parser';
 import firebase from 'react-native-firebase';
-import {_checkInternetConnection, currentUser} from "../App";
-import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
-import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
-import {EmptyComponent} from "../Components/EmptyComponent";
+import {_checkInternetConnection, currentUser} from '../App';
+import {CameraCameraRollComponent} from '../Components/CameraCameraRollComponent';
+import {ActivityIndicatorComponent} from '../Components/ActivityIndicatorComponent';
+import {EmptyComponent} from '../Components/EmptyComponent';
 import {Dropdown} from 'react-native-material-dropdown';
-import {allDietaryRestrictions} from "../constants/DietaryRestrictions";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import RNSafeAreaGetter from "../SafeAreaGetter";
+import {allDietaryRestrictions} from '../Constants/DietaryRestrictions';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import RNSafeAreaGetter from '../SafeAreaGetter';
+import {addPictureToStorage} from '../Helpers/FirebaseHelper';
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 // let allVocabs = null;
@@ -278,7 +278,7 @@ export class CreateObservationScreen extends React.Component {
             observationRef.set(observation)
                 .then(() => {
                     console.log('Successfully added observation to DB.');
-                    _addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef, ((url) => this._closeWindow(observation, url)), this._setActivityIndicatorText, this._stopActivityIndicator);
+                    addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef, ((url) => this._closeWindow(observation, url)), this._setActivityIndicatorText, this._stopActivityIndicator);
                 }).catch((error) => {
                     console.log('Error during observation transmission.');
                     this._stopActivityIndicator();
@@ -527,7 +527,7 @@ export class CreateObservationScreen extends React.Component {
         this._setLocationText();
     }
 
-    _locationResultKeyExtractor = (item, index) => item.id;
+    _locationResultKeyExtractor = (item) => item.id;
 
 
     _setLocationText(text) {
@@ -545,13 +545,13 @@ export class CreateObservationScreen extends React.Component {
         this._updateObservationState(obs);
     }
 
-    _onUpdateCurrency(currency, index) {
+    _onUpdateCurrency(currency) {
         let obs = this.state.observation;
         obs.currency = currency;
         this._updateObservationState(obs);
     }
 
-    _onUpdateDietaryRestrictions(dietaryRestriction, index) {
+    _onUpdateDietaryRestrictions(dietaryRestriction) {
         let obs = this.state.observation;
         obs.dietaryRestriction = dietaryRestriction;
         this._updateObservationState(obs);
@@ -590,7 +590,7 @@ export class CreateObservationScreen extends React.Component {
         });
     }
 
-    _keyboardDidHide(e) {
+    _keyboardDidHide() {
         this.setState({keyboardHeight: 0});
     }
 
@@ -668,7 +668,7 @@ export class CreateObservationScreen extends React.Component {
         this.setState({loadingIndicatorText: text});
     }
 
-    onLayout(e) {
+    onLayout() {
         const smallEmojiSize = (Dimensions.get('window').width - 4 * 6)/(Object.keys(EmojiEnum).length + 1);
         this.setState({
             smallEmojiSize: smallEmojiSize,
@@ -763,8 +763,8 @@ export class CreateObservationScreen extends React.Component {
                                         label={strings.dietaryInfo}
                                         labelHeight={15}
                                         data={allDietaryRestrictions && Object.values(allDietaryRestrictions)}
-                                        labelExtractor={(item, index) => item.value.name}
-                                        valueExtractor={(item, index) => item.key}
+                                        labelExtractor={(item) => item.value.name}
+                                        valueExtractor={(item) => item.key}
                                         onChangeText={this._onUpdateDietaryRestrictions.bind(this)}
                                         value={allDietaryRestrictions[this.state.observation.dietaryRestriction].value.name}
                                         inputContainerStyle={{borderBottomColor: 'transparent', borderWidth:0}}
@@ -807,8 +807,8 @@ export class CreateObservationScreen extends React.Component {
                                         label={strings.currency}
                                         labelHeight={15}
                                         data={allCurrencies && Object.values(allCurrencies)}
-                                        labelExtractor={(item, index) => item.symbol + ' - ' + item.name}
-                                        valueExtractor={(item, index) => item.code}
+                                        labelExtractor={(item) => item.symbol + ' - ' + item.name}
+                                        valueExtractor={(item) => item.code}
                                         onChangeText={this._onUpdateCurrency}
                                         value={this.state.observation.currency || ' '}
                                         inputContainerStyle={{borderBottomColor: 'transparent', borderWidth:0}}
@@ -857,7 +857,7 @@ export class CreateObservationScreen extends React.Component {
                                 style={[styles.containerPadding]}
                                 data={Object.keys(this.state.observation.vocabulary)}
                                 numColumns={3}
-                                keyExtractor={(item, index) =>  'selected_' + item}
+                                keyExtractor={(item) =>  'selected_' + item}
                                 removeClippedSubviews={true}
                                 ListHeaderComponent={() =>
                                     <Text style={[styles.containerPadding, styles.textTitleBoldDark]}>{strings.selected}</Text>
@@ -880,7 +880,7 @@ export class CreateObservationScreen extends React.Component {
                                 style={[styles.containerPadding, {flex: 1}]}
                                 data={this.state.searchedVocabSorted}
                                 numColumns={3}
-                                keyExtracor={(item, index) => item.key}
+                                keyExtracor={(item) => item.key}
                                 removeClippedSubviews={true}
                                 ListEmptyComponent={() => <EmptyComponent message={strings.noMatchingTerms}/>}
                                 ListHeaderComponent={() =>

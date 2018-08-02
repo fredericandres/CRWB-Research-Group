@@ -4,9 +4,7 @@ import {NavBarLogoutButton} from "../Components/NavBarButton";
 import strings, {appName} from "../strings";
 import {TextInputComponent} from "../Components/TextInputComponent";
 import {
-    _addPictureToStorage,
-    _formatUsername,
-    _handleAuthError,
+    formatUsername,
     colorAccent,
     colorBackground,
     colorContrast,
@@ -15,7 +13,7 @@ import {
     iconUser,
     maxUsernameLength,
     pathUsers
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import styles from "../styles";
 import {SettingsSwitchComponent} from "../Components/SettingsSwitchComponent";
 import {currentUser, currentUserInformation} from "../App";
@@ -26,6 +24,7 @@ import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailCompo
 import {ImageCacheManager} from 'react-native-cached-image'
 import {icons} from "../Attributions";
 import RNSafeAreaGetter from "../SafeAreaGetter";
+import {addPictureToStorage, handleAuthError} from "../Helpers/FirebaseHelper";
 
 const ICM = new ImageCacheManager();
 
@@ -162,7 +161,7 @@ export class SettingsScreen extends React.Component {
                             if (dataSnapshot.toJSON()) {
                                 // Display error message
                                 this._stopActivityIndicator();
-                                _handleAuthError(strings.formatString(strings.errorMessageUsernameAlreadyInUse, appName), this._showErrorPopup);
+                                SettingsScreen._showErrorPopup(strings.formatString(strings.errorMessageUsernameAlreadyInUse, appName));
                             } else {
                                 this._updateUserInfoInDatabase(userInfoChange);
                             }
@@ -181,14 +180,14 @@ export class SettingsScreen extends React.Component {
             }
 
         }
-        this._showErrorPopup(errorMessage);
+        SettingsScreen._showErrorPopup(errorMessage);
     }
 
     _uploadNewPicture() {
         if (this.state.newImageUrl) {
             currentUserInformation.imageUrl = this.state.newImageUrl;
             const userRef = firebase.database().ref(pathUsers).child(currentUser.uid);
-            _addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._clearImageCacheAndClose, this._setActivityIndicatorText, this._stopActivityIndicator);
+            addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._clearImageCacheAndClose, this._setActivityIndicatorText, this._stopActivityIndicator);
         } else {
             this._closeSettings();
         }
@@ -212,7 +211,7 @@ export class SettingsScreen extends React.Component {
         this.props.navigation.goBack();
     }
 
-    _showErrorPopup(message) {
+    static _showErrorPopup(message) {
         if (message) {
             Alert.alert(strings.missingValuesTitle, message,
                 [
@@ -239,7 +238,7 @@ export class SettingsScreen extends React.Component {
                 console.log('Error during user information update transmission.');
                 this._stopActivityIndicator();
                 console.log(error);
-                _handleAuthError(error, this._showErrorPopup);
+                SettingsScreen._showErrorPopup(handleAuthError(error));
             }
         );
     }
@@ -255,7 +254,7 @@ export class SettingsScreen extends React.Component {
         });
     }
 
-    _onPressViewAttributions () {
+    static _onPressViewAttributions () {
         let message = '';
         for (let i = 0; i < icons.length; i++) {
             message += icons[i] + '\n';
@@ -295,7 +294,7 @@ export class SettingsScreen extends React.Component {
         });
     }
 
-    _keyboardDidHide(e) {
+    _keyboardDidHide() {
         this.setState({keyboardHeight: 0});
     }
 
@@ -325,7 +324,7 @@ export class SettingsScreen extends React.Component {
                                 fontawesome={true}
                                 placeholder={strings.username}
                                 value={this.state.username}
-                                onChangeText={(text) => this.setState({username: _formatUsername(text)})}
+                                onChangeText={(text) => this.setState({username: formatUsername(text)})}
                                 icon={iconUser}
                                 keyboardType={'default'}
                                 maxLength={maxUsernameLength}
@@ -379,7 +378,7 @@ export class SettingsScreen extends React.Component {
                             <Button name={'saveChangesButton'} onPress={this._onPressSave} title={strings.saveChanges} color={colorAccent}/>
                         </View>
                         <View name={'viewAttributions'} style={[styles.containerPadding, {flex: 1}]}>
-                            <Button name={'saveChangesButton'} onPress={this._onPressViewAttributions} title={strings.viewAttributions} color={colorContrast}/>
+                            <Button name={'saveChangesButton'} onPress={SettingsScreen._onPressViewAttributions} title={strings.viewAttributions} color={colorContrast}/>
                         </View>
                         <View style={{height: this.state.keyboardHeight}}/>
                     </ScrollView>

@@ -1,7 +1,7 @@
 import React from "react";
 import {Text, TouchableOpacity, View} from "react-native";
 import styles from "../styles";
-import {_navigateToScreen} from '../constants/Constants';
+import {navigateToScreen} from '../Constants/Constants';
 import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
 
 export class UserComponent extends React.Component {
@@ -14,7 +14,7 @@ export class UserComponent extends React.Component {
     _onPressUser () {
         let params = {};
         params.user = this.user;
-        _navigateToScreen('Profile', this.props.navigation, params);
+        navigateToScreen('Profile', this.props.navigation, params);
     }
 
     render() {

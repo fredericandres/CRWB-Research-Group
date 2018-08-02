@@ -3,7 +3,7 @@ import styles from "../styles";
 import {Animated, Text, TouchableOpacity, View} from "react-native";
 import TimeAgo from 'react-native-timeago'
 import {
-    _navigateToScreen,
+    navigateToScreen,
     ActivityEnum,
     colorAccent,
     colorBackground,
@@ -17,7 +17,7 @@ import {
     iconLike,
     iconShare,
     iconSizeTiny
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import strings from "../strings";
 import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
 import {CachedImage} from "react-native-cached-image";
@@ -53,12 +53,12 @@ export class NotificationComponent extends React.Component {
         let params = {};
         if (this.notification.users.length === 1) {
             params.user = this.users[this.notification.userid];
-            _navigateToScreen('Profile', this.props.navigation, params);
+            navigateToScreen('Profile', this.props.navigation, params);
         } else {
             params.allUsers = this.users;
             params.users = this.notification.users;
             params.type = this.notification.type;
-            _navigateToScreen('Users', this.props.navigation, params);
+            navigateToScreen('Users', this.props.navigation, params);
         }
     }
 

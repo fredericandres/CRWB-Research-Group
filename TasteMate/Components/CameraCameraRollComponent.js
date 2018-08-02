@@ -1,7 +1,7 @@
-import React from "react";
-import {Alert, CameraRoll, FlatList, Image, Platform, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
-import styles from "../styles";
-import strings, {appName} from "../strings";
+import React from 'react';
+import {Alert, CameraRoll, FlatList, Image, Platform, SafeAreaView, TouchableOpacity, View} from 'react-native';
+import styles from '../styles';
+import strings, {appName} from '../strings';
 import {
     colorContrast,
     colorMain,
@@ -14,15 +14,15 @@ import {
     iconFlashOn,
     iconSizeLarge,
     iconSizeStandard
-} from "../constants/Constants";
-import Permissions from 'react-native-permissions'
+} from '../Constants/Constants';
+import Permissions from 'react-native-permissions';
 import {RNCamera} from 'react-native-camera';
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {EmptyComponent} from "./EmptyComponent";
-import {ObservationExploreComponent} from "./ObservationExploreComponent";
-import Entypo from "react-native-vector-icons/Entypo";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {EmptyComponent} from './EmptyComponent';
+import {ObservationExploreComponent} from './ObservationExploreComponent';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 export const SourceEnum = Object.freeze({CAMERA:1, GALLERY:2, DRAFTS:3});
 
@@ -120,11 +120,11 @@ export class CameraCameraRollComponent extends React.Component {
             // TODO [FEATURE]: sound/image effects
 
             console.log('Adding picture to camera roll');
-            CameraRoll.saveToCameraRoll(data.uri)
+            CameraRoll.saveToCameraRoll(data.uri, 'photo' )
                 .then((uri) => {
                     console.log('Successfully added picture to camera roll');
                     this.setState({loading: false});
-                    this.props.onImageSelectedAction(uri);
+                    this.props.onImageSelectedAction && this.props.onImageSelectedAction(uri);
                 }).catch((err) => {
                 console.log("Error while adding picture to camera roll");
                 console.log(err);
@@ -169,13 +169,15 @@ export class CameraCameraRollComponent extends React.Component {
             }
 
             CameraRoll.getPhotos(variables).then(r => {
-                this.photosPageInfo = r.page_info;
-                if (newlyLoaded) {
-                    this.setState({ photos: r.edges });
-                } else {
-                    this.setState((prevState) => {
-                        return {photos: prevState.photos.concat(r.edges)};
-                    });
+                if (r && r.edges) {
+                    this.photosPageInfo = r.page_info;
+                    if (newlyLoaded) {
+                        this.setState({ photos: r.edges });
+                    } else {
+                        this.setState((prevState) => {
+                            return {photos: prevState.photos.concat(r.edges)};
+                        });
+                    }
                 }
             }).catch((err) => {
                 console.log("Error while loading images from camera roll");
@@ -184,17 +186,17 @@ export class CameraCameraRollComponent extends React.Component {
         }
     }
 
-    _cameraRollKeyExtractor = (item, index) => item.node.image.uri;
+    _cameraRollKeyExtractor = (item) => item.node.image.uri;
 
     async _onSelectImageFromCameraRoll(photo) {
         this.setState({loading: true});
         const uri = photo.node.image.uri;
-        this.props.onImageSelectedAction(uri);
+        this.props.onImageSelectedAction && this.props.onImageSelectedAction(uri);
     }
 
     /************* DRAFTS *************/
 
-    _draftsKeyExtractor = (item, index) => item.observationid;
+    _draftsKeyExtractor = (item) => item.observationid;
 
     async _onPressDraftsButton(){
         this.setState({ activeItem: SourceEnum.DRAFTS });
@@ -271,7 +273,7 @@ export class CameraCameraRollComponent extends React.Component {
                                 style={styles.explorePadding}
                                 keyExtractor={this._draftsKeyExtractor}
                                 data={this.props.drafts}
-                                renderItem={({item}) => <ObservationExploreComponent observation={item} onLongPress={this.props.onLongPress} onPress={() => this.props.onDraftSelected(item)} source={item.image ? {uri: item.image} : null} {...this.props}/>}
+                                renderItem={({item}) => <ObservationExploreComponent observation={item} onLongPress={this.props.onLongPress} onPress={this.props.onDraftSelected && (() => this.props.onDraftSelected(item))} source={item.image ? {uri: item.image} : null} {...this.props}/>}
                                 numColumns={3}
                                 removeClippedSubviews={true}
                             />

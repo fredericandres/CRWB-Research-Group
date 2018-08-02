@@ -2,13 +2,13 @@ import React from "react";
 import styles from "../styles";
 import {Text, TouchableOpacity, View} from "react-native";
 import {
-    _navigateToScreen,
+    navigateToScreen,
     colorContrast,
     iconClose,
     iconSizeSmall,
     pathComments,
     pathUsers
-} from "../constants/Constants";
+} from "../Constants/Constants";
 import TimeAgo from "react-native-timeago";
 import firebase from 'react-native-firebase';
 import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
@@ -44,7 +44,7 @@ export class CommentComponent extends React.Component {
     _onPressProfile() {
         let params = {};
         params.user = this.state.user || this.comment.senderid;
-        _navigateToScreen('Profile', this.props.navigation, params);
+        navigateToScreen('Profile', this.props.navigation, params);
     }
 
     _onPressDeleteButton() {
@@ -60,7 +60,7 @@ export class CommentComponent extends React.Component {
                     console.log(error);
                 } else {
                     console.log('Successfully removed comment');
-                    this.props.onDelete(this.state.observation);
+                    this.props.onDelete && this.props.onDelete(this.state.observation);
                 }
             }
         );

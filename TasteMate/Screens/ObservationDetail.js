@@ -3,7 +3,7 @@ import {ObservationComponent} from "../Components/ObservationComponent";
 import {Animated, Keyboard, Platform, ScrollView, View} from "react-native";
 import strings from "../strings";
 import RNSafeAreaGetter from "../SafeAreaGetter";
-import {ReactNavigationTabBarHeight} from "../constants/Constants";
+import {ReactNavigationTabBarHeight} from "../Constants/Constants";
 
 export class ObservationDetailScreen extends React.Component {
     static navigationOptions = {
@@ -55,11 +55,11 @@ export class ObservationDetailScreen extends React.Component {
         });
     }
 
-    _keyboardDidHide(e) {
+    _keyboardDidHide() {
         this.setState({keyboardHeight: 0});
     }
 
-    onLayout(e) {
+    onLayout() {
         if (this.scrollToBottom) {
             this.scrollView.scrollToEnd({animated: true});
             this.scrollToBottom = false;

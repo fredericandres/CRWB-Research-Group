@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "../styles";
 import {Text, TouchableOpacity, View} from "react-native";
-import {colorAccent} from "../constants/Constants";
+import {colorAccent} from "../Constants/Constants";
 import strings from "../strings";
 
 export class EmptyComponent extends React.Component {

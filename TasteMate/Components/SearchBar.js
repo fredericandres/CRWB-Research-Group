@@ -1,7 +1,7 @@
 import React from "react";
 import {TextInput, TouchableOpacity, View} from "react-native";
 import styles from "../styles";
-import {colorBackground, colorContrast, colorLight, colorMain, iconSearch, iconSizeSmall} from "../constants/Constants";
+import {colorBackground, colorContrast, colorLight, colorMain, iconSearch, iconSizeSmall} from "../Constants/Constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export class SearchBar extends React.Component {
