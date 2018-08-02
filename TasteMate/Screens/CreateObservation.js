@@ -487,7 +487,7 @@ export class CreateObservationScreen extends React.Component {
         if (!this.state.observation.mypoc && fromServer) {
             obs.mypoc = mypoc;
         } else {
-            this.setState({myPocEdited:true});
+            this.setState({myPocEdited: true});
             obs.mypoccorrector = mypoc;
             // TODO [FEATURE]: Send corrected info to mypoc server
         }
@@ -741,7 +741,7 @@ export class CreateObservationScreen extends React.Component {
                                 infoText={strings.mypocExplanationText}
                                 infoButtons={myPocAlertButtons}
                                 placeholder={this.state.observation.mypoc ? strings.formatString(strings.mypocPrediction, this.state.observation.mypoc) : strings.predictionLoading}
-                                value={this.state.observation.mypoccorrector || this.state.observation.mypoc}
+                                value={this.state.myPocEdited ? this.state.observation.mypoccorrector : this.state.observation.mypoc}
                                 onChangeText={(text) => this._onUpdateMyPoC(text)}
                                 icon={iconMyPoc}
                                 keyboardType={'default'}
