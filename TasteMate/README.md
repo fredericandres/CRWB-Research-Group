@@ -1,4 +1,4 @@
-# CRWB-Research-Group
+# Tastemate
 
 Welcome to the Tastemate project. 
 

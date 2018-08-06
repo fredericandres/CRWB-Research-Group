@@ -136,36 +136,34 @@ export class EatingOutListScreen extends React.Component {
 
         this._setEmptyMessage(strings.loading, false);
 
-        // TODO [FEATURE]: Get cutleries more fficiently
+        // TODO [FEATURE]: Get cutleries more efficiently
         getActions()
             .then((dataSnapshot) => {
                 let observations = [];
                 let asyncWorkers = [];
                 dataSnapshot.forEach(function (userIdSnapshot) {
                     const userid = userIdSnapshot.key;
-                    if (userid !== curState.user.uid) {
-                        userIdSnapshot.forEach(function (obsIdSnapshot) {
-                            const obsid = obsIdSnapshot.key;
-                            const actions = obsIdSnapshot.toJSON();
-                            if (actions.cutleries && actions.cutleries[curState.user.uid]) {
-                                const promise = new Promise(function (resolve, reject) {
-                                    getObservation(userid, obsid)
-                                        .then((observation) => {
-                                            if (curState.locationPermission && curState.userlocation) {
-                                                observation.distance = _getDistanceFromLatLonInKm(observation);
-                                            }
-                                            observations.push(observation);
-                                            resolve();
-                                        }).catch((error) => {
-                                            console.log(error);
-                                            reject(error);
+                    userIdSnapshot.forEach(function (obsIdSnapshot) {
+                        const obsid = obsIdSnapshot.key;
+                        const actions = obsIdSnapshot.toJSON();
+                        if (actions.cutleries && actions.cutleries[curState.user.uid]) {
+                            const promise = new Promise(function (resolve, reject) {
+                                getObservation(userid, obsid)
+                                    .then((observation) => {
+                                        if (curState.locationPermission && curState.userlocation) {
+                                            observation.distance = _getDistanceFromLatLonInKm(observation);
                                         }
-                                    );
-                                });
-                                asyncWorkers.push(promise);
-                            }
-                        });
-                    }
+                                        observations.push(observation);
+                                        resolve();
+                                    }).catch((error) => {
+                                        console.log(error);
+                                        reject(error);
+                                    }
+                                );
+                            });
+                            asyncWorkers.push(promise);
+                        }
+                    });
                 });
 
                 Promise.all(asyncWorkers).then(() => {
