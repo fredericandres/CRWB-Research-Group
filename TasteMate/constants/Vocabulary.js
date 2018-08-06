@@ -1,11 +1,5 @@
-import {getLanguageCode, VocabEnum} from "./Constants";
-import LocalizedStrings from 'react-native-localization';
-import moment from "moment";
-import "moment/locale/ja";
-import "moment/locale/fr";
+import {VocabEnum} from './Constants';
 import strings from '../strings';
-
-moment.locale(getLanguageCode());
 
 export const allVocabulary = [
     {key: '0', type: VocabEnum.TASTE, value: strings.basil},
