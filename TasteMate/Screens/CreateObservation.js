@@ -109,9 +109,9 @@ export class CreateObservationScreen extends React.Component {
 
         allVocabSorted = allVocabulary.slice();
         allVocabSorted.sort(function (a, b) {
-            if (a.value.name < b.value.name)
+            if (a.value < b.value)
                 return -1;
-            if (a.value.name > b.value.name)
+            if (a.value > b.value)
                 return 1;
             return 0;
         });
@@ -588,7 +588,7 @@ export class CreateObservationScreen extends React.Component {
         let vocabArray = [];
         if (!allVocabSorted || (searchText && searchText !== '')) {
             allVocabSorted.forEach(function (vocabItem) {
-                if (!allVocabSorted || vocabItem.value.name.toLowerCase().indexOf(searchText) >= 0) {
+                if (!allVocabSorted || vocabItem.value.toLowerCase().indexOf(searchText) >= 0) {
                     vocabArray.push(vocabItem);
                 }
             });
@@ -745,10 +745,10 @@ export class CreateObservationScreen extends React.Component {
                                         label={strings.dietaryInfo}
                                         labelHeight={15}
                                         data={allDietaryRestrictions && Object.values(allDietaryRestrictions)}
-                                        labelExtractor={(item) => item.value.name}
+                                        labelExtractor={(item) => item.value}
                                         valueExtractor={(item) => item.key}
                                         onChangeText={this._onUpdateDietaryRestrictions.bind(this)}
-                                        value={allDietaryRestrictions[this.state.observation.dietaryRestriction].value.name}
+                                        value={allDietaryRestrictions[this.state.observation.dietaryRestriction].value}
                                         inputContainerStyle={{borderBottomColor: 'transparent', borderWidth:0}}
                                         inputContainerPadding={0}
                                     />
@@ -853,7 +853,7 @@ export class CreateObservationScreen extends React.Component {
                                         }]} onPress={() => this._onCheckBoxChanged(item)}>
                                         <SettingsSwitchComponent
                                             selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item]}
-                                            text={allVocabulary[item].value.name}/>
+                                            text={allVocabulary[item].value}/>
                                     </TouchableOpacity>
                                 }
                             />
@@ -876,7 +876,7 @@ export class CreateObservationScreen extends React.Component {
                                         }]} onPress={() => this._onCheckBoxChanged(item.key)}>
                                         <SettingsSwitchComponent
                                             selected={this.state.observation.vocabulary && this.state.observation.vocabulary[item.key]}
-                                            text={item.value.name}/>
+                                            text={item.value}/>
                                     </TouchableOpacity>
                                 }
                             />
