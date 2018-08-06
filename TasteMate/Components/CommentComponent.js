@@ -1,19 +1,12 @@
-import React from "react";
-import styles from "../styles";
-import {Text, TouchableOpacity, View} from "react-native";
-import {
-    navigateToScreen,
-    colorContrast,
-    iconClose,
-    iconSizeSmall,
-    pathComments,
-    pathUsers
-} from "../Constants/Constants";
-import TimeAgo from "react-native-timeago";
-import firebase from 'react-native-firebase';
-import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
-import {currentUser} from "../App";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import React from 'react';
+import styles from '../styles';
+import {Text, TouchableOpacity, View} from 'react-native';
+import {colorContrast, iconClose, iconSizeSmall, navigateToScreen} from '../Constants/Constants';
+import TimeAgo from 'react-native-timeago';
+import {UserImageThumbnailComponent} from './UserImageThumbnailComponent';
+import {currentUser} from '../App';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {getUser, removeComment} from '../Helpers/FirebaseHelper';
 
 export class CommentComponent extends React.Component {
     constructor(props) {
@@ -25,18 +18,11 @@ export class CommentComponent extends React.Component {
             user: {},
         };
 
-        console.log('Loading comment writer info...');
-        const refCreator = firebase.database().ref(pathUsers).child(this.comment.senderid);
-        refCreator.once(
-            'value',
-            (dataSnapshot) => {
-                console.log('Received comment writer.');
-                const creator = dataSnapshot.toJSON();
-                this.setState({user: creator});
-            },
-            (error) => {
-                console.error('Error while retrieving creator info');
-                console.error(error);
+        getUser(this.comment.senderid)
+            .then((user) => {
+                this.setState({user: user});
+            }).catch((error) => {
+                console.log(error);
             }
         );
     }
@@ -52,16 +38,11 @@ export class CommentComponent extends React.Component {
         const obsid = this.props.observation.observationid;
         const commentid = this.comment.id;
 
-        console.log('Removing comment...');
-        const ref = firebase.database().ref(pathComments).child(userid).child(obsid).child(commentid);
-        ref.remove(
-            (error) => {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log('Successfully removed comment');
-                    this.props.onDelete && this.props.onDelete(this.state.observation);
-                }
+        removeComment(userid, obsid, commentid)
+            .then(() => {
+                this.props.onDelete && this.props.onDelete(this.state.observation);
+            }).catch((error) => {
+                console.log(error);
             }
         );
     }

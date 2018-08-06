@@ -1,14 +1,15 @@
 import React from 'react';
 import {FlatList, View} from 'react-native';
-import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
-import styles from "../styles";
-import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
-import strings from "../strings";
-import {SearchBar} from "../Components/SearchBar";
-import {navigateToScreen, colorMain} from "../Constants/Constants";
+import {NavBarCreateObsButton, NavBarProfileButton} from '../Components/NavBarButton';
+import styles from '../styles';
+import {ObservationExploreComponent} from '../Components/ObservationExploreComponent';
+import strings from '../strings';
+import {SearchBar} from '../Components/SearchBar';
+import {colorMain, navigateToScreen} from '../Constants/Constants';
 import firebase from 'react-native-firebase';
-import {EmptyComponent} from "../Components/EmptyComponent";
-import {_checkInternetConnection} from "../App";
+import {EmptyComponent} from '../Components/EmptyComponent';
+import {_checkInternetConnection} from '../App';
+import {getXMostRecentObs} from '../Helpers/FirebaseHelper';
 
 const numColumns = 3;
 const OBS_LOAD_DEPTH = 9;
@@ -108,24 +109,17 @@ export class SearchExploreScreen extends React.Component {
         if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0 || isRefreshing)) {
             const index = isRefreshing ? 0 : this.state.observations.length;
             const searchText = this.state.searchTextSearched;
-            console.log('Loading ' + searchText + ' observations... Starting at ' + index + ' to ' + (index + OBS_LOAD_DEPTH));
             this.isLoadingObservations = true;
 
-            const httpsCallable = firebase.functions().httpsCallable('getXMostRecentObs');
-            httpsCallable({
-                from: index,
-                to: index + OBS_LOAD_DEPTH,
-                searchText: searchText
-            }).then(({data}) => {
-                console.log('Observations successfully retrieved');
-                this.isLoadingObservations = false;
-                this._addToObservationState(data.observations, onStartup, isRefreshing);
-            }).catch(httpsError => {
-                console.log(httpsError.code);
-                console.log(httpsError.message);
-                this._handleError(httpsError);
-                this.isLoadingObservations = false;
-            })
+            getXMostRecentObs(searchText, index, index + OBS_LOAD_DEPTH)
+                .then((observations) => {
+                    this.isLoadingObservations = false;
+                    this._addToObservationState(observations, onStartup, isRefreshing);
+                }).catch((error) => {
+                    this._handleError(error);
+                    this.isLoadingObservations = false;
+                }
+            );
         }
     }
 

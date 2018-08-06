@@ -1,19 +1,12 @@
-import React from "react";
-import styles from "../styles";
-import {Platform, TextInput, TouchableOpacity, View} from "react-native";
-import {
-    colorContrast,
-    colorLight,
-    colorMain,
-    iconSend,
-    iconSizeSmall,
-    pathComments
-} from "../Constants/Constants";
-import strings from "../strings";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {_checkInternetConnection, currentUser} from "../App";
-import firebase from 'react-native-firebase';
-import {UserImageThumbnailComponent} from "./UserImageThumbnailComponent";
+import React from 'react';
+import styles from '../styles';
+import {Platform, TextInput, TouchableOpacity, View} from 'react-native';
+import {colorContrast, colorLight, colorMain, iconSend, iconSizeSmall} from '../Constants/Constants';
+import strings from '../strings';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {_checkInternetConnection, currentUser} from '../App';
+import {UserImageThumbnailComponent} from './UserImageThumbnailComponent';
+import {addComment} from '../Helpers/FirebaseHelper';
 
 export class WriteCommentComponent extends React.Component {
     constructor(props) {
@@ -39,23 +32,13 @@ export class WriteCommentComponent extends React.Component {
         let comment = {};
         comment.senderid = currentUser.uid;
         comment.message = this.state.newComment.trim();
-        comment.timestamp = firebase.database().getServerTime();
-        const ref = firebase.database().ref(pathComments).child(this.observation.userid).child(this.observation.observationid);
-        const id = ref.push().key;
-
-        ref.child(id).set(
-            comment,
-            (error) => {
-                if (error) {
-                    console.error('Error during comment transmission.');
-                    console.error(error);
-                    // TODO: display error message
-                } else {
-                    console.log('Successfully added comment.');
-                    this.setState({newComment: ''});
-                    comment.id = id;
-                    this.props.onCommentAddedAction(comment);
-                }
+        addComment(this.observation.userid, this.observation.observationid, comment)
+            .then((id) => {
+                this.setState({newComment: ''});
+                comment.id = id;
+                this.props.onCommentAddedAction && this.props.onCommentAddedAction(comment);
+            }).catch((error) => {
+                console.log(error);
             }
         );
     }

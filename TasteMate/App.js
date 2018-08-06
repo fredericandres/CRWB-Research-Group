@@ -1,13 +1,13 @@
 import React from 'react';
 import {createBottomTabNavigator, createStackNavigator} from 'react-navigation';
-import {HomeScreen} from "./Screens/Home";
-import {ObservationDetailScreen} from "./Screens/ObservationDetail";
-import {SearchExploreScreen} from "./Screens/SearchExplore";
+import {HomeScreen} from './Screens/Home';
+import {ObservationDetailScreen} from './Screens/ObservationDetail';
+import {SearchExploreScreen} from './Screens/SearchExplore';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {NotificationsScreen} from "./Screens/Notifications";
-import {ProfileScreen} from "./Screens/Profile";
-import {EatingOutListScreen} from "./Screens/EatingOutList";
-import {CreateObservationScreen} from "./Screens/CreateObservation";
+import {NotificationsScreen} from './Screens/Notifications';
+import {ProfileScreen} from './Screens/Profile';
+import {EatingOutListScreen} from './Screens/EatingOutList';
+import {CreateObservationScreen} from './Screens/CreateObservation';
 import {
     colorContrast,
     colorLight,
@@ -17,19 +17,19 @@ import {
     iconNotifications,
     iconSearch,
     iconSizeStandard,
-    pathUsers,
     tastemateFont
 } from './Constants/Constants';
-import {Alert, NetInfo, Platform, StatusBar, StyleSheet} from "react-native";
-import {SettingsScreen} from "./Screens/Settings";
-import {SignUpLogInScreen} from "./Screens/SignUpLogIn";
-import strings from "./strings";
-import {MapScreen} from "./Screens/Map";
+import {Alert, NetInfo, Platform, StatusBar, StyleSheet} from 'react-native';
+import {SettingsScreen} from './Screens/Settings';
+import {SignUpLogInScreen} from './Screens/SignUpLogIn';
+import strings from './strings';
+import {MapScreen} from './Screens/Map';
 import firebase from 'react-native-firebase';
-import {CommentsScreen} from "./Screens/Comments";
+import {CommentsScreen} from './Screens/Comments';
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
-import {mapboxApiKey} from "./Constants/ApiKeys";
-import {UsersScreen} from "./Screens/Users";
+import {mapboxApiKey} from './Constants/ApiKeys';
+import {UsersScreen} from './Screens/Users';
+import {getUser} from './Helpers/FirebaseHelper';
 
 StatusBar.setHidden(false);
 
@@ -54,15 +54,11 @@ firebase.auth().onAuthStateChanged((user) => {
     currentUser = user;
 
     if (user) {
-        // Load user data
-        firebase.database().ref(pathUsers).child(currentUser.uid).on(
-            'value',
-            (dataSnapshot) => {
-                currentUserInformation = dataSnapshot.toJSON();
-            },
-            (error) => {
-                console.error('Could not load user data');
-                console.error(error);
+        getUser(currentUser.uid)
+            .then((user) => {
+                currentUserInformation = user;
+            }).catch((error) => {
+                console.log(error);
             }
         );
     }

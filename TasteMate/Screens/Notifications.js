@@ -1,20 +1,20 @@
 import React from 'react';
 import {FlatList, View} from 'react-native';
-import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
-import {NotificationComponent} from "../Components/NotificationComponent";
-import {LogInMessage} from "../Components/LogInMessage";
-import {
-    navigateToScreen,
-    ActivityEnum,
-    pathNotifications,
-    pathObservations,
-    pathUsers
-} from "../Constants/Constants";
+import {NavBarCreateObsButton, NavBarProfileButton} from '../Components/NavBarButton';
+import {NotificationComponent} from '../Components/NotificationComponent';
+import {LogInMessage} from '../Components/LogInMessage';
+import {ActivityEnum, navigateToScreen} from '../Constants/Constants';
 import firebase from 'react-native-firebase';
-import strings from "../strings";
-import {EmptyComponent} from "../Components/EmptyComponent";
-import {_checkInternetConnection, currentUser} from "../App";
-import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
+import strings from '../strings';
+import {EmptyComponent} from '../Components/EmptyComponent';
+import {_checkInternetConnection, currentUser} from '../App';
+import {
+    getObservation,
+    getUser,
+    getXMostRecentNotifications,
+    markNotificationAsRead,
+    sortArrayByTimestamp
+} from '../Helpers/FirebaseHelper';
 
 const NTF_LOAD_DEPTH = 15;
 const initialState = {
@@ -128,12 +128,8 @@ export class NotificationsScreen extends React.Component {
             const currentState = this.state;
             const index = (isRefreshing ? 0 : ntfSize) + NTF_LOAD_DEPTH;
 
-            console.log('Loading notifications...');
-            const refNotifications = firebase.database().ref(pathNotifications).child(userid).orderByChild('timestamp').limitToLast(index);
-            refNotifications.once('value')
-                .then((dataSnapshot) => {
-                    console.log('Notifications successfully retrieved');
-                    let notifications = dataSnapshot.toJSON() ? Object.values(dataSnapshot.toJSON()) : [];
+            getXMostRecentNotifications(userid, index)
+                .then(({dataSnapshot, notifications}) => {
                     this._addToNotificationState(notifications, onStartup, isRefreshing);
 
                     let iteratedUsers = [];
@@ -144,12 +140,11 @@ export class NotificationsScreen extends React.Component {
                         // Load username of notification sender
                         if (!iteratedUsers[notification.userid] && (!currentState.users[notification.userid])) {
                             iteratedUsers[notification.userid] = true;
-                            firebase.database().ref(pathUsers).child(notification.userid).once('value')
-                                .then((dataSnapshot) => {
-                                    console.log('User successfully retrieved');
-                                    _addUserAction(dataSnapshot ? dataSnapshot.toJSON() : null, notification.userid);
+                            getUser(notification.userid)
+                                .then((user) => {
+                                    _addUserAction(user, notification.userid);
                                 }).catch((error) => {
-                                    console.log('Error while retrieving user');
+                                    console.log(error);
                                     _handleError(error);
                                 }
                             );
@@ -157,28 +152,24 @@ export class NotificationsScreen extends React.Component {
 
                         // Set read status to true
                         if (!notification.read) {
-                            firebase.database().ref(pathNotifications).child(userid).child(childSnapshot.key).update({
-                                read: true,
-                            }).then(() => {
-                                console.log('Successfully added read to notification on DB.');
-                            }).catch((error) => {
-                                console.log('Error during read notification transmission.');
-                                _handleError(error);
-                            });
+                            markNotificationAsRead(userid, childSnapshot.key)
+                                .then(() => {
+                                    // DO nothing
+                                }).catch((error) => {
+                                    _handleError(error);
+                                }
+                            );
                         }
 
                         // Load observation
                         if (notification.observationid && !iteratedObservations[notification.observationid] && (!currentState.observations[notification.observationid])) {
                             iteratedObservations[notification.observationid] = true;
-                            firebase.database().ref(pathObservations).child(userid).child(notification.observationid).once('value')
-                                .then((dataSnapshot) => {
-                                    console.log('Observation successfully retrieved');
-                                    const observation = dataSnapshot.toJSON();
+                            getObservation(userid, notification.observationid)
+                                .then((observation) => {
                                     if (observation) {
                                         _addObservationAction(observation, notification.observationid);
                                     }
                                 }).catch((error) => {
-                                    console.log('Error while retrieving Observation');
                                     _handleError(error);
                                 }
                             );
@@ -186,7 +177,6 @@ export class NotificationsScreen extends React.Component {
                     });
                     this.isLoadingObservations = false;
                 }).catch((error) => {
-                    console.log('Error while retrieving notifications');
                     _handleError(error);
                     this.isLoadingObservations = false;
                 }

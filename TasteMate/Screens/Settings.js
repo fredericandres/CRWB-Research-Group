@@ -1,30 +1,34 @@
 import React from 'react';
 import {Alert, Button, findNodeHandle, Keyboard, Platform, SafeAreaView, ScrollView, Text, View} from 'react-native';
-import {NavBarLogoutButton} from "../Components/NavBarButton";
-import strings, {appName} from "../strings";
-import {TextInputComponent} from "../Components/TextInputComponent";
+import {NavBarLogoutButton} from '../Components/NavBarButton';
+import strings, {appName} from '../strings';
+import {TextInputComponent} from '../Components/TextInputComponent';
 import {
-    formatUsername,
     colorAccent,
     colorBackground,
     colorContrast,
+    formatUsername,
     iconEmail,
     iconLocation,
     iconUser,
     maxUsernameLength,
-    pathUsers
-} from "../Constants/Constants";
-import styles from "../styles";
-import {SettingsSwitchComponent} from "../Components/SettingsSwitchComponent";
-import {currentUser, currentUserInformation} from "../App";
-import firebase from 'react-native-firebase';
-import {CameraCameraRollComponent} from "../Components/CameraCameraRollComponent";
-import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
-import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
-import {ImageCacheManager} from 'react-native-cached-image'
-import {icons} from "../Attributions";
-import RNSafeAreaGetter from "../SafeAreaGetter";
-import {addPictureToStorage, handleAuthError} from "../Helpers/FirebaseHelper";
+    StoragePathEnum
+} from '../Constants/Constants';
+import styles from '../styles';
+import {SettingsSwitchComponent} from '../Components/SettingsSwitchComponent';
+import {currentUser, currentUserInformation} from '../App';
+import {CameraCameraRollComponent} from '../Components/CameraCameraRollComponent';
+import {ActivityIndicatorComponent} from '../Components/ActivityIndicatorComponent';
+import {UserImageThumbnailComponent} from '../Components/UserImageThumbnailComponent';
+import {ImageCacheManager} from 'react-native-cached-image';
+import {icons} from '../Attributions';
+import RNSafeAreaGetter from '../SafeAreaGetter';
+import {
+    addPictureToStorage,
+    checkIfUsernameExists,
+    handleAuthError,
+    updateUserInformation
+} from '../Helpers/FirebaseHelper';
 
 const ICM = new ImageCacheManager();
 
@@ -152,13 +156,10 @@ export class SettingsScreen extends React.Component {
             if (changes) {
                 this._startActivityIndicator(strings.savingProfile);
                 if (userInfoChange.username) {
-                    console.log('Checking if username already exists...');
                     this._setActivityIndicatorText(strings.checkingUsername);
-                    const refUsername = firebase.database().ref(pathUsers).orderByChild('username').equalTo(userInfoChange.username);
-                    refUsername.once('value')
-                        .then((dataSnapshot) => {
-                            console.log('Username successfully checked');
-                            if (dataSnapshot.toJSON()) {
+                    checkIfUsernameExists(userInfoChange.username)
+                        .then((exists) => {
+                            if (exists) {
                                 // Display error message
                                 this._stopActivityIndicator();
                                 SettingsScreen._showErrorPopup(strings.formatString(strings.errorMessageUsernameAlreadyInUse, appName));
@@ -166,7 +167,6 @@ export class SettingsScreen extends React.Component {
                                 this._updateUserInfoInDatabase(userInfoChange);
                             }
                         }).catch((error) => {
-                            console.log('Error while checking if username exists');
                             this._stopActivityIndicator();
                             console.log(error);
                         }
@@ -185,9 +185,13 @@ export class SettingsScreen extends React.Component {
 
     _uploadNewPicture() {
         if (this.state.newImageUrl) {
-            currentUserInformation.imageUrl = this.state.newImageUrl;
-            const userRef = firebase.database().ref(pathUsers).child(currentUser.uid);
-            addPictureToStorage('/' + pathUsers + '/' + currentUser.uid + '.jpg', this.state.newImageUrl, userRef, this._clearImageCacheAndClose, this._setActivityIndicatorText, this._stopActivityIndicator);
+            addPictureToStorage(StoragePathEnum.USER, currentUser.uid, null, this.state.newImageUrl, this._setActivityIndicatorText, this._stopActivityIndicator)
+                .then((url) => {
+                    this._clearImageCacheAndClose(url);
+                }).catch((error) => {
+                    console.log(error);
+                }
+            );
         } else {
             this._closeSettings();
         }
@@ -201,9 +205,10 @@ export class SettingsScreen extends React.Component {
                 currentUserInformation.imageUrl = url;
                 this._closeSettings();
             }).catch((error) => {
-            console.log('Error while clearing image url cache');
-            console.log(error);
-        });
+                console.log('Error while clearing image url cache');
+                console.log(error);
+            }
+        );
     }
 
     _closeSettings() {
@@ -223,9 +228,9 @@ export class SettingsScreen extends React.Component {
 
     _updateUserInfoInDatabase(userInfo) {
         this._setActivityIndicatorText(strings.savingProfile);
-        firebase.database().ref(pathUsers).child(currentUser.uid).update(userInfo)
+
+        updateUserInformation(currentUser.uid, userInfo)
             .then(() => {
-                console.log('Successfully updated user information on DB.');
                 if (userInfo.username) {
                     currentUserInformation.username = userInfo.username;
                 }
@@ -235,7 +240,6 @@ export class SettingsScreen extends React.Component {
 
                 this._uploadNewPicture();
             }).catch((error) => {
-                console.log('Error during user information update transmission.');
                 this._stopActivityIndicator();
                 console.log(error);
                 SettingsScreen._showErrorPopup(handleAuthError(error));
@@ -341,7 +345,7 @@ export class SettingsScreen extends React.Component {
                             />
 
                             {/*<TextInputComponent
-                            fontawesome={true}*/}
+                             fontawesome={true}*/}
                             {/*placeholder={strings.oldPassword}*/}
                             {/*icon={iconLock}*/}
                             {/*onChangeText={(text) => this.setState({oldPassword: text})}*/}

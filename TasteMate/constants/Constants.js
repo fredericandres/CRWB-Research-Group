@@ -34,6 +34,8 @@ export const EmojiEnum = Object.freeze({
 });
 export const VocabEnum = Object.freeze({TASTE:1, TEXTURE:2, ODOR:3});
 export const ActivityEnum = Object.freeze({LIKE:'LIKE', SHARE:'SHARE', CUTLERY:'CUTLERY', FOLLOW:'FOLLOW', COMMENT:'COMMENT'});
+export const FollowerFolloweeEnum = Object.freeze({FOLLOWER:'follower', FOLLOWEE:'followee'});
+export const StoragePathEnum = Object.freeze({USER:0, OBSERVATION:1});
 
 export const pathObservations = 'observations';
 export const pathUsers = 'users';

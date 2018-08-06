@@ -1,27 +1,25 @@
 import React from 'react';
 import {FlatList, Platform, TouchableOpacity, View} from 'react-native';
-import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
-import strings from "../strings";
-import {EatingOutListComponent} from "../Components/EatingOutListComponent";
-import Permissions from "react-native-permissions";
+import {NavBarCreateObsButton, NavBarProfileButton} from '../Components/NavBarButton';
+import strings from '../strings';
+import {EatingOutListComponent} from '../Components/EatingOutListComponent';
+import Permissions from 'react-native-permissions';
 import firebase from 'react-native-firebase';
 import {
-    navigateToScreen,
     colorAccent,
     colorBackground,
     iconList,
     iconMap,
     iconSizeStandard,
-    pathActions,
-    pathObservations
-} from "../Constants/Constants";
-import {LogInMessage} from "../Components/LogInMessage";
-import {MapMarkerComponent} from "../Components/MapMarkerComponent";
-import {EmptyComponent} from "../Components/EmptyComponent";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+    navigateToScreen
+} from '../Constants/Constants';
+import {LogInMessage} from '../Components/LogInMessage';
+import {MapMarkerComponent} from '../Components/MapMarkerComponent';
+import {EmptyComponent} from '../Components/EmptyComponent';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
-import {_checkInternetConnection} from "../App";
-import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
+import {_checkInternetConnection} from '../App';
+import {getActions, getObservation, sortArrayByTimestamp} from '../Helpers/FirebaseHelper';
 
 export const NO_LOCATION = 'noLocation';
 export const FURTHER_AWAY = 'furtherAway';
@@ -138,38 +136,36 @@ export class EatingOutListScreen extends React.Component {
 
         this._setEmptyMessage(strings.loading, false);
 
-        console.log('Loading observations ids saved as Eating Out...');
-        const refEatingOut = firebase.database().ref(pathActions).orderByKey().equalTo(this.state.user.uid);
-        refEatingOut.once('value')
+        // TODO [FEATURE]: Get cutleries more fficiently
+        getActions()
             .then((dataSnapshot) => {
-                console.log('Observations ids saved as Eating Out successfully retrieved');
                 let observations = [];
                 let asyncWorkers = [];
                 dataSnapshot.forEach(function (userIdSnapshot) {
                     const userid = userIdSnapshot.key;
-                    userIdSnapshot.forEach(function (obsIdSnapshot) {
-                        const obsid = obsIdSnapshot.key;
-                        if (obsIdSnapshot.toJSON().cutleries) {
-                            const promise = new Promise(function (resolve, reject) {
-                                firebase.database().ref(pathObservations).child(userid).child(obsid).once('value')
-                                    .then((dataSnapshot) => {
-                                        console.log('Eating Out observation successfully retrieved');
-                                        let observation = dataSnapshot.toJSON();
-                                        if (curState.locationPermission && curState.userlocation) {
-                                            observation.distance = _getDistanceFromLatLonInKm(observation);
+                    if (userid !== curState.user.uid) {
+                        userIdSnapshot.forEach(function (obsIdSnapshot) {
+                            const obsid = obsIdSnapshot.key;
+                            const actions = obsIdSnapshot.toJSON();
+                            if (actions.cutleries && actions.cutleries[curState.user.uid]) {
+                                const promise = new Promise(function (resolve, reject) {
+                                    getObservation(userid, obsid)
+                                        .then((observation) => {
+                                            if (curState.locationPermission && curState.userlocation) {
+                                                observation.distance = _getDistanceFromLatLonInKm(observation);
+                                            }
+                                            observations.push(observation);
+                                            resolve();
+                                        }).catch((error) => {
+                                            console.log(error);
+                                            reject(error);
                                         }
-                                        observations.push(observation);
-                                        resolve();
-                                    }).catch((error) => {
-                                        console.log('Error while retrieving Eating Out observation');
-                                        console.log(error);
-                                        reject(error);
-                                    }
-                                );
-                            });
-                            asyncWorkers.push(promise);
-                        }
-                    });
+                                    );
+                                });
+                                asyncWorkers.push(promise);
+                            }
+                        });
+                    }
                 });
 
                 Promise.all(asyncWorkers).then(() => {

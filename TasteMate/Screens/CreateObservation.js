@@ -37,8 +37,7 @@ import {
     iconMyPoc,
     iconPrice,
     iconSizeSmall,
-    iconSizeStandard,
-    pathObservations
+    iconSizeStandard
 } from '../Constants/Constants';
 import {mapboxApiKey} from '../Constants/ApiKeys';
 import {ObservationExploreComponent} from '../Components/ObservationExploreComponent';
@@ -49,7 +48,6 @@ import {SettingsSwitchComponent} from '../Components/SettingsSwitchComponent';
 import {allVocabulary} from '../Constants/Vocabulary';
 import RNFetchBlob from 'react-native-fetch-blob';
 import XMLParser from 'react-xml-parser';
-import firebase from 'react-native-firebase';
 import {_checkInternetConnection, currentUser} from '../App';
 import {CameraCameraRollComponent} from '../Components/CameraCameraRollComponent';
 import {ActivityIndicatorComponent} from '../Components/ActivityIndicatorComponent';
@@ -59,7 +57,7 @@ import {allDietaryRestrictions} from '../Constants/DietaryRestrictions';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import RNSafeAreaGetter from '../SafeAreaGetter';
-import {addPictureToStorage} from '../Helpers/FirebaseHelper';
+import {addObservation, generateObservationKey, updateObservation} from '../Helpers/FirebaseHelper';
 
 const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 // let allVocabs = null;
@@ -252,41 +250,25 @@ export class CreateObservationScreen extends React.Component {
         observation.price = priceNumber ? (parseInt(priceNumber) !== priceNumber ? priceNumber.toFixed(2) : priceNumber).toString() : '0';
 
         if (this.isEditing) {
-            firebase.database().ref(pathObservations).child(currentUser.uid).child(this.state.observation.observationid).update(observation)
+            updateObservation(currentUser.uid, this.state.observation.observationid, observation)
                 .then(() => {
                     this._stopActivityIndicator();
-                    console.log('Successfully updated observation at DB.');
                     this._closeWindow(observation, null);
                 }).catch((error) => {
-                    console.log('Error during observation update transmission.');
                     this._stopActivityIndicator();
                     console.log(error);
                     // TODO: display error message
                 }
             );
         } else {
-            let ref = firebase.database().ref(pathObservations).child(currentUser.uid);
-            observation.userid = currentUser.uid;
-            observation.timestamp = firebase.database().getServerTime();
-            observation.observationid = observation.observationid || ref.push().key;
-
-            // Remove image property but save for image upload
-            const imageUrl = observation.image;
-            delete observation.image;
-
-            const observationRef = firebase.database().ref(pathObservations).child(currentUser.uid).child(observation.observationid);
-            observationRef.set(observation)
-                .then(() => {
-                    console.log('Successfully added observation to DB.');
-                    addPictureToStorage('/' + pathObservations + '/' + observation.observationid + '.jpg', imageUrl, observationRef, ((url) => this._closeWindow(observation, url)), this._setActivityIndicatorText, this._stopActivityIndicator);
+            addObservation(currentUser.uid, observation, this._setActivityIndicatorText, this._stopActivityIndicator)
+                .then((url) => {
+                    this._closeWindow(observation, url);
                 }).catch((error) => {
-                    console.log('Error during observation transmission.');
                     this._stopActivityIndicator();
                     console.log(error);
-                    // TODO: display error message
                 }
             );
-            observation.image = imageUrl;
         }
     }
 
@@ -335,7 +317,7 @@ export class CreateObservationScreen extends React.Component {
 
     async _loadDrafts() {
         try {
-            const observationsJSON = await AsyncStorage.getItem('OBSERVATIONS');
+            const observationsJSON = await AsyncStorage.getItem(AsyncStorageKeyObservations);
             const observations = JSON.parse(observationsJSON);
             this.setState({drafts: observations});
         } catch (error) {
@@ -354,7 +336,7 @@ export class CreateObservationScreen extends React.Component {
 
             let obs = this.state.observation;
             if (!obs.observationid) {
-                obs.observationid = firebase.database().ref(pathObservations).child(currentUser.uid).push().key;
+                obs.observationid = generateObservationKey(currentUser.uid);
             }
 
             observations[obs.observationid] = obs;

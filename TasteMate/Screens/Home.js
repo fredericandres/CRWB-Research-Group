@@ -1,34 +1,39 @@
 import React from 'react';
 import {FlatList, Keyboard, Platform, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {NavBarCreateObsButton, NavBarProfileButton} from "../Components/NavBarButton";
-import {ObservationComponent} from "../Components/ObservationComponent";
-import styles from "../styles";
-import strings, {appName} from "../strings";
+import {NavBarCreateObsButton, NavBarProfileButton} from '../Components/NavBarButton';
+import {ObservationComponent} from '../Components/ObservationComponent';
+import styles from '../styles';
+import strings, {appName} from '../strings';
 import firebase from 'react-native-firebase';
 import {
-    formatNumberWithString,
-    navigateToScreen,
     ActivityEnum,
     colorBackground,
     colorContrast,
+    FollowerFolloweeEnum,
+    formatNumberWithString,
     iconFollow,
     iconSizeSmall,
     iconSizeStandard,
     iconUnfollow,
-    pathFollow,
-    pathObservations,
-    pathUsers,
+    navigateToScreen,
     ReactNavigationTabBarHeight
-} from "../Constants/Constants";
-import {LogInMessage} from "../Components/LogInMessage";
-import {EmptyComponent} from "../Components/EmptyComponent";
-import RNSafeAreaGetter from "../SafeAreaGetter";
-import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
-import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
-import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
-import {_checkInternetConnection, currentUser} from "../App";
-import {_generateCombinedKey} from "./Profile";
-import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
+} from '../Constants/Constants';
+import {LogInMessage} from '../Components/LogInMessage';
+import {EmptyComponent} from '../Components/EmptyComponent';
+import RNSafeAreaGetter from '../SafeAreaGetter';
+import {UserImageThumbnailComponent} from '../Components/UserImageThumbnailComponent';
+import {ObservationExploreComponent} from '../Components/ObservationExploreComponent';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import {_checkInternetConnection, currentUser} from '../App';
+import {
+    addFollowRelationship,
+    getFollowers,
+    getMostPopularUsers,
+    getMostRecentObsForUser,
+    getXMostRecentFeedObsForUsers,
+    removeFollowRelationship,
+    sortArrayByTimestamp
+} from '../Helpers/FirebaseHelper';
 
 const OBS_LOAD_DEPTH = 4;
 const initialState ={
@@ -154,23 +159,18 @@ export class HomeScreen extends React.Component {
     _loadObservationFeed(userid, onStartup, isRefreshing) {
         const _loadObservations = this._loadObservations;
         this._setEmptyMessage(strings.loading, false);
+        this.setState({feedEmpty: false});
 
         if (this.followees && this.followees.length > 0 && !isRefreshing && !onStartup) {
             this._loadObservations(onStartup, isRefreshing);
         } else {
-            console.log('Loading people the current user follows...');
-            const refFollowees = firebase.database().ref(pathFollow).orderByChild('follower').equalTo(userid);
-            refFollowees.once('value')
-                .then((dataSnapshot) => {
-                    console.log('Followees successfully retrieved');
-                    let followees = [userid];
-                    dataSnapshot.forEach(function (childSnapshot) {
-                        followees.push(childSnapshot.toJSON().followee);
-                    });
+            getFollowers(FollowerFolloweeEnum.FOLLOWER, userid, null)
+                .then((followees) => {
+                    followees.push(userid);
                     this.followees = followees;
                     _loadObservations(onStartup, isRefreshing);
+
                 }).catch((error) => {
-                    console.log('Error while retrieving followees');
                     this._handleError(error);
                 }
             );
@@ -186,25 +186,18 @@ export class HomeScreen extends React.Component {
                 });
             }
             const index = isRefreshing ? 0 : this.state.observations.length;
-
-            console.log('Loading observations... Starting at ' + index + ' to ' + (index + OBS_LOAD_DEPTH));
             this.isLoadingObservations = true;
 
-            const httpsCallable = firebase.functions().httpsCallable('getXMostRecentFeedObsForUsers');
-            httpsCallable({
-                users: this.followees,
-                from: index,
-                to: index + OBS_LOAD_DEPTH
-            }).then(({data}) => {
-                console.log('Observations successfully retrieved');
-                this.isLoadingObservations = false;
-                this._addToObservationState(data.observations, onStartup, isRefreshing);
-            }).catch(httpsError => {
-                console.log(httpsError.code);
-                console.log(httpsError.message);
-                this._handleError(httpsError);
-                this.isLoadingObservations = false;
-            })
+            getXMostRecentFeedObsForUsers(this.followees, index, index + OBS_LOAD_DEPTH)
+                .then((observations) => {
+                    this.isLoadingObservations = false;
+                    this._addToObservationState(observations, onStartup, isRefreshing);
+                }).catch((error) => {
+                    console.log(error);
+                    this.isLoadingObservations = false;
+                    this._handleError(error);
+                }
+            );
         }
     }
 
@@ -315,54 +308,26 @@ export class HomeScreen extends React.Component {
             feedEmpty: true
         });
         const _addObservationsToState = this._addObservationsToState;
-        const _sortUsersByFollowers = HomeScreen._sortUsersByFollowers;
 
-        console.log('Loading empty feed popular users...');
-        const refUsers = firebase.database().ref(pathUsers).orderByChild('followers').limitToLast(8);
-        refUsers.once('value')
-            .then((dataSnapshot) => {
-                console.log('Successfully retrieved empty feed popular users');
-                const usersJson = dataSnapshot.toJSON();
-                const users = usersJson && Object.values(usersJson);
-                _sortUsersByFollowers(users);
+        getMostPopularUsers(8)
+            .then((users) => {
                 this.setState({
                     feedEmptyUsers: users,
                 });
-                dataSnapshot.forEach(function (childSnapshot) {
-                    const refObs = firebase.database().ref(pathObservations).child(childSnapshot.key).orderByChild('timestamp').limitToLast(9);
-                    refObs.once('value')
-                        .then((dataSnapshot) => {
-                            console.log('Popular observations successfully retrieved');
-                            const observations = dataSnapshot.toJSON();
-                            _addObservationsToState(observations && Object.values(observations), childSnapshot.key);
+                for (let i = 0; i < users.length; i++) {
+                    const user = users[i];
+                    getMostRecentObsForUser(user.userid, 9)
+                        .then((observations) => {
+                            _addObservationsToState(observations && Object.values(observations), user.userid);
                         }).catch((error) => {
-                            console.log('Error while retrieving observation of popular user with id ' + childSnapshot.key);
                             console.log(error);
                         }
                     );
-
-                });
+                }
             }).catch((error) => {
-                console.log('Error while retrieving most popular users');
                 console.log(error);
             }
         );
-    }
-
-    static _sortUsersByFollowers(users) {
-        if (users) {
-            users.sort(function (a, b) {
-                if (!a.followers)
-                    return 1;
-                if (!b.followers)
-                    return -1;
-                if (a.followers < b.followers)
-                    return 1;
-                if (a.followers > b.followers)
-                    return -1;
-                return 0;
-            });
-        }
     }
 
     _addObservationsToState(userObservations, userid) {
@@ -377,45 +342,33 @@ export class HomeScreen extends React.Component {
     _toggleFollowUnfollow(userid) {
         const follower = currentUser ? currentUser.uid : null;
         const followee = userid;
-        const combined = _generateCombinedKey(follower, followee);
         const _addIsFollowingToState = this._addIsFollowingToState;
 
         if (!userid || follower === followee) {
             // Do nothing
         } else if (this.state.feedEmptyFollowing[userid]) {
-            console.log('Removing relationship of ' + follower + ' following ' + followee + '...');
-            const ref = firebase.database().ref(pathFollow).child(combined);
-            ref.remove(
-                (error) => {
-                    if (error) {
-                        error.log(error);
-                    } else {
-                        console.log('Successfully removed relationship of ' + follower + ' following ' + followee);
-                        _addIsFollowingToState(false, userid);
-                    }
+            removeFollowRelationship(follower, followee)
+                .then(() => {
+                    _addIsFollowingToState(false, userid);
+                }).catch((error) => {
+                    console.log(error);
                 }
             );
         } else {
-            console.log('Adding ' + follower + ' to follow ' + followee + '...');
-            firebase.database().ref(pathFollow).child(combined).set({
-                follower: follower,
-                followee: followee,
-            }, (error) => {
-                if (error) {
-                    console.error('Error during user following relationship transmission.');
-                    console.error(error);
-                } else {
-                    console.log('Successfully added ' + follower + ' to follow ' + followee);
+            addFollowRelationship(follower, followee)
+                .then(() => {
                     _addIsFollowingToState(true, userid);
+                }).catch((error) => {
+                    console.log(error);
                 }
-            });
+            );
         }
     }
 
     _addIsFollowingToState(isFollowing, userid) {
         let feedEmptyFollowing = this.state.feedEmptyFollowing;
         feedEmptyFollowing[userid] = isFollowing;
-        this.setState({feedEmptyFollowing: feedEmptyFollowing}, (() => console.log(this.state.feedEmptyFollowing)));
+        this.setState({feedEmptyFollowing: feedEmptyFollowing});
     }
 
     _onPressUser(index) {
@@ -449,7 +402,7 @@ export class HomeScreen extends React.Component {
                         {
                             this.state.observations.length === 0 && this.state.feedEmpty &&
                             <ScrollView style={[{flex:1, flexDirection:'column'}]}>
-                                <TouchableOpacity style={styles.containerPadding} onPress={() => this._loadObservationFeed(currentUser.uid, true, false)}>
+                                <TouchableOpacity style={styles.containerPadding} onPress={() => this._checkInternetConnectionAndStart(this.state.user)}>
                                     <Text style={styles.textStandardDark}>{strings.emptyFeed} <Text style={styles.textStandardBold}>{strings.clickHereToRefresh}</Text></Text>
                                 </TouchableOpacity>
                                 <View>

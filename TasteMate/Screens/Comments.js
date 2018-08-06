@@ -1,17 +1,12 @@
 import React from 'react';
-import {Animated, FlatList, Keyboard, Platform, TouchableWithoutFeedback, View} from "react-native";
-import strings from "../strings";
-import {CommentComponent} from "../Components/CommentComponent";
-import {WriteCommentComponent} from "../Components/WriteCommentComponent";
-import {
-    colorBackground,
-    pathComments,
-    ReactNavigationTabBarHeight
-} from "../Constants/Constants";
-import firebase from 'react-native-firebase';
-import {currentUser} from "../App";
+import {Animated, FlatList, Keyboard, Platform, TouchableWithoutFeedback, View} from 'react-native';
+import strings from '../strings';
+import {CommentComponent} from '../Components/CommentComponent';
+import {WriteCommentComponent} from '../Components/WriteCommentComponent';
+import {colorBackground, ReactNavigationTabBarHeight} from '../Constants/Constants';
+import {currentUser} from '../App';
 import RNSafeAreaGetter from 'react-native-safe-area-getter';
-import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
+import {getXMostRecentComments, sortArrayByTimestamp} from '../Helpers/FirebaseHelper';
 
 const CMT_LOAD_DEPTH = 10;
 
@@ -83,25 +78,11 @@ export class CommentsScreen extends React.Component {
         if (ntfSize === 0 || ntfSize % CMT_LOAD_DEPTH === 0 || isRefreshing || onStartup) {
             const index = (isRefreshing ? 0 : ntfSize) + CMT_LOAD_DEPTH;
 
-            console.log('Loading comments...');
-            const refComments = firebase.database().ref(pathComments).child(this.observation.userid).child(this.observation.observationid).orderByChild('timestamp').limitToLast(index);
-            refComments.once('value')
-                .then((dataSnapshot) => {
-                    console.log('Comments successfully retrieved');
-                    const commentsJson = dataSnapshot.toJSON();
-                    let comments = [];
-                    if (commentsJson) {
-                        Object.keys(commentsJson).map((commentid) => {
-                            let comment = commentsJson[commentid];
-                            comment.id = commentid;
-                            comments.push(comment);
-                        });
-                    }
-
+            getXMostRecentComments(this.observation.userid, this.observation.observationid, index)
+                .then((comments) => {
                     this._addToCommentState(comments);
                 }).catch((error) => {
-                    console.error('Error while retrieving comments');
-                    console.error(error);
+                    console.log(error);
                 }
             );
         }

@@ -18,21 +18,13 @@ import {
     iconShare,
     iconSizeSmall,
     iconSizeStandard,
-    navigateToScreen,
-    pathActions,
-    pathComments,
-    pathCutleries,
-    pathLikes,
-    pathObservations,
-    pathShares,
-    pathUsers
+    navigateToScreen
 } from '../Constants/Constants';
 import styles, {smileySuperLargeFontSize} from '../styles';
 import TimeAgo from 'react-native-timeago';
 import {CommentComponent} from './CommentComponent';
 import strings, {appName} from '../strings';
 import Share from 'react-native-share';
-import firebase from 'react-native-firebase';
 import {currentUser} from '../App';
 import {WriteCommentComponent} from './WriteCommentComponent';
 import {CachedImage} from 'react-native-cached-image';
@@ -43,7 +35,15 @@ import {allDietaryRestrictions} from '../Constants/DietaryRestrictions';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import ReadMore from './ReadMore';
-import {sortArrayByTimestamp} from '../Helpers/FirebaseHelper';
+import {
+    addUserAction,
+    getUser,
+    getUserActions,
+    getXMostRecentComments,
+    removeObservation,
+    removeUserAction,
+    sortArrayByTimestamp
+} from '../Helpers/FirebaseHelper';
 
 export class ObservationComponent extends React.Component {
     constructor(props) {
@@ -73,43 +73,22 @@ export class ObservationComponent extends React.Component {
             adjectives: ''
         };
 
-        console.log('Loading actions...');
-        const refActions = firebase.database().ref(pathActions).child(this.state.observation.userid).child(this.state.observation.observationid).orderByChild(currentUser.uid).equalTo(true);
-        refActions.once('value')
-            .then((dataSnapshot) => {
-                console.log('Received actions.');
-                const actions = dataSnapshot.toJSON();
+        getUserActions(this.state.observation.userid, this.state.observation.observationid, currentUser.uid)
+            .then((actions) => {
                 if (actions) {
-                    if (actions.likes) {
-                        this.setState({liked: true});
-                    }
-                    if (actions.shares) {
-                        this.setState({shared: true});
-                    }
-                    if (actions.cutleries) {
-                        this.setState({cutleried: true});
-                    }
+                    this.setState({
+                        liked: actions.likes,
+                        shares: actions.shares,
+                        cutleried: actions.cutleries,
+                    });
                 }
             }).catch((error) => {
-                console.log('Error while retrieving actions');
                 console.log(error);
             }
         );
 
-        console.log('Checking if comments exist...');
-        const refComments = firebase.database().ref(pathComments).child(this.state.observation.userid).child(this.state.observation.observationid).orderByChild('timestamp').limitToLast(2);
-        refComments.once('value')
-            .then((dataSnapshot) => {
-                console.log('Received comments.');
-                const commentsJson = dataSnapshot.toJSON();
-                let comments = [];
-                if (commentsJson) {
-                    Object.keys(commentsJson).map((commentid) => {
-                        let comment = commentsJson[commentid];
-                        comment.id = commentid;
-                        comments.push(comment);
-                    });
-                }
+        getXMostRecentComments(this.state.observation.userid, this.state.observation.observationid, 2)
+            .then((comments) => {
                 sortArrayByTimestamp(comments, true);
                 if (comments.length > 1) {
                     this.setState({moreComments: true});
@@ -118,23 +97,15 @@ export class ObservationComponent extends React.Component {
                     this.setState({comments: comments});
                 }
             }).catch((error) => {
-                console.log('Error while retrieving comments');
                 console.log(error);
             }
         );
 
         if (!this.state.user) {
-            console.log('Loading creator info...');
-            const refCreator = firebase.database().ref(pathUsers).child(this.state.observation.userid);
-            refCreator.once(
-                'value',
-                (dataSnapshot) => {
-                    console.log('Received creator.');
-                    const creator = dataSnapshot.toJSON();
-                    this.setState({user: creator});
-                },
-                (error) => {
-                    console.log('Error while retrieving creator info');
+            getUser(this.state.observation.userid)
+                .then((user) => {
+                    this.setState({user: user});
+                }).catch((error) => {
                     console.log(error);
                 }
             );
@@ -163,10 +134,10 @@ export class ObservationComponent extends React.Component {
             // Do nothing
         } else {
             if (this.state.liked) {
-                this._removeAction(pathLikes);
+                this._removeAction(ActivityEnum.LIKE);
             } else {
                 console.log('Sending like...');
-                this._sendAction(pathLikes);
+                this._sendAction(ActivityEnum.LIKE);
             }
         }
     }
@@ -176,49 +147,37 @@ export class ObservationComponent extends React.Component {
             // Do nothing
         } else {
             if (this.state.cutleried) {
-                this._removeAction(pathCutleries);
+                this._removeAction(ActivityEnum.CUTLERY);
             } else {
                 console.log('Sending cutlery...');
-                this._sendAction(pathCutleries);
+                this._sendAction(ActivityEnum.CUTLERY);
             }
         }
     }
 
-    _sendAction(path) {
-        let content = {};
-        content[currentUser.uid] = true;
-
-        firebase.database().ref(pathActions).child(this.state.observation.userid).child(this.state.observation.observationid).child(path).update(
-            content,
-            (error) => {
-                if (error) {
-                    console.log('Error during ' + path + ' transmission.');
-                    console.log(error);
-                    // TODO: display error message
-                } else {
-                    console.log('Successfully ' + path + ' observation.');
-                    this._updateActionState(path, true);
-                }
+    _sendAction(type) {
+        addUserAction(this.state.observation.userid, this.state.observation.observationid, type, currentUser.uid)
+            .then(() => {
+                this._updateActionState(type, true);
+            }).catch((error) => {
+                console.log(error);
             }
         );
     }
 
-    _removeAction(path) {
-        firebase.database().ref(pathActions).child(this.state.observation.userid).child(this.state.observation.observationid).child(path).child(currentUser.uid).remove(
-            (error) => {
-                if (error) {
-                    error.log(error);
-                } else {
-                    console.log('Successfully removed ' + path);
-                    this._updateActionState(path, false);
-                }
+    _removeAction(type) {
+        removeUserAction(this.state.observation.userid, this.state.observation.observationid, type, currentUser.uid)
+            .then(() => {
+                this._updateActionState(type, false);
+            }).catch((error) => {
+                console.log(error);
             }
         );
     }
 
-    _updateActionState(path, value) {
+    _updateActionState(type, value) {
         let obs = this.state.observation;
-        if (path === pathLikes) {
+        if (type === ActivityEnum.LIKE) {
             if (!obs.likesCount) {
                 obs.likesCount = 0;
             }
@@ -233,7 +192,7 @@ export class ObservationComponent extends React.Component {
                 liked: value,
                 observation: obs
             });
-        } else if (path === pathShares) {
+        } else if (type === ActivityEnum.SHARE) {
             if (!obs.sharesCount) {
                 obs.sharesCount = 0;
             }
@@ -248,7 +207,7 @@ export class ObservationComponent extends React.Component {
                 shared: value,
                 observation: obs
             });
-        } else if (path === pathCutleries) {
+        } else if (type === ActivityEnum.CUTLERY) {
             if (!obs.cutleriesCount) {
                 obs.cutleriesCount = 0;
             }
@@ -321,15 +280,11 @@ export class ObservationComponent extends React.Component {
         if (buttonIndex === 0) {
             this.props.navigation.navigate('CreateObservation', {observation: this.state.observation, edit: true, onUpdate: this._onUpdate});
         } else if (buttonIndex === 1) {
-            const ref = firebase.database().ref(pathObservations).child(this.state.observation.userid).child(this.state.observation.observationid);
-            ref.remove(
-                (error) => {
-                    if (error) {
-                        error.log(error);
-                    } else {
-                        console.log('Successfully removed observation');
-                        this.props.onDelete && this.props.onDelete(this.state.observation);
-                    }
+            removeObservation(this.state.observation.userid, this.state.observation.observationid)
+                .then(() => {
+                    this.props.onDelete && this.props.onDelete(this.state.observation);
+                }).catch(() => {
+                    console.log(error);
                 }
             );
         }
@@ -343,7 +298,7 @@ export class ObservationComponent extends React.Component {
         if (!currentUser || currentUser.isAnonymous) {
             // Do nothing
         } else {
-            this._sendAction(pathShares);
+            this._sendAction(ActivityEnum.SHARE);
         }
 
         // TODO: What is being shared? Link?

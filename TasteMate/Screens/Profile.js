@@ -1,65 +1,49 @@
 import React from 'react';
 import {FlatList, SafeAreaView, Text, View} from 'react-native';
-import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from "../Components/NavBarButton";
+import {NavBarButton, NavBarCloseButton, NavBarFollowUnFollowButton} from '../Components/NavBarButton';
+import {colorMain, FollowerFolloweeEnum, formatNumber, iconCog, iconFollow, iconUnfollow} from '../Constants/Constants';
+import styles from '../styles';
+import {UserComponent} from '../Components/UserComponent';
+import {ObservationExploreComponent} from '../Components/ObservationExploreComponent';
+import {ProfileSegmentedControlItem} from '../Components/ProfileSegmentedControlItem';
+import strings from '../strings';
+import {currentUser, currentUserInformation} from '../App';
+import {EmptyComponent} from '../Components/EmptyComponent';
+import {UserImageThumbnailComponent} from '../Components/UserImageThumbnailComponent';
 import {
-    formatNumber,
-    colorMain,
-    iconCog,
-    iconFollow,
-    iconUnfollow,
-    pathFollow,
-    pathUsers
-} from "../Constants/Constants";
-import styles from "../styles";
-import {UserComponent} from "../Components/UserComponent";
-import {ObservationExploreComponent} from "../Components/ObservationExploreComponent";
-import {ProfileSegmentedControlItem} from "../Components/ProfileSegmentedControlItem";
-import strings from "../strings";
-import {currentUser, currentUserInformation} from "../App";
-import firebase from 'react-native-firebase';
-import {EmptyComponent} from "../Components/EmptyComponent";
-import {UserImageThumbnailComponent} from "../Components/UserImageThumbnailComponent";
-import {sortArrayByTimestamp} from "../Helpers/FirebaseHelper";
+    addFollowRelationship,
+    getFollowers,
+    getUser,
+    getXMostRecentObsForUserWithId,
+    isFollowing,
+    removeFollowRelationship,
+    sortArrayByTimestamp
+} from '../Helpers/FirebaseHelper';
 
 function _toggleFollowUnfollow(navigation) {
     const isFollowing = navigation.getParam('isFollowing');
     const follower = currentUser ? currentUser.uid : null;
     const followee = userid;
-    const combined = _generateCombinedKey(follower, followee);
 
     if (isFollowing === null || !userid || follower === followee) {
         // Do nothing, we are not sure yet if current user is following this user or not
     } else if (isFollowing) {
-        console.log('Removing relationship of ' + follower + ' following ' + followee);
-        const ref = firebase.database().ref(pathFollow).child(combined);
-        ref.remove(
-            (error) => {
-                if (error) {
-                    error.log(error);
-                } else {
-                    console.log('Successfully removed relationship of ' + follower + ' following ' + followee);
-                    navigation.setParams({ isFollowing: false });
-                }
+        removeFollowRelationship(follower, followee)
+            .then(() => {
+                navigation.setParams({ isFollowing: false });
+            }).catch((error) => {
+                console.log(error);
             }
         );
     } else {
-        firebase.database().ref(pathFollow).child(combined).set({
-            follower: follower,
-            followee: followee,
-        }, (error) => {
-            if (error) {
-                console.log('Error during user following relationship transmission.');
-                console.log(error);
-            } else {
-                console.log('Successfully added ' + follower + ' to follow ' + followee);
+        addFollowRelationship(follower, followee)
+            .then(() => {
                 navigation.setParams({ isFollowing: true });
+            }).catch((error) => {
+                console.log(error);
             }
-        });
+        );
     }
-}
-
-export function _generateCombinedKey(follower, followee) {
-    return follower + '_' + followee;
 }
 
 const FOLLOW_LOAD_DEPTH = 10;
@@ -130,13 +114,10 @@ export class ProfileScreen extends React.Component {
 
         if (!this.state.user.username && userid) {
             // Get user from DB
-            firebase.database().ref(pathUsers).child(userid).once('value')
-                .then((dataSnapshot) => {
-                    console.log('Successfully retrieved user data');
-                    const user = dataSnapshot.toJSON();
+            getUser(userid)
+                .then((user) => {
                     this.setState({user: user});
                 }).catch((error) => {
-                    console.log('Error while retrieving user data');
                     console.log(error);
                 }
             );
@@ -144,15 +125,10 @@ export class ProfileScreen extends React.Component {
 
         if (currentUser && userid && userid !== currentUser.uid) {
             // Is current user following this user?
-            console.log('Retrieving follower status...');
-            const ref = firebase.database().ref(pathFollow).child(_generateCombinedKey(currentUser.uid, userid));
-            ref.once('value')
-                .then((dataSnapshot) => {
-                    console.log('Successfully retrieved follower status');
-                    this.props.navigation.setParams({isFollowing: dataSnapshot.toJSON() !== null});
-                }).catch(
-                (error) => {
-                    console.log('Error while retrieving follower status');
+            isFollowing(currentUser.uid, userid)
+                .then((isFollowing) => {
+                    this.props.navigation.setParams({isFollowing: isFollowing});
+                }).catch((error) => {
                     console.log(error);
                 }
             );
@@ -173,7 +149,7 @@ export class ProfileScreen extends React.Component {
         const followersSize = Object.keys(this.followersIds).length;
         if (followersSize === 0 || followersSize % FOLLOW_LOAD_DEPTH === 0) {
             console.log('Loading followers...');
-            this._loadUsers('followee', userid, this.followersIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => this.setState(prevState => ({followers: [...prevState.followers, dataSnapshot]})));
+            this._loadUsers(FollowerFolloweeEnum.FOLLOWEE, userid, this.followersIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => this.setState(prevState => ({followers: [...prevState.followers, dataSnapshot]})));
         }
     }
 
@@ -181,7 +157,7 @@ export class ProfileScreen extends React.Component {
         const followingSize = Object.keys(this.followingIds).length;
         if (followingSize === 0 || followingSize % FOLLOW_LOAD_DEPTH === 0) {
             console.log('Loading following...');
-            this._loadUsers('follower', userid, this.followingIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => this.setState(prevState => ({following: [...prevState.following, dataSnapshot]})));
+            this._loadUsers(FollowerFolloweeEnum.FOLLOWER, userid, this.followingIds, this.state.followers ? this.state.followers.length + FOLLOW_LOAD_DEPTH : FOLLOW_LOAD_DEPTH, (dataSnapshot) => this.setState(prevState => ({following: [...prevState.following, dataSnapshot]})));
         }
     }
 
@@ -189,24 +165,17 @@ export class ProfileScreen extends React.Component {
         const obsSize = this.state.observations.length;
         if (userid && !this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0)) {
             const index = this.state.observations.length;
-
-            console.log('Loading observations... Starting at ' + index + ' to ' + (index + OBS_LOAD_DEPTH));
             this.isLoadingObservations = true;
 
-            const httpsCallable = firebase.functions().httpsCallable('getXMostRecentObsForUserWithId');
-            httpsCallable({
-                userid: userid,
-                from: index,
-                to: index + OBS_LOAD_DEPTH
-            }).then(({data}) => {
-                console.log('Successfully loaded observations');
-                this.isLoadingObservations = false;
-                this._addToObservationState(data.observations, onStartup);
-            }).catch(httpsError => {
-                console.log(httpsError.code);
-                console.log(httpsError.message);
-                this.isLoadingObservations = false;
-            })
+            getXMostRecentObsForUserWithId(userid, index, index + OBS_LOAD_DEPTH)
+                .then((observations) => {
+                    this.isLoadingObservations = false;
+                    this._addToObservationState(observations, onStartup);
+                }).catch((error) => {
+                    console.log(error);
+                    this.isLoadingObservations = false;
+                }
+            );
         }
     }
 
@@ -229,35 +198,26 @@ export class ProfileScreen extends React.Component {
 
     _loadUsers(type, userid, idarray, loadDepth, callback) {
         // Load all matches of userid in combination of type
-        const ref = firebase.database().ref(pathFollow).orderByChild(type).equalTo(userid).limitToFirst(loadDepth);
-        ref.once('value')
-            .then((dataSnapshot) => {
-                console.log('Successfully loaded ' + type + 's');
-                if (dataSnapshot.numChildren() !== idarray.size) {
-                    // Loop through results to get all users
-                    dataSnapshot.forEach(function (childSnapshot) {
-                        const uid = type === 'follower' ? childSnapshot.toJSON().followee : childSnapshot.toJSON().follower;
-                        if (uid && !idarray[uid]) {
-                            idarray[uid] = true;
-                            firebase.database().ref(pathUsers).child(uid).once(
-                                'value',
-                                (dataSnapshot) => {
-                                    const user = dataSnapshot ? dataSnapshot.toJSON() : null;
-                                    if (user !== null) {
-                                        callback(user);
-                                    } else {
-                                        console.log('Error while retrieving user with id ' + uid)
-                                    }
-                                },
-                                (error) => {
-                                    console.log(error);
+        getFollowers(type, userid, loadDepth)
+            .then((followeers) => {
+                for (let i = 0; i < followeers.length; i++) {
+                    const uid = followeers[i];
+                    if (uid && !idarray[uid]) {
+                        idarray[uid] = true;
+                        getUser(uid)
+                            .then((user) => {
+                                if (user !== null) {
+                                    callback(user);
+                                } else {
+                                    console.log('User with id ' + uid + ' does not exist');
                                 }
-                            );
-                        }
-                    });
+                            }).catch ((error) => {
+                                console.log(error);
+                            }
+                        );
+                    }
                 }
-            }).catch((error) => {
-                console.log('Error while retrieving ' + type + ' of ' + userid);
+            }).catch ((error) => {
                 console.log(error);
             }
         );

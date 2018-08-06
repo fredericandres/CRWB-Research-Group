@@ -16,9 +16,9 @@ export default class Observation {
 
     constructor() {
         // TODO [FEATURE]: Set currency according to location
-        this.currency = currency || 'USD';
-        this.rating = rating ? rating : 5;
-        this.vocabulary = vocabulary ? vocabulary : {};
-        this.dietaryRestriction = dietaryRestriction || 'none';
+        this.currency = 'USD';
+        this.rating = 5;
+        this.vocabulary = {};
+        this.dietaryRestriction = 'none';
     }
 }

@@ -10,23 +10,29 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import strings from "../strings";
-import styles from "../styles";
+import strings from '../strings';
+import styles from '../styles';
 import {
-    formatUsername,
     colorAccent,
+    formatUsername,
     iconEmail,
     iconLocation,
     iconPassword,
     iconUser,
     maxUsernameLength,
-    pathUsers,
     tastemateFont
-} from "../Constants/Constants";
-import {TextInputComponent} from "../Components/TextInputComponent";
+} from '../Constants/Constants';
+import {TextInputComponent} from '../Components/TextInputComponent';
 import firebase from 'react-native-firebase';
-import {ActivityIndicatorComponent} from "../Components/ActivityIndicatorComponent";
-import {handleAuthError} from "../Helpers/FirebaseHelper";
+import {ActivityIndicatorComponent} from '../Components/ActivityIndicatorComponent';
+import {
+    checkIfUsernameExists,
+    createAnonymousAccount,
+    createNewAccount,
+    handleAuthError,
+    logInUser,
+    updateUserInformation
+} from '../Helpers/FirebaseHelper';
 
 export class SignUpLogInScreen extends React.Component {
     static navigationOptions = {
@@ -104,65 +110,55 @@ export class SignUpLogInScreen extends React.Component {
                 } else {
                     _startActivityIndicator(strings.checkingUsername);
 
-                    console.log('Checking if username already exists...');
-                    const refUsername = firebase.database().ref(pathUsers).orderByChild('username').equalTo(this.state.username);
-                    refUsername.once('value')
-                        .then((dataSnapshot) => {
-                            console.log('Username successfully checked');
-                            if (dataSnapshot.toJSON()) {
-                                // Display error message
+                    checkIfUsernameExists(this.state.username)
+                        .then((exists) => {
+                            if (exists) {
                                 _stopActivityIndicator();
                                 this.setState({error: strings.formatString(strings.errorMessageUsernameAlreadyInUse)});
                             } else {
-                                // Create account
                                 _setActivityIndicatorText(strings.creatingAccount);
-                                console.log('Creating new account...');
-                                firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then((credentials) => {
-                                    console.log('Successfully created new account.');
-
-                                    // Add user's username & location to database
-                                    _setActivityIndicatorText(strings.savingUserInformation);
-                                    firebase.database().ref(pathUsers).child(credentials.user.uid).set({
-                                        username: this.state.username,
-                                        location: this.state.location.trim(),
-                                        userid: credentials.user.uid
-                                    }, (error) => {
-                                        if (error) {
-                                            console.log('Error during user information transmission.');
-                                            console.log(error);
-                                            _stopActivityIndicator();
-                                            _onAuthError(handleAuthError(error));
-                                        } else {
-                                            _stopActivityIndicator();
-                                            console.log('Successfully added user information to DB.');
-                                        }
-                                    });
-                                }).catch((error) => {
-                                    console.log('Error during signup.');
-                                    console.log(error);
-                                    _stopActivityIndicator();
-                                    _onAuthError(handleAuthError(error));
-                                });
+                                createNewAccount(this.state.email, this.state.password)
+                                    .then((credentials) => {
+                                        // Add user's username & location to database
+                                        _setActivityIndicatorText(strings.savingUserInformation);
+                                        const userInfo = {
+                                            username: this.state.username,
+                                            location: this.state.location.trim(),
+                                            userid: credentials.user.uid
+                                        };
+                                        updateUserInformation(credentials.user.uid, userInfo)
+                                            .then(() => {
+                                                _stopActivityIndicator();
+                                            }).catch((error) => {
+                                                console.log(error);
+                                                _stopActivityIndicator();
+                                                _onAuthError(handleAuthError(error));
+                                            }
+                                        );
+                                    }).catch((error) => {
+                                        console.log(error);
+                                        _stopActivityIndicator();
+                                        _onAuthError(handleAuthError(error));
+                                    }
+                                );
                             }
                         }).catch((error) => {
                             _stopActivityIndicator();
-                            console.log('Error while checking if username exists');
                             console.log(error);
                         }
                     );
                 }
             } else {
                 _startActivityIndicator(strings.loggingIn);
-                console.log('Logging in...');
-                firebase.auth().signInAndRetrieveDataWithEmailAndPassword(this.state.email, this.state.password).then(() => {
-                    console.log('Successfully logged in.');
-                    _stopActivityIndicator();
-                }).catch((error) => {
-                    console.log('Error during login.');
-                    console.log(error);
-                    _stopActivityIndicator();
-                    _onAuthError(handleAuthError(error));
-                });
+                logInUser(this.state.email, this.state.password)
+                    .then(() => {
+                        _stopActivityIndicator();
+                    }).catch((error) => {
+                        console.log(error);
+                        _stopActivityIndicator();
+                        _onAuthError(handleAuthError(error));
+                    }
+                );
             }
         }
 
@@ -183,14 +179,15 @@ export class SignUpLogInScreen extends React.Component {
             this._close();
         } else {
             this._startActivityIndicator(strings.creatingAnonymous);
-            firebase.auth().signInAnonymouslyAndRetrieveData().then(() => {
-                console.log('Successfully signed up.');
-            }).catch((error) => {
-                console.log('Error during signup.');
-                console.log(error);
-                this._stopActivityIndicator();
-                this._onAuthError(handleAuthError(error));
-            });
+            createAnonymousAccount()
+                .then(() => {
+                    // Do nothing
+                }).catch((error) => {
+                    console.log(error);
+                    this._stopActivityIndicator();
+                    this._onAuthError(handleAuthError(error));
+                }
+            );
         }
     }
 
