@@ -7,6 +7,21 @@ Welcome to the Tastemate project.
 * [Google Play Console](https://play.google.com/apps/publish/) 
 * [App StoreConnect](https://appstoreconnect.apple.com/) 
 
+## Usage
+
+1. Create the file `ApiKeys.js` in `Tastemate/Constants/` and add the following line
+    ```export const mapboxApiKey = '$MAPBOX_API_KEY';'```
+    where $MAPBOX_API_KEY is the Mapbox API key that you can get [here](https://www.mapbox.com/account/)
+
+2. Install npm
+
+3. Run `npm install` in `Tastemate/`
+
+4. Run `pod install` in `Tastemate/ios/`
+
+5. See the React Native website on  how to run the code [in the simulator](https://facebook.github
+.io/react-native/docs/getting-started) or [on your device](https://facebook.github.io/react-native/docs/running-on-device)
+
 ## Release
 
 ### Android
