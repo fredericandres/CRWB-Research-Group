@@ -16,7 +16,7 @@ moment.locale(getLanguageCode());
 // Use a string like so: strings.home
 // If you add another language: add the language code (e.g. de) to the locales above and add the translations like below
 
-export const appName = 'Tastemate';
+export const appName = 'Flavorlens';
 
 export default strings = new LocalizedStrings({
     en: {

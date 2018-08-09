@@ -1,6 +1,7 @@
 PRIVACY POLICY MODEL FOR MOBILE APPLICATIONS
  
-This privacy policy governs your use of the software application Tastemate (â€œApplicationâ€) for mobile devices that was created by researchers at the National Institute of Informatics. The Application is a social media platform for sharing pictures and detailed ratings of food dishes with others. 
+This privacy policy governs your use of the software application Flavorlens (â€œApplicationâ€) for mobile devices that
+was created by researchers at the National Institute of Informatics. The Application is a social media platform for sharing pictures and detailed ratings of food dishes with others. 
  
 What information does the Application obtain and how is it used?
  

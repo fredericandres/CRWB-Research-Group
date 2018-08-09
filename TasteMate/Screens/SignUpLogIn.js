@@ -10,7 +10,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import strings from '../strings';
+import strings, {appName} from '../strings';
 import styles from '../styles';
 import {
     colorAccent,
@@ -243,7 +243,7 @@ export class SignUpLogInScreen extends React.Component {
                                     <Text style={[styles.textStandardDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.welcomeTo}</Text>
                                 </View>
                                 <View style={{flex: 0, flexDirection:'row', alignItems: 'flex-end'}}>
-                                    <Text style={[styles.textLargeDark, styles.containerPadding, {textAlign: 'center', fontFamily:tastemateFont}]}>Tastemate </Text>
+                                    <Text style={[styles.textLargeDark, styles.containerPadding, {textAlign: 'center', fontFamily:tastemateFont}]}>{appName} </Text>
                                 </View>
                                 <View style={{flex: 1, flexDirection:'row', alignItems: 'flex-start'}}>
                                     <Text style={[styles.textStandardDark, styles.containerPadding, {textAlign: 'center'}]}>{strings.tastemateDescription}</Text>
