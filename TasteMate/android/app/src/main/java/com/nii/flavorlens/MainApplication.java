@@ -1,4 +1,4 @@
-package com.tastemate;
+package com.nii.flavorlens;
 
 import android.app.Application;
 
@@ -63,7 +63,7 @@ public class MainApplication extends Application implements ReactApplication, Sh
 
     @Override
     public String getFileProviderAuthority() {
-        return "com.tastemate.provider";
+        return "com.nii.flavorlens.provider";
     }
 
   @Override

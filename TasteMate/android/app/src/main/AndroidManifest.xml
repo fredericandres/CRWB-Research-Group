@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.tastemate">
+          package="com.nii.flavorlens">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
@@ -30,7 +30,7 @@
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
         <provider
                 android:name="android.support.v4.content.FileProvider"
-                android:authorities="com.tastemate.provider"
+                android:authorities="com.nii.flavorlens.provider"
                 android:grantUriPermissions="true"
                 android:exported="false">
             <meta-data

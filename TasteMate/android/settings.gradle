@@ -1,4 +1,4 @@
-rootProject.name = 'TasteMate'
+rootProject.name = 'Flavorlens'
 include ':react-native-safe-area-getter'
 project(':react-native-safe-area-getter').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-safe-area-getter/android')
 include ':react-native-image-resizer'

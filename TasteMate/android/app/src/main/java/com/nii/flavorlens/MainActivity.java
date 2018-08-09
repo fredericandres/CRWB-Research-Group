@@ -1,4 +1,4 @@
-package com.tastemate;
+package com.nii.flavorlens;
 
 import com.facebook.react.ReactActivity;
 
@@ -10,6 +10,6 @@ public class MainActivity extends ReactActivity {
      */
     @Override
     protected String getMainComponentName() {
-        return "TasteMate";
+        return "Flavorlens";
     }
 }

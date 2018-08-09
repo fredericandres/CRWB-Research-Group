@@ -8,4 +8,4 @@ YellowBox.ignoreWarnings([
     'Module RNFetchBlob requires main queue setup',
     'Class RCTCxxModule was not exported'
 ]);
-AppRegistry.registerComponent('TasteMate', () => App);
+AppRegistry.registerComponent('Flavorlens', () => App);

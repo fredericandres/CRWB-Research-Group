@@ -99,7 +99,7 @@ android {
     buildToolsVersion '27.0.3'
 
     defaultConfig {
-        applicationId "com.tastemate"
+        applicationId "com.nii.flavorlens"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 6

@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>TasteMate</string>
+	<string>Flavorlens</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -48,13 +48,13 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>TasteMate lets you take pictures within the app.</string>
+	<string>Flavorlens lets you take pictures within the app.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>TasteMate displays your location on a map of food observations so you know which ones are nearby.</string>
+	<string>Flavorlens displays your location on a map of food observations so you know which ones are nearby.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>TasteMate adds pictures you take to your photo library.</string>
+	<string>Flavorlens adds pictures you take to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>TasteMate lets you select pictures from your photo library.</string>
+	<string>Flavorlens lets you select pictures from your photo library.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>
