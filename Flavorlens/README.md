@@ -5,7 +5,7 @@ Welcome to the Flavorlens project.
 ## Important links
 * [Firebase Console](https://console.firebase.google.com/) 
 * [Google Play Console](https://play.google.com/apps/publish/) 
-* [App StoreConnect](https://appstoreconnect.apple.com/) 
+* [App Store Connect](https://appstoreconnect.apple.com/) 
 
 ## Usage
 
@@ -25,7 +25,9 @@ Welcome to the Flavorlens project.
 ## Release
 
 ### Android
-1. In `Flavorlens/android/gradle.properties`, make sure you have 
+1. Download the file `tastemate-key.keystore` from the Google Drive and add it to `Flavorlens/android/app/`
+
+2. In `Flavorlens/android/gradle.properties`, make sure you have 
    ```
    TASTEMATE_RELEASE_STORE_FILE=tastemate-key.keystore
    TASTEMATE_RELEASE_KEY_ALIAS=tastemate-key-alias
@@ -61,6 +63,8 @@ Welcome to the Flavorlens project.
 3. Remove localhost from the `NSExceptionDomains` in `Flavorlens/ios/TasteNate/Info.plist`
 
 4. Change the Xcode scheme from `Debug` to `Release`
+
+4. Download the file `iOSSigningCert.p12` from the Google Drive
 
 3. Increase the properties `Build` and `Version` in Xcode. You can find them by clicking on the Flavorlens 
 project in the organizer view, slecting the Flavorlens with the app icon as a target, and then clicking on the 
