@@ -1,4 +1,4 @@
-package com.nii.flavorlens;
+package com.tastemate;
 
 import android.app.Application;
 

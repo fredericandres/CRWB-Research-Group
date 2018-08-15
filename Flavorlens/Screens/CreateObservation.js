@@ -424,11 +424,15 @@ export class CreateObservationScreen extends React.Component {
                                         console.log('MyPoC prediction successfully retrieved');
                                         // Parse xml text into object and look for 'text' element --> MyPoC prediction of image
                                         const xml = new XMLParser().parseFromString(xmlText);
-                                        const mypoc = xml.getElementsByTagName("text")[0].value;
-                                        updateMyPoC(mypoc, true);
+                                        const texts = xml.getElementsByTagName("text");
+                                        if (texts && texts.length > 0) {
+                                            const mypoc = texts[0].value;
+                                            updateMyPoC(mypoc, true);
+                                        }
                                     }).catch((error) => {
-                                    console.log(error);
-                                });
+                                        console.log(error);
+                                    }
+                                );
                             } else {
                                 console.log('An error occurred while sending image to MyPoC server');
                                 console.log(xhr);
