@@ -237,6 +237,7 @@ export default strings = new LocalizedStrings({
         sweet: 'sweet',
         umami: 'umami',
         vanilla: 'vanilla',
+        xOptional: '{0} (Optional)'
     },
     fr: {
         explore: 'Explorer',

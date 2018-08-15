@@ -82,23 +82,23 @@ export class CameraCameraRollComponent extends React.Component {
 
     _requestPermission(type, successAction){
         Permissions.request(type).then(response => {
-            if (type === 'camera') {
-                this.setState({ cameraPermission: response });
-            } else if (type === 'photo') {
-                this.setState({ photoPermission: response });
+            let action = () => console.log('not authorized');
+            if (response === 'authorized') {
+                action = successAction;
             }
 
-            if (response === 'authorized') {
-                successAction();
+            if (type === 'camera') {
+                this.setState({ cameraPermission: response }, action);
+            } else if (type === 'photo') {
+                this.setState({ photoPermission: response }, action);
             }
-        })
+        });
     }
 
     _onPressPermissionNeeded() {
         if (this.state.cameraPermission !== 'authorized') {
-            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.formatString(strings.enableCamera, appName), () => this._requestPermission('camera', () => console.log('Camera permission granted')));
-        }
-        if (this.state.photoPermission !== 'authorized') {
+            this._alertForPermission('camera', strings.accessCameraQuestion, strings.accessCameraExplanation, strings.formatString(strings.enableCamera, appName), () => this._requestPermission('camera', this._onPressPermissionNeeded));
+        } else if (this.state.photoPermission !== 'authorized') {
             this._alertForPermission('photo', strings.accessPhotoQuestion, strings.accessPhotoExplanation, strings.formatString(strings.enablePhoto, appName), () => this._requestPermission('photo', () => console.log('Photo permission granted')));
         }
     }

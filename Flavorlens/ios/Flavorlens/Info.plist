@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>5</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>whatsapp</string>
@@ -42,14 +42,24 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This permission is never requested</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This permission is never requested</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This permission is never requested</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Flavorlens lets you take pictures within the app.</string>
+	<string>Flavorlens lets you take a photo of your food when you are creating a dish observation. You can also take a new profile picture.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Flavorlens displays your location on a map of food observations so you know which ones are nearby.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This permission is never requested</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Flavorlens adds pictures you take to your photo library.</string>
+	<string>Flavorlens adds photos you take to your phone's photo library so they are saved and you can use them later on.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Flavorlens lets you select pictures from your photo library.</string>
+	<string>Flavorlens lets you select a picture from your photo library when you are creating a dish observation. You can also select a picture from your photo library and save it as your new profile picture. </string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This permission is never requested</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>

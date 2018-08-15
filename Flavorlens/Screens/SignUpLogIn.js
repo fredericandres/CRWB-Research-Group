@@ -105,8 +105,8 @@ export class SignUpLogInScreen extends React.Component {
             if (this.state.signUpActive) {
                 if (!this.state.username) {
                     errorMessage = strings.errorMessageEnterUsername;
-                } else if (!this.state.location) {
-                    errorMessage = strings.errorMessageEnterLocation;
+                //} else if (!this.state.location) {
+                    //errorMessage = strings.errorMessageEnterLocation;
                 } else {
                     _startActivityIndicator(strings.checkingUsername);
 
@@ -301,7 +301,7 @@ export class SignUpLogInScreen extends React.Component {
                                 onFocus={() => this._inputFocused('location')}
                                 fontawesome={true}
                                 hidden={!this.state.signUpActive}
-                                placeholder={strings.location}
+                                placeholder={strings.formatString(strings.xOptional, strings.location)}
                                 value={this.state.location}
                                 onChangeText={(text) => this.setState({location: text})}
                                 icon={iconLocation}

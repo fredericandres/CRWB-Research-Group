@@ -36,16 +36,18 @@ Welcome to the Flavorlens project.
 
 2. Verify that `Flavorlens/android/app/google-services.json` is the firebase file that points to the production database
 
-3. Run the following code
+3. Increase the properties `versionName` and `versionCode` in `Flavorlens/android/app/build.gradle`
+
+4. Run the following code
    ```
    $ cd Flavorlens/android/
    $ export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
    $ ./gradlew assembleRelease
    ```
 
-4. Find `app-release.apk` in `Flavorlens/android.app/build/outputs/apk/release`
+5. Find `app-release.apk` in `Flavorlens/android.app/build/outputs/apk/release`
 
-5. Upload `app-release.apk` at the [Google Play Console](https://play.google.com/apps/publish/) 
+6. Upload `app-release.apk` at the [Google Play Console](https://play.google.com/apps/publish/) 
 
 ### iOS
 1. Verify that `Flavorlens/ios/GoogleService-Info.plist` is the firebase file that points to the production database
@@ -60,5 +62,19 @@ Welcome to the Flavorlens project.
 
 4. Change the Xcode scheme from `Debug` to `Release`
 
-5. Run Xcode
+3. Increase the properties `Build` and `Version` in Xcode. You can find them by clicking on the Flavorlens 
+project in the organizer view, slecting the Flavorlens with the app icon as a target, and then clicking on the 
+`General` tab
+
+5. Select `Generic iOS Device` Xcode as a Run Target in the top left corner of the Xcode window
+
+6. Select `Product > Archive`
+
+7. Once the app has been archived, a new window should have opened. There, click `Validate...` and follow the steps. 
+Then,
+ click `Upload... to App Store`
+ 
+8. Go to the [App Store Connect](https://appstoreconnect.apple.com/) and navigate to the Flavorlens app
+
+9. Select the new build you just archived, update the description if necessary, and submit the app for review
 
