@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
+	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<key>CLIENT_ID</key>
+	<string>498074266688-8vq5skg56us6nc8mq120v5dv48l1eq47.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.498074266688-8vq5skg56us6nc8mq120v5dv48l1eq47</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB60jxnOXw985eE4JMIc1fr8u2w6hnfi0M</string>
+	<key>GCM_SENDER_ID</key>
+	<string>498074266688</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.nii.flavorlens</string>
+	<key>PROJECT_ID</key>
+	<string>tastemate-bb95e</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tastemate-bb95e.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<true></true>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false></false>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:498074266688:ios:75c14902af0d7773</string>
+	<key>DATABASE_URL</key>
+	<string>https://tastemate-bb95e.firebaseio.com</string>
+</dict>
+</plist>
