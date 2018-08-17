@@ -207,9 +207,9 @@ export class CreateObservationScreen extends React.Component {
             if (!this.state.observation.dishname) {
                 missing.push(strings.dishname.toLowerCase());
             }
-            if (!this.state.observation.price) {
-                missing.push(strings.price.toLowerCase());
-            }
+            // if (!this.state.observation.price) {
+            //     missing.push(strings.price.toLowerCase());
+            // }
             if (!this.state.observation.currency) {
                 missing.push(strings.currency.toLowerCase());
             }
@@ -217,7 +217,7 @@ export class CreateObservationScreen extends React.Component {
                 missing.push(strings.tasteTerms);
             }
             if ((!this.state.observation.mypoc || this.state.observation.mypoc === '') && !this.state.observation.mypoccorrector) {
-                missing.push(strings.myPoc.toLowerCase());
+                missing.push(strings.mypocPrediction.toLowerCase());
             }
 
             if (missing.length > 0) {
@@ -726,7 +726,7 @@ export class CreateObservationScreen extends React.Component {
                                 infoTitle={strings.mypocExplanationTitle}
                                 infoText={strings.mypocExplanationText}
                                 infoButtons={myPocAlertButtons}
-                                placeholder={this.state.observation.mypoc ? strings.formatString(strings.mypocPrediction, this.state.observation.mypoc) : strings.predictionLoading}
+                                placeholder={this.state.observation.mypoc ? strings.formatString(strings.myPoc, this.state.observation.mypoc) : strings.predictionLoading}
                                 value={this.state.myPocEdited ? this.state.observation.mypoccorrector : this.state.observation.mypoc}
                                 onChangeText={(text) => this._onUpdateMyPoC(text)}
                                 icon={iconMyPoc}
