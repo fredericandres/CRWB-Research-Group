@@ -397,10 +397,13 @@ export class ObservationComponent extends React.Component {
                                     <Image source={(dietaryRestriction && dietaryRestriction.source) || require('../Images/DietaryRestrictions/none.png')} resizeMode={'cover'} style={{width: iconSizeStandard, height:iconSizeStandard, opacity: 0.7}}/>
                                 </View>
                             }
-                            <View name={'price'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor:colorMain, flexDirection:'column', justifyContent:'center'}]}>
-                                {/*TODO [FEATURE]: Calculate price in currency of location or language*/}
-                                <Text style={[styles.textStandardDark]}>{allCurrencies[this.state.observation.currency].symbol}{this.state.observation.price}</Text>
-                            </View>
+                            {
+                                this.state.observation.price && this.state.observation.currency &&
+                                <View name={'price'} style={[styles.leftRoundedEdges, styles.rightRoundedEdges, styles.containerPadding, {backgroundColor:colorMain, flexDirection:'column', justifyContent:'center'}]}>
+                                    {/*TODO [FEATURE]: Calculate price in currency of location or language*/}
+                                    <Text style={[styles.textStandardDark]}>{allCurrencies[this.state.observation.currency].symbol}{this.state.observation.price}</Text>
+                                </View>
+                            }
                         </View>
                     </View>
                     <View style={[styles.containerOpacityDark, {padding: 6, position: 'absolute', bottom: 0, right: 0, flexDirection:'row'}]}>

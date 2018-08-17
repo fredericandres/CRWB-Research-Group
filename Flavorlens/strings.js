@@ -237,7 +237,7 @@ export default strings = new LocalizedStrings({
         sweet: 'sweet',
         umami: 'umami',
         vanilla: 'vanilla',
-        xOptional: '{0} (Optional)'
+        xOptional: '{0} (Optional)',
     },
     fr: {
         explore: 'Explorer',
@@ -1143,5 +1143,20 @@ export default strings = new LocalizedStrings({
         sweet: 'süß',
         umami: 'umami',
         vanilla: 'Vanille',
+        xOptional: '{0} (optional)',
+    },
+    hi /*hindi*/: {
+        home: 'Ghar',
+        explore: 'Khoj',
+        notifications: 'Soochna',
+        eatingOutList: 'Bhar Khane ki Soochi',
+        profile: 'Profile',
+        settings: 'Settings',
+        observationDetail: 'Vistaar',
+        createObservation: 'Naya Avlokan',
+        signUpLogIn: 'signUpLogIn',
+        mapDetail: 'Vistaar Naksha',
+        hiThere: 'Namaste',
+        welcomeToTastemate: 'Tastemate Me aapka Swagat Hai',
     },
 });
