@@ -30,6 +30,9 @@ build/
 local.properties
 *.iml
 
+# VS Code
+.vscode/
+
 # node.js
 #
 node_modules/
@@ -60,3 +63,5 @@ ios/pods/
 
 #Code
 ApiKeys.js
+android/app/google-services.json
+android/app/google-services.prod.json

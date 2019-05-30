@@ -19,7 +19,7 @@ import {
     iconSizeStandard,
     tastemateFont
 } from './Constants/Constants';
-import {Alert, NetInfo, Platform, StatusBar, StyleSheet} from 'react-native';
+import {Alert, AsyncStorage, NetInfo, Platform, StatusBar, StyleSheet} from 'react-native';
 import {SettingsScreen} from './Screens/Settings';
 import {SignUpLogInScreen} from './Screens/SignUpLogIn';
 import strings from './strings';
@@ -29,7 +29,8 @@ import {CommentsScreen} from './Screens/Comments';
 import MapboxGL from '@mapbox/react-native-mapbox-gl';
 import {mapboxApiKey} from './Constants/ApiKeys';
 import {UsersScreen} from './Screens/Users';
-import {getUser} from './Helpers/FirebaseHelper';
+import {getUser, updateUserInformation} from './Helpers/FirebaseHelper';
+import { storeDataAsync, getDataAsync } from './Helpers/AsyncStorageHelper';
 
 StatusBar.setHidden(false);
 
@@ -49,20 +50,34 @@ const styles = StyleSheet.create({
 MapboxGL.setAccessToken(mapboxApiKey);
 
 export let currentUser = null;
-export let currentUserInformation = null;
-firebase.auth().onAuthStateChanged((user) => {
+getDataAsync('currentUser').then((user) => {
     currentUser = user;
+    console.log('Got user from Storage', currentUser);
+});
+const setCurrentUser = (user) => {
+    currentUser = user;
+    storeDataAsync('currentUser', currentUser);
+}
+export let currentUserInformation = null;
+getDataAsync('currentUserInformation').then((userInfo) => {
+    currentUserInformation = userInfo;
+    console.log('Got userInfo from Storage', currentUserInformation);
+});
+export const setUserInformation = (user) => {
+    setCurrentUser(user);
 
     if (user) {
         getUser(currentUser.uid)
             .then((user) => {
                 currentUserInformation = user;
+                storeDataAsync('currentUserInformation', currentUserInformation);
             }).catch((error) => {
                 console.log(error);
             }
         );
     }
-});
+};
+firebase.auth().onAuthStateChanged((user) => setUserInformation(user));
 
 let connectionInfo = null;
 let firstConnectionCall = null;

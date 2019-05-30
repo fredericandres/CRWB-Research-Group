@@ -68,6 +68,7 @@ export const iconCheckboxChecked = 'check-square-o';
 export const iconCheckboxUnchecked = 'square-o';
 export const iconSend = 'send';
 export const iconClose = 'close';
+export const iconTimesCircle = 'times-circle';
 export const iconCamera = 'camera-retro';
 export const iconFlashOn = 'ios-flash';
 export const iconFlashOff = 'ios-flash-off';
@@ -83,6 +84,7 @@ export const iconMenu = 'ellipsis-v';
 export const iconList = 'list';
 export const iconMap = 'map';
 export const iconArrowUpLeft = 'arrow-up-left';
+export const iconArrowLeft = 'arrow-left';
 export const iconEdit = 'edit';
 
 export const AsyncStorageKeyObservations = 'OBSERVATIONS';

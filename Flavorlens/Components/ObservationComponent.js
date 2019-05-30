@@ -122,7 +122,7 @@ export class ObservationComponent extends React.Component {
             adjs = '';
             Object.keys(this.state.observation.vocabulary).map(index => {
                 if (allVocabulary[index]) {
-                    adjs += '#' + allVocabulary[index].value.name + ' ';
+                    adjs += '#' + allVocabulary[index].value + ' ';
                 }
             });
         }

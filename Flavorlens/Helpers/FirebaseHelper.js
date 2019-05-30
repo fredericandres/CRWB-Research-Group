@@ -17,6 +17,12 @@ import {
     StoragePathEnum
 } from '../Constants/Constants';
 
+const functions = {
+    getXMostRecentFeedObsForUsers: 'getXMostRecentFeedObsForUsers',
+    getXMostRecentObsForUserWithId: 'getXMostRecentObsForUserWithId',
+    getXMostRecentObs: 'getXMostRecentObs'
+}
+
 /************* USER *************/
 
 /**
@@ -93,6 +99,8 @@ export function getMostPopularUsers(n) {
  */
 export function updateUserInformation(userid, userInfo) {
     console.log('Updating user information...');
+    userInfo.timestamp = userInfo.timestamp==null? firebase.database().getServerTime(): userInfo.timestamp;
+    console.log('firebase update userinfo', userInfo);
     return new Promise(function(resolve, reject) {
         firebase.database().ref(pathUsers).child(userid).update(userInfo)
             .then(() => {
@@ -271,7 +279,7 @@ export function sortArrayByTimestamp(array, reverse) {
  */
 export function getXMostRecentObs(searchText, from, to) {
     console.log('Loading ' + searchText + ' observations... Starting at ' + from + ' to ' + to);
-    const httpsCallable = firebase.functions().httpsCallable('getXMostRecentObs');
+    const httpsCallable = firebase.functions().httpsCallable(functions.getXMostRecentObs);
     return new Promise(function(resolve, reject) {
         httpsCallable({
             from: from,
@@ -298,7 +306,7 @@ export function getXMostRecentObs(searchText, from, to) {
  */
 export function getXMostRecentObsForUserWithId(userid, from, to) {
     console.log('Loading observations... Starting at ' + from + ' to ' + to);
-    const httpsCallable = firebase.functions().httpsCallable('getXMostRecentObsForUserWithId');
+    const httpsCallable = firebase.functions().httpsCallable(functions.getXMostRecentObsForUserWithId);
     return new Promise(function(resolve, reject) {
         httpsCallable({
             userid: userid,
@@ -324,7 +332,7 @@ export function getXMostRecentObsForUserWithId(userid, from, to) {
  */
 export function getXMostRecentFeedObsForUsers(users, from, to) {
     console.log('Loading observations... Starting at ' + from + ' to ' + to);
-    const httpsCallable = firebase.functions().httpsCallable('getXMostRecentFeedObsForUsers');
+    const httpsCallable = firebase.functions().httpsCallable(functions.getXMostRecentFeedObsForUsers);
     return new Promise(function(resolve, reject) {
         httpsCallable({
             users: users,
@@ -627,10 +635,12 @@ export function removeFollowRelationship(follower, followee) {
  */
 export function addFollowRelationship(follower, followee) {
     console.log('Removing relationship of ' + follower + ' following ' + followee + '...');
+    const timestamp = firebase.database().getServerTime();
     return new Promise(function(resolve, reject) {
         firebase.database().ref(pathFollow).child(generateCombinedKey(follower, followee)).set({
             follower: follower,
             followee: followee,
+            timestamp: timestamp
         }, (error) => {
             if (error) {
                 console.log('Error while adding follow relationship of ' + follower + ' following ' + followee);

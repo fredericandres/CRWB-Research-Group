@@ -47,7 +47,7 @@ import {SearchBar} from '../Components/SearchBar';
 import {SettingsSwitchComponent} from '../Components/SettingsSwitchComponent';
 import {allVocabulary} from '../Constants/Vocabulary';
 import RNFetchBlob from 'react-native-fetch-blob';
-import XMLParser from 'react-xml-parser';
+// import XMLParser from 'react-xml-parser';
 import {_checkInternetConnection, currentUser} from '../App';
 import {CameraCameraRollComponent} from '../Components/CameraCameraRollComponent';
 import {ActivityIndicatorComponent} from '../Components/ActivityIndicatorComponent';
@@ -64,6 +64,7 @@ const PagesEnum = Object.freeze({SELECTIMAGE:0, DETAILS:1, TASTE:2});
 let allVocabSorted = null;
 
 export class CreateObservationScreen extends React.Component {
+    _isMounted = false;
     static navigationOptions = ({navigation}) => {
         const {params = {}} = navigation.state;
         return {
@@ -135,6 +136,7 @@ export class CreateObservationScreen extends React.Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.props.navigation.setParams({
             onClose: (() => this._openExitAlert()),
         });
@@ -155,6 +157,7 @@ export class CreateObservationScreen extends React.Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         this.backHandler.remove();
         if (this.mypocRequest) {
             this.mypocRequest.onreadystatechange = null;
@@ -226,7 +229,9 @@ export class CreateObservationScreen extends React.Component {
                 _checkInternetConnection(this._sendObservation, null);
             }
         } else {
-            this.setState((prevState) => ({activePageIndex: prevState.activePageIndex + 1}));
+            if(this._isMounted){
+                this.setState((prevState) => ({activePageIndex: prevState.activePageIndex + 1}));
+            }
         }
     }
 
@@ -294,7 +299,9 @@ export class CreateObservationScreen extends React.Component {
         if ((this.isEditing && this.state.activePageIndex === PagesEnum.DETAILS) || this.state.activePageIndex === PagesEnum.SELECTIMAGE) {
             this._openExitAlert();
         } else {
-            this.setState((prevState) => ({activePageIndex: prevState.activePageIndex - 1}));
+            if(this._isMounted){
+                this.setState((prevState) => ({activePageIndex: prevState.activePageIndex - 1}));
+            }
         }
     }
 
@@ -319,7 +326,9 @@ export class CreateObservationScreen extends React.Component {
         try {
             const observationsJSON = await AsyncStorage.getItem(AsyncStorageKeyObservations);
             const observations = JSON.parse(observationsJSON);
-            this.setState({drafts: observations});
+            if(this._isMounted){
+                this.setState({drafts: observations});
+            }
         } catch (error) {
             console.log(error);
         }
@@ -350,17 +359,19 @@ export class CreateObservationScreen extends React.Component {
 
     _onDraftSelected(item) {
         console.log(item);
-        this.setState({observation: item}, (() => {
-            this._onPressNext();
-            if (!item.mypoc) {
-                this._sendToMyPoC(item.image).then(() => {
-                    console.log('MyPoC request sent');
-                });
-            }
-            if (item.location) {
-                this._setLocationText();
-            }
-        }));
+        if(this._isMounted){
+            this.setState({observation: item}, (() => {
+                this._onPressNext();
+                if (!item.mypoc) {
+                    this._sendToMyPoC(item.image).then(() => {
+                        console.log('MyPoC request sent');
+                    });
+                }
+                if (item.location) {
+                    this._setLocationText();
+                }
+            }));
+        }
     }
 
     async _removeDraft(observationid) {
@@ -369,7 +380,9 @@ export class CreateObservationScreen extends React.Component {
             if (drafts && drafts[observationid]) {
                 delete drafts[observationid];
                 await AsyncStorage.setItem(AsyncStorageKeyObservations, JSON.stringify(drafts));
-                this.setState({drafts: drafts});
+                if(this._isMounted){
+                    this.setState({drafts: drafts});
+                }
             }
         } catch (error) {
             // Error retrieving data
@@ -473,7 +486,9 @@ export class CreateObservationScreen extends React.Component {
         if (!this.state.observation.mypoc && fromServer) {
             obs.mypoc = mypoc;
         } else {
-            this.setState({myPocEdited: true});
+            if(this._isMounted){
+                this.setState({myPocEdited: true});
+            }
             obs.mypoccorrector = mypoc;
             // TODO [FEATURE]: Send corrected info to mypoc server
         }
@@ -495,7 +510,9 @@ export class CreateObservationScreen extends React.Component {
         RNFetchBlob.fetch('GET', mapboxUrl)
             .then((response) => {
                 const data = JSON.parse(response.data);
-                this.setState({locationResults: data && data.features});
+                if(this._isMounted){
+                    this.setState({locationResults: data && data.features});
+                }
             }).catch((error) => {
                 console.log(error);
             }
@@ -517,7 +534,9 @@ export class CreateObservationScreen extends React.Component {
 
 
     _setLocationText(text) {
-        this.setState((prevState) => ({locationText: text ? text : prevState.observation.location.address}));
+        if(this._isMounted){
+         this.setState((prevState) => ({locationText: text ? text : prevState.observation.location.address}));
+        }
     }
 
     _updateObservationState(obs) {
@@ -571,13 +590,17 @@ export class CreateObservationScreen extends React.Component {
             if (error) {
                 console.log(error);
             } else {
-                this.setState({keyboardHeight: e.endCoordinates.height - bottomPadding});
+                if(this._isMounted){
+                    this.setState({keyboardHeight: e.endCoordinates.height - bottomPadding});
+                }
             }
         });
     }
 
     _keyboardDidHide() {
-        this.setState({keyboardHeight: 0});
+        if(this._isMounted){
+            this.setState({keyboardHeight: 0});
+        }
     }
 
     /************* EATING EXPERIENCE *************/
@@ -599,7 +622,9 @@ export class CreateObservationScreen extends React.Component {
         } else {
             vocabArray = allVocabSorted;
         }
-        this.setState({searchedVocabSorted: vocabArray});
+        if(this._isMounted){
+            this.setState({searchedVocabSorted: vocabArray});
+        }
 
         // let sections = allVocabs;
         // if (!allVocabs || (searchText && searchText !== '')) {
@@ -638,14 +663,18 @@ export class CreateObservationScreen extends React.Component {
 
     _startActivityIndicator(text) {
         if (!this.state.loadingIndicatorVisible) {
-            this.setState({loadingIndicatorVisible: true});
+            if(this._isMounted){
+                this.setState({loadingIndicatorVisible: true});
+            }
             this._setActivityIndicatorText(text);
         }
     }
 
     _stopActivityIndicator() {
         if (this.state.loadingIndicatorVisible) {
-            this.setState({loadingIndicatorVisible: false});
+            if(this._isMounted){
+                this.setState({loadingIndicatorVisible: false});
+            }
             this._setActivityIndicatorText('');
         }
     }
@@ -656,10 +685,12 @@ export class CreateObservationScreen extends React.Component {
 
     onLayout() {
         const smallEmojiSize = (Dimensions.get('window').width - 4 * 6)/(Object.keys(EmojiEnum).length + 1);
-        this.setState({
-            smallEmojiSize: smallEmojiSize,
-            selectedEmojiSize: smallEmojiSize * 1.5
-        })
+        if(this._isMounted){
+            this.setState({
+                smallEmojiSize: smallEmojiSize,
+                selectedEmojiSize: smallEmojiSize * 1.5
+            })
+         }
     }
 
     render() {

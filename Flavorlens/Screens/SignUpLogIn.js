@@ -33,8 +33,13 @@ import {
     logInUser,
     updateUserInformation
 } from '../Helpers/FirebaseHelper';
+import MapboxGL from '@mapbox/react-native-mapbox-gl';
+import MapModalComponent from "../Components/MapModalComponent";
 
 export class SignUpLogInScreen extends React.Component {
+
+    _isMounted = false;
+
     static navigationOptions = {
         header: null,
     };
@@ -51,6 +56,16 @@ export class SignUpLogInScreen extends React.Component {
         this._stopActivityIndicator = this._stopActivityIndicator.bind(this);
         this._setActivityIndicatorText = this._setActivityIndicatorText.bind(this);
         this._inputFocused = this._inputFocused.bind(this);
+        this._onMapModalClose = this._onMapModalClose.bind(this);
+
+        this._mapOptions = Object.keys(MapboxGL.StyleURL)
+            .map(key => {
+                return {
+                    label: key,
+                    data: MapboxGL.StyleURL[key],
+                };
+            })
+            .sort(this.onSortOptions);
 
         this.state = {
             username: undefined,
@@ -62,6 +77,8 @@ export class SignUpLogInScreen extends React.Component {
             user: null,
             loadingIndicatorVisible: false,
             loadingIndicatorText: '',
+            styleURL: this._mapOptions[1].data,
+            mapModalVisible: false
         };
 
         this.unsubscriber = null;
@@ -71,8 +88,11 @@ export class SignUpLogInScreen extends React.Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-            this.setState({user: user});
+            if(this._isMounted){
+                this.setState({user: user});
+            }
             if (user && (!user.isAnonymous || this.skipPressed)) {
                 this._close();
             }
@@ -80,10 +100,12 @@ export class SignUpLogInScreen extends React.Component {
     }
 
     componentWillMount() {
+        this._isMounted = true;
         StatusBar.setHidden(true);
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         StatusBar.setHidden(false);
         if (this.unsubscriber) {
             this.unsubscriber();
@@ -123,8 +145,9 @@ export class SignUpLogInScreen extends React.Component {
                                         _setActivityIndicatorText(strings.savingUserInformation);
                                         const userInfo = {
                                             username: this.state.username,
-                                            location: this.state.location.trim(),
-                                            userid: credentials.user.uid
+                                            location: this.state.location ? this.state.location.center : null,
+                                            userid: credentials.user.uid,
+                                            timestamp: null
                                         };
                                         updateUserInformation(credentials.user.uid, userInfo)
                                             .then(() => {
@@ -200,6 +223,10 @@ export class SignUpLogInScreen extends React.Component {
     }
 
     _inputFocused(refName) {
+        if (refName === 'location') {
+            this.setState({...this.state, mapModalVisible: true});
+        }
+
         if (Platform.OS === 'ios') {
             setTimeout(() => {
                 let scrollResponder = this.scrollView.getScrollResponder();
@@ -230,7 +257,15 @@ export class SignUpLogInScreen extends React.Component {
         this.setState({loadingIndicatorText: text});
     }
 
+    _onMapModalClose = (returnValue) => {
+        console.log("Closing Modal");
+        console.log(returnValue);
+        this.setState({...this.state, mapModalVisible: false, location: returnValue});
+        this.inputs['location'].textInput.blur();
+    }
+
     render() {
+        const {location} = this.state;
         return (
             <ImageBackground source={require('../Images/background.jpg')} resizeMode={'cover'}  style={{flex: 1}}>
                 <View style={[styles.containerOpacityMain, {position:'absolute', left: 0, right: 0, top: 0, bottom: 0}]}/>
@@ -296,20 +331,30 @@ export class SignUpLogInScreen extends React.Component {
                                 onSubmitEditing={() => {this._focusNextField('location');}}
                                 maxLength={maxUsernameLength}
                             />
+                            {/* Location Control*/}
                             <TextInputComponent
                                 ref={input => {this.inputs['location'] = input;}}
                                 onFocus={() => this._inputFocused('location')}
                                 fontawesome={true}
                                 hidden={!this.state.signUpActive}
                                 placeholder={strings.formatString(strings.xOptional, strings.location)}
-                                value={this.state.location}
+                                value={location ? location.place_name: ''}
                                 onChangeText={(text) => this.setState({location: text})}
                                 icon={iconLocation}
+                                clearButtonMode="always"
                                 keyboardType={'default'}
                                 returnKeyType={'join'}
                                 returnKeyLabel={strings.signUp}
                                 onSubmitEditing={() => {this._onPressSubmit()}}
                             />
+
+                            <MapModalComponent
+                                animationType="slide"
+                                transparent={false}
+                                isModalVisible={this.state.mapModalVisible}
+                                onClose={this._onMapModalClose}
+                                styleURL={this.state.styleURL} />
+
                             <View style={[this.state.error ? styles.containerOpacityMain : {}, styles.rightRoundedEdges, styles.leftRoundedEdges, {flex: 0, flexDirection:'row', alignItems: 'center', justifyContent:'center'}]}>
                                 <Text style={[styles.textStandard, styles.containerPadding, {textAlign: 'center', color:colorAccent}]}>{this.state.error}</Text>
                             </View>
@@ -343,5 +388,17 @@ export class SignUpLogInScreen extends React.Component {
                 }
             </ImageBackground>
         );
+    }
+
+    onSortOptions(a, b) {
+        if (a.label < b.label) {
+            return -1;
+        }
+
+        if (a.label > b.label) {
+            return 1;
+        }
+
+        return 0;
     }
 }

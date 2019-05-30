@@ -53,6 +53,7 @@ const initialState ={
 // TODO [FEATURE]: Scroll to top of list when clicking on tastemate logo
 
 export class HomeScreen extends React.Component {
+    _isMounted = false;
     static navigationOptions = ({navigation}) => {
         const {params = {}} = navigation.state;
         return {
@@ -97,6 +98,7 @@ export class HomeScreen extends React.Component {
     /************* LIFECYCLE *************/
 
     componentDidMount() {
+        this._isMounted = true;
         this.props.navigation.setParams({
             onProfilePressed: (() => this._onNavBarButtonPressed(true)),
             onCreateObsPressed: this._onNavBarButtonPressed,
@@ -106,14 +108,16 @@ export class HomeScreen extends React.Component {
             // Reset page info
             let resetState = initialState;
             resetState.user = user;
-            this.setState(resetState, () => {
-                if (!user) {
-                    // Open SingUpLogIn screen if no account associated (not even anonymous)
-                    navigateToScreen('SignUpLogIn', this.props.navigation);
-                } else {
-                    this._checkInternetConnectionAndStart(user);
-                }
-            });
+            if(this._isMounted){
+                this.setState(resetState, () => {
+                    if (!user) {
+                        // Open SingUpLogIn screen if no account associated (not even anonymous)
+                        navigateToScreen('SignUpLogIn', this.props.navigation);
+                    } else {
+                        this._checkInternetConnectionAndStart(user);
+                    }
+                });
+            }
         });
 
         if (Platform.OS === 'ios') {
@@ -123,6 +127,7 @@ export class HomeScreen extends React.Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         if (this.unsubscriber) {
             this.unsubscriber();
         }
@@ -159,7 +164,9 @@ export class HomeScreen extends React.Component {
     _loadObservationFeed(userid, onStartup, isRefreshing) {
         const _loadObservations = this._loadObservations;
         this._setEmptyMessage(strings.loading, false);
-        this.setState({feedEmpty: false});
+        if(this._isMounted){
+            this.setState({feedEmpty: false});
+        }
 
         if (this.followees && this.followees.length > 0 && !isRefreshing && !onStartup) {
             this._loadObservations(onStartup, isRefreshing);
@@ -181,9 +188,11 @@ export class HomeScreen extends React.Component {
         const obsSize = this.state.observations.length;
         if (!this.isLoadingObservations && (obsSize === 0 || obsSize % OBS_LOAD_DEPTH === 0 || isRefreshing)) {
             if (isRefreshing) {
-                this.setState({
-                    observations: [],
-                });
+                if(this._isMounted){
+                    this.setState({
+                        observations: [],
+                    });
+                }
             }
             const index = isRefreshing ? 0 : this.state.observations.length;
             this.isLoadingObservations = true;
@@ -206,35 +215,47 @@ export class HomeScreen extends React.Component {
             sortArrayByTimestamp(observations);
 
             if (onStartup || isRefreshing) {
+                if(this._isMounted){
                 this.setState({observations: observations});
+                }
             } else {
-                this.setState(prevState => ({observations: prevState.observations.concat(observations)}));
+                if(this._isMounted){
+                                this.setState(prevState => ({observations: prevState.observations.concat(observations)}));
+                }
             }
         } else {
             this._loadFeedEmptyInfo();
         }
         this._setEmptyMessage(strings.emptyFeed, false);
-        this.setState({
-            isRefreshing: false,
-        });
+        if(this._isMounted){
+            this.setState({
+                isRefreshing: false,
+            });
+        }
     }
 
     _handleError(error){
         console.log(error);
         this._setEmptyMessage(strings.errorOccurred, true);
+        if(this._isMounted){
         this.setState({isRefreshing: false});
+        }
     }
 
     _setEmptyMessage(message, cannotLoad) {
+        if(this._isMounted){
         this.setState({
             emptyListMessage: message,
             cannotLoad: cannotLoad
         });
     }
+    }
 
     _onRefresh() {
         console.log('Refreshing...');
+        if(this._isMounted){
         this.setState({isRefreshing: true});
+        }
         this._loadObservationFeed(this.state.user.uid, false, true);
     }
 
@@ -249,17 +270,21 @@ export class HomeScreen extends React.Component {
         array.splice(index, 1);
 
         const emptyFeed = !array || array.length === 0;
+        if(this._isMounted){
         this.setState({
             observations: array,
             feedEmpty: emptyFeed
         });
+    }
         if (emptyFeed) {
             this._loadFeedEmptyInfo();
         }
     }
 
     _onCreate(newObs) {
+        if(this._isMounted){
         this.setState((prevState) => ({observations: [newObs].concat(prevState.observations)}));
+        }
     }
 
     _keyExtractor = (item, index) => this.state.observations[index].observationid;
@@ -288,7 +313,9 @@ export class HomeScreen extends React.Component {
                 if (error) {
                     console.log(error);
                 } else {
+                    if(this._isMounted){
                     this.setState({keyboardHeight: e.endCoordinates.height - bottomPadding - ReactNavigationTabBarHeight}, () => this._scrollToItem(this.state.observations.length - 1));
+                    }
                 }
             });
         }
@@ -296,7 +323,9 @@ export class HomeScreen extends React.Component {
 
     _keyboardDidHide() {
         if (this.bottomOfList) {
+            if(this._isMounted){
             this.setState({keyboardHeight: 0});
+            }
             this.bottomOfList = false;
         }
     }
@@ -311,9 +340,11 @@ export class HomeScreen extends React.Component {
 
         getMostPopularUsers(8)
             .then((users) => {
+                if(this._isMounted){
                 this.setState({
                     feedEmptyUsers: users,
                 });
+            }
                 for (let i = 0; i < users.length; i++) {
                     const user = users[i];
                     getMostRecentObsForUser(user.userid, 9)
@@ -335,7 +366,9 @@ export class HomeScreen extends React.Component {
             let observations = this.state.feedEmptyObservations;
             sortArrayByTimestamp(userObservations);
             observations[userid] = userObservations;
+            if(this._isMounted){
             this.setState({feedEmptyObservations: observations});
+            }
         }
     }
 
@@ -368,13 +401,17 @@ export class HomeScreen extends React.Component {
     _addIsFollowingToState(isFollowing, userid) {
         let feedEmptyFollowing = this.state.feedEmptyFollowing;
         feedEmptyFollowing[userid] = isFollowing;
+        if(this._isMounted){
         this.setState({feedEmptyFollowing: feedEmptyFollowing});
+        }
     }
 
     _onPressUser(index) {
+        if(this._isMounted){
         this.setState({
             feedEmptySelectedIndex: index,
         });
+    }
     }
 
     _onPressProfile(user) {

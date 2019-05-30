@@ -11,6 +11,7 @@ import {getXMostRecentComments, sortArrayByTimestamp} from '../Helpers/FirebaseH
 const CMT_LOAD_DEPTH = 10;
 
 export class CommentsScreen extends React.Component {
+    _isMounted = false;
     static navigationOptions = () => ({
         title: strings.allComments + ' ',
     });
@@ -38,6 +39,7 @@ export class CommentsScreen extends React.Component {
     }
 
     componentWillMount() {
+        this._isMounted = true;
         if (Platform.OS === 'ios') {
             this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
             this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
@@ -45,6 +47,7 @@ export class CommentsScreen extends React.Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         if (this.keyboardDidShowListener) {
             this.keyboardDidShowListener.remove();
         }
@@ -59,18 +62,24 @@ export class CommentsScreen extends React.Component {
                 console.log(error);
             } else {
                 const keyboardHeight = e.endCoordinates.height - ReactNavigationTabBarHeight - bottomPadding;
-                this.setState({keyboardHeight: keyboardHeight});
+                if(this._isMounted){
+                    this.setState({keyboardHeight: keyboardHeight});
+                }
             }
         });
     }
 
     _keyboardDidHide(e) {
-        this.setState({keyboardHeight: 0});
+        if(this._isMounted){
+            this.setState({keyboardHeight: 0});
+        }
     }
 
     _addCommentToState(comment) {
         const commentArray = [comment];
-        this.setState(prevState => ({comments: commentArray.concat(prevState.comments)}));
+        if(this._isMounted){
+            this.setState(prevState => ({comments: commentArray.concat(prevState.comments)}));
+        }
     }
 
     _loadComments(onStartup, isRefreshing) {
@@ -91,15 +100,20 @@ export class CommentsScreen extends React.Component {
     _addToCommentState(comments) {
         if (comments && comments.length > 0) {
             sortArrayByTimestamp(comments);
-
-            this.setState({comments: comments});
+            if(this._isMounted){
+                this.setState({comments: comments});
+            }
         }
-        this.setState({isRefreshing: false});
+        if(this._isMounted){
+            this.setState({isRefreshing: false});
+        }
     }
 
     _onRefresh() {
         console.log('Refreshing...');
-        this.setState({isRefreshing: true});
+        if(this._isMounted){
+            this.setState({isRefreshing: true});
+        }
         this._loadComments(false, true);
     }
 
@@ -113,7 +127,9 @@ export class CommentsScreen extends React.Component {
         if (index > -1) {
             comments.splice(index, 1);
         }
-        this.setState({comments:comments});
+        if(this._isMounted){
+            this.setState({comments:comments});
+        }
     }
 
     _keyExtractor = (item,) => item.timestamp + item.senderid;
